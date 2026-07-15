@@ -1,0 +1,321 @@
+datasource db {
+  provider = "mongodb"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model Permission {
+  id          String   @id @default(auto()) @map("_id") @db.ObjectId
+  name        String   @unique
+  description String?
+  roleIds     String[] @db.ObjectId
+  roles       Role[]   @relation(fields: [roleIds], references: [id])
+}
+
+model Role {
+  id            String       @id @default(auto()) @map("_id") @db.ObjectId
+  name          String       @unique
+  description   String?
+  permissionIds String[]     @db.ObjectId
+  permissions   Permission[] @relation(fields: [permissionIds], references: [id])
+  users         User[]
+}
+
+model User {
+  id           String        @id @default(auto()) @map("_id") @db.ObjectId
+  email        String        @unique
+  username     String        @unique
+  passwordHash String
+  name         String
+  phone        String?
+  roleId       String        @db.ObjectId
+  role         Role          @relation(fields: [roleId], references: [id])
+  vendorId     String?       @db.ObjectId
+  vendor       Vendor?       @relation(fields: [vendorId], references: [id])
+  lawFirmId    String?       @db.ObjectId
+  lawFirm      LawFirm?      @relation(fields: [lawFirmId], references: [id])
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+  sessions     Session[]
+  activityLogs ActivityLog[]
+  auditLogs    AuditLog[]
+  assignedLeads Lead[]       @relation("IntakeAgentLeads")
+  tasks        Task[]        @relation("UserTasks")
+  meetings     Meeting[]
+}
+
+model Session {
+  id           String   @id @default(auto()) @map("_id") @db.ObjectId
+  userId       String   @db.ObjectId
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  refreshToken String   @unique
+  ipAddress    String?
+  userAgent    String?
+  isActive     Boolean  @default(true)
+  expiresAt    DateTime
+  createdAt    DateTime @default(now())
+}
+
+model MassTort {
+  id          String     @id @default(auto()) @map("_id") @db.ObjectId
+  name        String     @unique
+  description String?
+  isCustom    Boolean    @default(false)
+  createdAt   DateTime   @default(now())
+  campaigns   Campaign[]
+}
+
+model LeadSource {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  name      String   @unique
+  createdAt DateTime @default(now())
+  leads     Lead[]
+}
+
+model CaseStage {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  name      String   @unique
+  createdAt DateTime @default(now())
+  cases     Case[]
+}
+
+model Lead {
+  id                String       @id @default(auto()) @map("_id") @db.ObjectId
+  leadId            String       @unique
+  firstName         String
+  lastName          String
+  phone             String
+  email             String
+  state             String
+  status            String
+  priority          String
+  leadScore         Int          @default(0)
+  aiSummary         String?
+  duplicateDetected Boolean      @default(false)
+  campaignId        String       @db.ObjectId
+  campaign          Campaign     @relation(fields: [campaignId], references: [id])
+  vendorId          String?      @db.ObjectId
+  vendor            Vendor?      @relation(fields: [vendorId], references: [id])
+  intakeAgentId     String?      @db.ObjectId
+  intakeAgent       User?        @relation("IntakeAgentLeads", fields: [intakeAgentId], references: [id])
+  lawFirmId         String?      @db.ObjectId
+  lawFirm           LawFirm?     @relation(fields: [lawFirmId], references: [id])
+  sourceId          String?      @db.ObjectId
+  source            LeadSource?  @relation(fields: [sourceId], references: [id])
+  caseDetails       String?
+  tortTypeId        String?      @db.ObjectId
+  dob               String?
+  gender            String?
+  address           String?
+  ssn               String?
+  incidentDate      String?
+  exposure          String?
+  symptoms          String?
+  diagnosis         String?
+  hospital          String?
+  attorney          String?
+  createdAt         DateTime     @default(now())
+  updatedAt         DateTime     @updatedAt
+  tasks             Task[]
+  meetings          Meeting[]
+  documents         Document[]
+  activityLogs      ActivityLog[]
+  case              Case?
+}
+
+model Vendor {
+  id        String     @id @default(auto()) @map("_id") @db.ObjectId
+  name      String
+  email     String     @unique
+  phone     String?
+  address   String?
+  status    String     @default("ACTIVE")
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
+  users     User[]
+  leads     Lead[]
+  campaigns Campaign[]
+  invoices  Invoice[]
+}
+
+model LawFirm {
+  id        String     @id @default(auto()) @map("_id") @db.ObjectId
+  name      String
+  email     String     @unique
+  phone     String?
+  address   String?
+  status    String     @default("ACTIVE")
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
+  users     User[]
+  attorneys Attorney[]
+  leads     Lead[]
+  cases     Case[]
+  invoices  Invoice[]
+  campaigns Campaign[]
+}
+
+model Attorney {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  name      String
+  email     String   @unique
+  phone     String?
+  lawFirmId String   @db.ObjectId
+  lawFirm   LawFirm  @relation(fields: [lawFirmId], references: [id])
+  cases     Case[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Campaign {
+  id                 String    @id @default(auto()) @map("_id") @db.ObjectId
+  name               String
+  description        String?
+  budget             Float     @default(0.0)
+  roi                Float     @default(0.0)
+  revenue            Float     @default(0.0)
+  leadCount          Int       @default(0)
+  conversionRate     Float     @default(0.0)
+  status             String    @default("ACTIVE")
+  massTortId         String    @db.ObjectId
+  massTort           MassTort  @relation(fields: [massTortId], references: [id])
+  vendorId           String?   @db.ObjectId
+  vendor             Vendor?   @relation(fields: [vendorId], references: [id])
+  lawFirmId          String?   @db.ObjectId
+  lawFirm            LawFirm?  @relation(fields: [lawFirmId], references: [id])
+  marketingSource    String?
+  startDate          DateTime?
+  endDate            DateTime?
+  costPerLeadTarget  Float?    @default(0.0)
+  expectedLeadTarget Int?      @default(0)
+  createdAt          DateTime  @default(now())
+  updatedAt          DateTime  @updatedAt
+  leads              Lead[]
+}
+
+model Case {
+  id                  String     @id @default(auto()) @map("_id") @db.ObjectId
+  caseNumber          String     @unique
+  leadId              String     @unique @db.ObjectId
+  lead                Lead       @relation(fields: [leadId], references: [id], onDelete: Cascade)
+  attorneyId          String?    @db.ObjectId
+  attorney            Attorney?  @relation(fields: [attorneyId], references: [id])
+  lawFirmId           String     @db.ObjectId
+  lawFirm             LawFirm    @relation(fields: [lawFirmId], references: [id])
+  stageId             String     @db.ObjectId
+  stage               CaseStage  @relation(fields: [stageId], references: [id])
+  settlementAmount    Float      @default(0.0)
+  medicalRecordsStatus String    @default("PENDING")
+  courtDetails        String?
+  createdAt           DateTime   @default(now())
+  updatedAt           DateTime   @updatedAt
+  documents           Document[]
+}
+
+model Task {
+  id           String    @id @default(auto()) @map("_id") @db.ObjectId
+  title        String
+  description  String?
+  assignedToId String?   @db.ObjectId
+  assignedTo   User?     @relation("UserTasks", fields: [assignedToId], references: [id])
+  leadId       String?   @db.ObjectId
+  lead         Lead?     @relation(fields: [leadId], references: [id])
+  dueDate      DateTime?
+  priority     String
+  status       String
+  reminderSent Boolean   @default(false)
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+}
+
+model Meeting {
+  id          String   @id @default(auto()) @map("_id") @db.ObjectId
+  title       String
+  description String?
+  leadId      String?  @db.ObjectId
+  lead        Lead?    @relation(fields: [leadId], references: [id])
+  userId      String   @db.ObjectId
+  user        User     @relation(fields: [userId], references: [id])
+  startTime   DateTime
+  endTime     DateTime
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model Document {
+  id             String    @id @default(auto()) @map("_id") @db.ObjectId
+  name           String
+  url            String
+  folder         String    @default("General")
+  ocrText        String?
+  version        Int       @default(1)
+  approvalStatus String    @default("PENDING")
+  leadId         String?   @db.ObjectId
+  lead           Lead?     @relation(fields: [leadId], references: [id])
+  caseId         String?   @db.ObjectId
+  case           Case?     @relation(fields: [caseId], references: [id])
+  uploadedById   String?   @db.ObjectId
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
+}
+
+model Notification {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  title     String
+  message   String
+  userId    String   @db.ObjectId
+  type      String
+  read      Boolean  @default(false)
+  createdAt DateTime @default(now())
+}
+
+model Payment {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  amount    Float
+  status    String
+  method    String?
+  invoiceId String   @db.ObjectId
+  invoice   Invoice  @relation(fields: [invoiceId], references: [id])
+  createdAt DateTime @default(now())
+}
+
+model Invoice {
+  id            String    @id @default(auto()) @map("_id") @db.ObjectId
+  invoiceNumber String    @unique
+  amount        Float
+  status        String
+  dueDate       DateTime
+  vendorId      String?   @db.ObjectId
+  vendor        Vendor?   @relation(fields: [vendorId], references: [id])
+  lawFirmId     String?   @db.ObjectId
+  lawFirm       LawFirm?  @relation(fields: [lawFirmId], references: [id])
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+  payments      Payment[]
+}
+
+model ActivityLog {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  userId    String   @db.ObjectId
+  user      User     @relation(fields: [userId], references: [id])
+  leadId    String?  @db.ObjectId
+  lead      Lead?    @relation(fields: [leadId], references: [id])
+  action    String
+  details   String?
+  createdAt DateTime @default(now())
+}
+
+model AuditLog {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  userId    String   @db.ObjectId
+  user      User     @relation(fields: [userId], references: [id])
+  action    String
+  tableName String
+  recordId  String
+  oldValues String?
+  newValues String?
+  createdAt DateTime @default(now())
+}

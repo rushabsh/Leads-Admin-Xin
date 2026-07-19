@@ -137,7 +137,7 @@ export default function VendorLoginPage() {
           {/* Active Data Input Form */}
           <form onSubmit={handleSubmit} className="space-y-5 text-xs">
 
-            {/* Field: Corporate Email */}
+            {/* Corporate Email */}
             <div className="space-y-2">
               <label className="flex items-center gap-1.5 font-mono text-[10px] font-semibold uppercase tracking-wider text-zinc-400">
                 <Mail className="w-3 h-3 text-zinc-500" /> Vendor Email / Username

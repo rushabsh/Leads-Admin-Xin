@@ -229,7 +229,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
               />
             </div>
 
-            {user.role !== 'Viewer' && (
+            {/* {user.role !== 'Viewer' && (
               <button
                 onClick={() => router.push('/admin/leads?add=true')}
                 className="flex items-center gap-1 rounded-xl bg-primary px-3.5 py-1.5 text-xs font-semibold text-white shadow-md shadow-primary/10 hover:bg-primary-hover"
@@ -237,7 +237,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                 <Plus className="h-4 w-4" />
                 <span>Quick Add</span>
               </button>
-            )}
+            )} */}
 
             <button
               onClick={() => setIsDarkMode(!isDarkMode)}

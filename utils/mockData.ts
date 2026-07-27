@@ -56,6 +56,7 @@ export interface MockCase {
 export interface MockCampaign {
   id: string;
   name: string;
+  description?: string;
   tortName: string;
   budget: number;
   roi: number;
@@ -63,6 +64,7 @@ export interface MockCampaign {
   leadCount: number;
   conversionRate: number;
   status: string;
+  vendorId?: string;
   vendorName: string;
 }
 
@@ -202,27 +204,143 @@ export const DEFAULT_LAW_FIRMS: MockLawFirm[] = [
 export const DEFAULT_CAMPAIGNS: MockCampaign[] = [
   {
     id: 'camp-1',
-    name: 'Camp Lejeune Water Ads',
-    tortName: 'Camp Lejeune',
+    name: 'Camp Lejeune Water Contamination Ads',
+    description: 'Targeted search and social campaigns for toxic water exposure victims at Marine Corps Base Camp Lejeune.',
+    tortName: 'Camp Lejeune Water Contamination',
     budget: 25000,
     roi: 3.8,
     revenue: 120000,
     leadCount: 150,
     conversionRate: 64,
     status: 'ACTIVE',
+    vendorId: 'ven-1',
     vendorName: 'Premier Leads LLC'
   },
   {
     id: 'camp-2',
-    name: 'Roundup Cancer PPC',
-    tortName: 'Roundup',
-    budget: 15000,
-    roi: 2.1,
-    revenue: 45000,
-    leadCount: 85,
-    conversionRate: 48,
+    name: 'Roundup Non-Hodgkin Lymphoma PPC',
+    description: 'High-intent search advertising focusing on agricultural workers exposed to glyphosate weed killer.',
+    tortName: 'Roundup Weed Killer',
+    budget: 18000,
+    roi: 2.9,
+    revenue: 72000,
+    leadCount: 95,
+    conversionRate: 54,
     status: 'ACTIVE',
-    vendorName: 'Apex Intake Gen'
+    vendorId: 'ven-1',
+    vendorName: 'Premier Leads LLC'
+  },
+  {
+    id: 'camp-3',
+    name: 'PFAS Chemical Water Social Push',
+    description: 'Facebook and Instagram video campaign targeting communities with documented municipal PFAS water contamination.',
+    tortName: 'PFAS Toxic Chemicals',
+    budget: 30000,
+    roi: 3.2,
+    revenue: 115000,
+    leadCount: 135,
+    conversionRate: 58,
+    status: 'ACTIVE',
+    vendorId: 'ven-1',
+    vendorName: 'Premier Leads LLC'
+  },
+  {
+    id: 'camp-4',
+    name: 'NEC Infant Formula Medical Search',
+    description: 'Paid search campaign directed at parents of premature infants given bovine milk-based formula.',
+    tortName: 'NEC Baby Formula',
+    budget: 22000,
+    roi: 3.5,
+    revenue: 88000,
+    leadCount: 78,
+    conversionRate: 62,
+    status: 'ACTIVE',
+    vendorId: 'ven-1',
+    vendorName: 'Premier Leads LLC'
+  },
+  {
+    id: 'camp-5',
+    name: 'Chemical Hair Straightener Cancer Ads',
+    description: 'Digital display & social media outreach targeting long-term users of chemical relaxers diagnosed with uterine cancer.',
+    tortName: 'Hair Straightener Cancer',
+    budget: 20000,
+    roi: 3.1,
+    revenue: 82000,
+    leadCount: 110,
+    conversionRate: 61,
+    status: 'ACTIVE',
+    vendorId: 'ven-1',
+    vendorName: 'Premier Leads LLC'
+  },
+  {
+    id: 'camp-6',
+    name: 'Ozempic & Wegovy Gastroparesis Intake',
+    description: 'Inbound lead generation for GLP-1 receptor agonist users suffering severe stomach paralysis.',
+    tortName: 'Ozempic Stomach Paralysis',
+    budget: 35000,
+    roi: 4.1,
+    revenue: 165000,
+    leadCount: 180,
+    conversionRate: 69,
+    status: 'ACTIVE',
+    vendorId: 'ven-1',
+    vendorName: 'Premier Leads LLC'
+  },
+  {
+    id: 'camp-7',
+    name: 'Paraquat Parkinson\'s Disease PPC',
+    description: 'Search campaign targeting licensed commercial herbicide applicators diagnosed with Parkinson\'s disease.',
+    tortName: 'Paraquat Herbicide',
+    budget: 16000,
+    roi: 2.8,
+    revenue: 55000,
+    leadCount: 64,
+    conversionRate: 50,
+    status: 'ACTIVE',
+    vendorId: 'ven-1',
+    vendorName: 'Premier Leads LLC'
+  },
+  {
+    id: 'camp-8',
+    name: 'Tylenol Prenatal Autism Outreach',
+    description: 'Social awareness campaign focusing on mothers who took acetaminophen during pregnancy resulting in ASD/ADHD.',
+    tortName: 'Tylenol Autism Claim',
+    budget: 14000,
+    roi: 2.4,
+    revenue: 42000,
+    leadCount: 70,
+    conversionRate: 46,
+    status: 'ACTIVE',
+    vendorId: 'ven-1',
+    vendorName: 'Premier Leads LLC'
+  },
+  {
+    id: 'camp-9',
+    name: 'AFFF Firefighter Foam Exposure',
+    description: 'Targeted media campaign for civilian & military firefighters exposed to aqueous film-forming foam.',
+    tortName: 'AFFF Firefighting Foam',
+    budget: 12000,
+    roi: 2.2,
+    revenue: 35000,
+    leadCount: 45,
+    conversionRate: 40,
+    status: 'PAUSED',
+    vendorId: 'ven-1',
+    vendorName: 'Premier Leads LLC'
+  },
+  {
+    id: 'camp-10',
+    name: 'Bard Hernia Mesh Revision Claims',
+    description: 'Retargeting and native ad campaign for patients requiring surgical hernia mesh removal or revision.',
+    tortName: 'Hernia Mesh Complications',
+    budget: 10000,
+    roi: 1.9,
+    revenue: 24000,
+    leadCount: 30,
+    conversionRate: 35,
+    status: 'PAUSED',
+    vendorId: 'ven-1',
+    vendorName: 'Premier Leads LLC'
   }
 ];
 
@@ -390,7 +508,8 @@ export const initializeLocalStorage = () => {
   if (typeof window === 'undefined') return;
 
   const checkAndSet = (key: string, defaultVal: any) => {
-    if (!localStorage.getItem(key)) {
+    const existing = localStorage.getItem(key);
+    if (!existing || (Array.isArray(defaultVal) && JSON.parse(existing).length < defaultVal.length)) {
       localStorage.setItem(key, JSON.stringify(defaultVal));
     }
   };

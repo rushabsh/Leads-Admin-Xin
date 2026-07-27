@@ -1,10 +1,11 @@
 'use client';
 
 import { useEffect, useMemo } from 'react';
+import Link from 'next/link';
 import { motion } from 'framer-motion';
 import {
   Users, UserCheck, ShieldAlert, Banknote, Clock,
-  BarChart3, Mail, Phone, Calendar
+  BarChart3, Mail, Phone, Calendar, FolderKanban, ChevronRight
 } from 'lucide-react';
 import dynamic from 'next/dynamic';
 import { useCRMStore } from '../../../store/crmStore';
@@ -56,6 +57,12 @@ export default function VendorPortal() {
   const vendorCampaigns = useMemo(() => {
     return campaigns.filter(c => c.vendorId === vendorId || vendorLeads.some(vl => vl.campaignId === c.id));
   }, [campaigns, vendorId, vendorLeads]);
+
+  const activeVendorCampaigns = useMemo(() => {
+    const active = vendorCampaigns.filter(c => c.status === 'ACTIVE');
+    if (active.length > 0) return active;
+    return campaigns.filter(c => c.status === 'ACTIVE');
+  }, [vendorCampaigns, campaigns]);
 
   const vendorInvoices = useMemo(() => {
     return invoices.filter(i => i.vendorId === vendorId);
@@ -121,10 +128,10 @@ export default function VendorPortal() {
       </div>
 
       {/* KPI Cards */}
-      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-5">
+      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
         <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm dark:border-slate-800 dark:bg-slate-900/50">
           <div className="flex items-center justify-between text-slate-400">
-            <span className="text-xs uppercase font-bold tracking-wider">Leads Sent</span>
+            <span className="text-xs uppercase font-bold tracking-wider">Sent Leads </span>
             <Users className="h-4.5 w-4.5 text-primary" />
           </div>
           {isStatsLoading ? (
@@ -137,7 +144,7 @@ export default function VendorPortal() {
 
         <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm dark:border-slate-800 dark:bg-slate-900/50">
           <div className="flex items-center justify-between text-slate-400">
-            <span className="text-xs uppercase font-bold tracking-wider">Qualified Cases</span>
+            <span className="text-xs uppercase font-bold tracking-wider">InProgress Leads</span>
             <UserCheck className="h-4.5 w-4.5 text-emerald-500" />
           </div>
           {isStatsLoading ? (
@@ -152,7 +159,7 @@ export default function VendorPortal() {
 
         <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm dark:border-slate-800 dark:bg-slate-900/50">
           <div className="flex items-center justify-between text-slate-400">
-            <span className="text-xs uppercase font-bold tracking-wider">Rejected Leads</span>
+            <span className="text-xs uppercase font-bold tracking-wider">Close Lead</span>
             <ShieldAlert className="h-4.5 w-4.5 text-rose-500" />
           </div>
           {isStatsLoading ? (
@@ -163,7 +170,7 @@ export default function VendorPortal() {
           <span className="text-[10px] text-slate-400 block mt-1">Criteria match failures</span>
         </div>
 
-        <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm dark:border-slate-800 dark:bg-slate-900/50">
+        {/* <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm dark:border-slate-800 dark:bg-slate-900/50">
           <div className="flex items-center justify-between text-slate-400">
             <span className="text-xs uppercase font-bold tracking-wider">Earned Payout</span>
             <Banknote className="h-4.5 w-4.5 text-indigo-500" />
@@ -187,7 +194,7 @@ export default function VendorPortal() {
             <h3 className="text-2xl font-bold mt-3">{formatCurrency(stats.pendingPayments)}</h3>
           )}
           <span className="text-[10px] text-amber-500 font-semibold block mt-1">Awaiting verification</span>
-        </div>
+        </div> */}
       </div>
 
       {/* Main Grid */}
@@ -207,9 +214,18 @@ export default function VendorPortal() {
           </div>
         </div>
 
-        {/* Invoice Summary Panel */}
+        {/* Active Campaigns Panel */}
         <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm dark:border-slate-800 dark:bg-slate-900/50">
-          <h3 className="text-md font-bold mb-4">Payout Accounts & Invoices</h3>
+          <div className="flex items-center justify-between mb-4">
+            <h3 className="text-md font-bold">Active Campaigns</h3>
+            <Link
+              href="/vendor-portal/campaigns"
+              className="text-xs font-semibold text-primary hover:underline flex items-center gap-1"
+            >
+              View all
+              <ChevronRight className="h-3 w-3" />
+            </Link>
+          </div>
           {isLoading ? (
             <div className="space-y-3.5 pr-1 animate-pulse">
               {Array.from({ length: 3 }).map((_, idx) => (
@@ -225,24 +241,33 @@ export default function VendorPortal() {
                 </div>
               ))}
             </div>
-          ) : vendorInvoices.length === 0 ? (
+          ) : activeVendorCampaigns.length === 0 ? (
             <div className="flex h-48 flex-col items-center justify-center text-center">
-              <Banknote className="h-8 w-8 text-slate-300 dark:text-slate-700" />
-              <p className="mt-2 text-xs text-slate-555">No invoices generated yet.</p>
+              <FolderKanban className="h-8 w-8 text-slate-300 dark:text-slate-700" />
+              <p className="mt-2 text-xs text-slate-500">No active campaigns running.</p>
             </div>
           ) : (
             <div className="space-y-4 max-h-64 overflow-y-auto pr-1">
-              {vendorInvoices.map((inv) => (
-                <div key={inv.id} className="flex items-center justify-between border-b border-slate-50 pb-3 last:border-0 last:pb-0 dark:border-slate-850">
-                  <div>
-                    <p className="text-xs font-bold">{inv.invoiceNumber}</p>
-                    <p className="text-[10px] text-slate-400">Due {new Date(inv.dueDate).toLocaleDateString()}</p>
+              {activeVendorCampaigns.map((camp) => (
+                <div key={camp.id} className="flex items-center justify-between border-b border-slate-100 pb-3 last:border-0 last:pb-0 dark:border-slate-850">
+                  <div className="space-y-1">
+                    <p className="text-xs font-bold text-slate-900 dark:text-white">{camp.name}</p>
+                    <div className="flex items-center gap-2">
+                      <span className="inline-flex items-center rounded-md bg-primary/10 px-1.5 py-0.5 text-[10px] font-semibold text-primary">
+                        {camp.tortName || 'Mass Tort'}
+                      </span>
+                      <span className="text-[10px] text-slate-400">
+                        {camp.leadCount || 0} leads
+                      </span>
+                    </div>
                   </div>
                   <div className="text-right">
-                    <p className="text-xs font-bold text-slate-900 dark:text-white">${inv.amount.toLocaleString()}</p>
-                    <span className={`inline-block rounded px-1.5 py-0.5 text-[9px] font-bold ${inv.status === 'PAID' ? 'bg-emerald-500/10 text-emerald-500' : 'bg-amber-500/10 text-amber-500'
-                      }`}>
-                      {inv.status}
+                    <p className="text-xs font-bold text-slate-900 dark:text-white">
+                      ${camp.budget ? camp.budget.toLocaleString() : '0'}
+                    </p>
+                    <span className="inline-flex items-center gap-1 text-[10px] font-semibold text-emerald-500">
+                      <span className="h-1.5 w-1.5 rounded-full bg-emerald-500 animate-pulse" />
+                      ACTIVE
                     </span>
                   </div>
                 </div>

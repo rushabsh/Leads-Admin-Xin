@@ -2,13 +2,16 @@
 
 import { useState, useEffect } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
-import { Plus, Check } from 'lucide-react';
+import { Plus, Check, Upload } from 'lucide-react';
 import { useCRMStore } from '../../../../store/crmStore';
 import { useAuthStore } from '../../../../store/authStore';
+import api from '../../../../lib/api';
 
 // Extracted modular components
 import VendorPortalLeadsTable from '../../../../components/vendor-portal/leads/VendorPortalLeadsTable';
 import SubmitLeadModal from '../../../../components/vendor-portal/leads/SubmitLeadModal';
+import CsvImportModal from '../../../../components/admin/leads/CsvImportModal';
+import useCsvImport from '../../admin/leads/useCsvImport';
 
 interface LeadData {
   id: string;
@@ -32,7 +35,7 @@ interface LeadData {
 
 export default function VendorLeadsPage() {
   const { user } = useAuthStore();
-  const { leads, campaigns: rawCampaigns, fetchData, addLead, isLoading } = useCRMStore();
+  const { leads, campaigns: rawCampaigns, fetchData, addLead, deleteLead, isLoading } = useCRMStore();
   const campaigns = rawCampaigns as any[];
 
   const vendorId = user?.vendorId || 'ven-1';
@@ -90,6 +93,21 @@ export default function VendorLeadsPage() {
     setTimeout(() => setToast(null), 3000);
   };
 
+  // CSV Import State Hook
+  const {
+    showImportModal,
+    setShowImportModal,
+    csvStep,
+    setCsvStep,
+    parsedCsvData,
+    validationErrors,
+    importSummary,
+    handleCSVFileChange,
+    handleValidateCsv,
+    handleCSVImportConfirm,
+    handleDownloadTemplate,
+  } = useCsvImport(showToast, vendorId, user?.name);
+
   const handleCampaignChange = (campId: string) => {
     const camp = campaigns.find(c => c.id === campId);
     if (camp) {
@@ -135,6 +153,30 @@ export default function VendorLeadsPage() {
       showToast(error.response?.data?.message || 'Failed to submit lead', 'error');
     } finally {
       setIsSubmitting(false);
+    }
+  };
+
+  const handleDeleteLead = async (leadId: string) => {
+    if (!confirm('Are you sure you want to delete this lead?')) return;
+    try {
+      await api.delete(`/leads/${leadId}`);
+      deleteLead(leadId);
+      showToast('Lead deleted successfully', 'success');
+      fetchData();
+    } catch (e) {
+      showToast('Failed to delete lead', 'error');
+    }
+  };
+
+  const handleDeleteMultipleLeads = async (leadIds: string[]) => {
+    if (!confirm(`Are you sure you want to delete ${leadIds.length} selected lead(s)?`)) return;
+    try {
+      await Promise.all(leadIds.map((id) => api.delete(`/leads/${id}`).catch((err) => err)));
+      leadIds.forEach((id) => deleteLead(id));
+      showToast(`${leadIds.length} lead(s) deleted successfully`, 'success');
+      fetchData();
+    } catch (e) {
+      showToast('Failed to delete selected leads', 'error');
     }
   };
 
@@ -192,11 +234,10 @@ export default function VendorLeadsPage() {
             initial={{ opacity: 0, y: -20 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -20 }}
-            className={`fixed top-4 right-4 z-50 flex items-center gap-2 rounded-xl px-4 py-3 text-sm font-semibold shadow-lg ${
-              toast.type === 'success'
-                ? 'bg-emerald-500/10 text-emerald-500 border border-emerald-500/20'
-                : 'bg-rose-500/10 text-rose-500 border border-rose-500/20'
-            }`}
+            className={`fixed top-4 right-4 z-50 flex items-center gap-2 rounded-xl px-4 py-3 text-sm font-semibold shadow-lg ${toast.type === 'success'
+              ? 'bg-emerald-500/10 text-emerald-500 border border-emerald-500/20'
+              : 'bg-rose-500/10 text-rose-500 border border-rose-500/20'
+              }`}
           >
             <Check className="h-4 w-4" />
             <span>{toast.message}</span>
@@ -212,13 +253,22 @@ export default function VendorLeadsPage() {
             View history, real-time qualification statuses, and submit leads directly.
           </p>
         </div>
-        <button
-          onClick={handleOpenSubmitModal}
-          className="inline-flex items-center gap-2 rounded-xl bg-primary px-4 py-2.5 text-sm font-semibold text-white shadow-lg shadow-primary/25 hover:bg-primary/90 transition-all active:scale-[0.98]"
-        >
-          <Plus className="h-4 w-4" />
-          Submit Lead manually
-        </button>
+        <div className="flex flex-wrap items-center gap-3">
+          <button
+            onClick={() => { setShowImportModal(true); setCsvStep('upload'); }}
+            className="inline-flex items-center gap-2 rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm font-semibold text-slate-700 shadow-sm hover:border-primary hover:bg-primary/5 hover:text-primary transition-all dark:border-slate-800 dark:bg-slate-900 dark:text-slate-300 dark:hover:border-primary dark:hover:bg-primary/10 dark:hover:text-primary active:scale-[0.98]"
+          >
+            <Upload className="h-4 w-4" />
+            Import CSV Leads
+          </button>
+          <button
+            onClick={handleOpenSubmitModal}
+            className="inline-flex items-center gap-2 rounded-xl bg-primary px-4 py-2.5 text-sm font-semibold text-white shadow-lg shadow-primary/25 hover:bg-primary/90 transition-all active:scale-[0.98]"
+          >
+            <Plus className="h-4 w-4" />
+            Submit Lead manually
+          </button>
+        </div>
       </div>
 
       <VendorPortalLeadsTable
@@ -236,6 +286,8 @@ export default function VendorLeadsPage() {
         sortDirection={sortDirection}
         onRequestSort={requestSort}
         isLoading={isLoading}
+        onDeleteLead={handleDeleteLead}
+        onDeleteMultipleLeads={handleDeleteMultipleLeads}
       />
 
       <SubmitLeadModal
@@ -247,6 +299,20 @@ export default function VendorLeadsPage() {
         onCampaignChange={handleCampaignChange}
         onSubmit={handleSubmit}
         isSubmitting={isSubmitting}
+      />
+
+      <CsvImportModal
+        showImportModal={showImportModal}
+        setShowImportModal={setShowImportModal}
+        csvStep={csvStep}
+        setCsvStep={setCsvStep}
+        parsedCsvData={parsedCsvData}
+        validationErrors={validationErrors}
+        importSummary={importSummary}
+        onCSVFileChange={handleCSVFileChange}
+        onValidateCsv={handleValidateCsv}
+        onCSVImportConfirm={handleCSVImportConfirm}
+        onDownloadTemplate={handleDownloadTemplate}
       />
     </div>
   );

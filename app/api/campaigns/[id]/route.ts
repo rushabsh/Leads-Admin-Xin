@@ -6,7 +6,9 @@ export async function GET(req: NextRequest, { params }: { params: Promise<{ id: 
   try {
     const user = await verifyAuth(req);
     if (!user) return NextResponse.json({ success: false, message: 'Unauthenticated' }, { status: 401 });
-    if (!checkPermission(user, 'read:campaigns')) return NextResponse.json({ success: false, message: 'Forbidden' }, { status: 403 });
+    if (!checkPermission(user, 'read:campaigns') && user.roleName !== 'Vendor') {
+      return NextResponse.json({ success: false, message: 'Forbidden' }, { status: 403 });
+    }
 
     const { id } = await params;
     const campaign = await prisma.campaign.findUnique({
@@ -15,11 +17,18 @@ export async function GET(req: NextRequest, { params }: { params: Promise<{ id: 
         massTort: true,
         vendor: true,
         lawFirm: true,
-        leads: true,
+        leads: {
+          orderBy: { createdAt: 'desc' },
+        },
       },
     });
 
     if (!campaign) return NextResponse.json({ success: false, message: 'Campaign not found' }, { status: 404 });
+
+    if (user.roleName === 'Vendor' && user.vendorId && campaign.vendorId !== user.vendorId) {
+      return NextResponse.json({ success: false, message: 'Forbidden: Access to campaign denied' }, { status: 403 });
+    }
+
     return NextResponse.json({ success: true, campaign });
   } catch (error) {
     console.error('Campaign GET Error:', error);

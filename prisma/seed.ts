@@ -114,7 +114,7 @@ async function main() {
     {
       name: 'Vendor',
       description: 'Lead generation agency access',
-      permNames: ['create:leads', 'read:leads'],
+      permNames: ['create:leads', 'read:leads', 'read:campaigns'],
     },
   ];
 

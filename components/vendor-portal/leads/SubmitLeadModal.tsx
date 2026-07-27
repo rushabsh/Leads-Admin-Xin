@@ -54,7 +54,7 @@ export default function SubmitLeadModal({
                 value={formData.firstName}
                 onChange={(e) => setFormData({ ...formData, firstName: e.target.value })}
                 placeholder="John"
-                className="mt-1 block w-full rounded-xl border border-slate-250 bg-slate-50/50 px-3 py-2 outline-none focus:border-primary focus:bg-white dark:border-slate-800 dark:bg-slate-950"
+                className="mt-1 block w-full rounded-xl border border-slate-250 bg-slate-50/50 px-3 py-2 outline-none focus:border-primary focus:bg-black dark:border-slate-800 dark:bg-slate-950"
               />
             </div>
             <div>
@@ -65,7 +65,7 @@ export default function SubmitLeadModal({
                 value={formData.lastName}
                 onChange={(e) => setFormData({ ...formData, lastName: e.target.value })}
                 placeholder="Doe"
-                className="mt-1 block w-full rounded-xl border border-slate-250 bg-slate-50/50 px-3 py-2 outline-none focus:border-primary focus:bg-white dark:border-slate-800 dark:bg-slate-950"
+                className="mt-1 block w-full rounded-xl border border-slate-250 bg-slate-50/50 px-3 py-2 outline-none focus:border-primary focus:bg-black dark:border-slate-800 dark:bg-slate-950"
               />
             </div>
           </div>
@@ -79,7 +79,7 @@ export default function SubmitLeadModal({
                 value={formData.email}
                 onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                 placeholder="john.doe@example.com"
-                className="mt-1 block w-full rounded-xl border border-slate-250 bg-slate-50/50 px-3 py-2 outline-none focus:border-primary focus:bg-white dark:border-slate-800 dark:bg-slate-950"
+                className="mt-1 block w-full rounded-xl border border-slate-250 bg-slate-50/50 px-3 py-2 outline-none focus:border-primary focus:bg-black dark:border-slate-800 dark:bg-slate-950"
               />
             </div>
             <div>
@@ -90,7 +90,7 @@ export default function SubmitLeadModal({
                 value={formData.phone}
                 onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
                 placeholder="5551234567"
-                className="mt-1 block w-full rounded-xl border border-slate-250 bg-slate-50/50 px-3 py-2 outline-none focus:border-primary focus:bg-white dark:border-slate-800 dark:bg-slate-950"
+                className="mt-1 block w-full rounded-xl border border-slate-250 bg-slate-50/50 px-3 py-2 outline-none focus:border-primary focus:bg-black dark:border-slate-800 dark:bg-slate-950"
               />
             </div>
           </div>
@@ -105,7 +105,7 @@ export default function SubmitLeadModal({
                 value={formData.state}
                 onChange={(e) => setFormData({ ...formData, state: e.target.value.toUpperCase() })}
                 placeholder="FL"
-                className="mt-1 block w-full rounded-xl border border-slate-250 bg-slate-50/50 px-3 py-2 outline-none focus:border-primary focus:bg-white dark:border-slate-800 dark:bg-slate-950"
+                className="mt-1 block w-full rounded-xl border border-slate-250 bg-slate-50/50 px-3 py-2 outline-none focus:border-primary focus:bg-black dark:border-slate-800 dark:bg-slate-950"
               />
             </div>
             <div>
@@ -131,7 +131,7 @@ export default function SubmitLeadModal({
               value={formData.caseDetails}
               onChange={(e) => setFormData({ ...formData, caseDetails: e.target.value })}
               placeholder="Explain water contamination timeline, roundup pesticide usage, or cancer diagnosis details..."
-              className="mt-1 block w-full rounded-xl border border-slate-250 bg-slate-50/50 px-3 py-2 outline-none focus:border-primary focus:bg-white dark:border-slate-800 dark:bg-slate-950"
+              className="mt-1 block w-full rounded-xl border border-slate-250 bg-slate-50/50 px-3 py-2 outline-none focus:border-primary focus:bg-black dark:border-slate-800 dark:bg-slate-950"
             />
           </div>
 

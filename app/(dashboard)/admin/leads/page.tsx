@@ -54,7 +54,6 @@ function LeadsPageContent() {
 
   // Modals state
   const [showAddModal, setShowAddModal] = useState(false);
-  const [showImportModal, setShowImportModal] = useState(false);
 
   // New Lead Form state
   const [formData, setFormData] = useState({
@@ -104,6 +103,8 @@ function LeadsPageContent() {
 
   // CSV Importer Hook
   const {
+    showImportModal,
+    setShowImportModal,
     csvStep,
     setCsvStep,
     parsedCsvData,
@@ -243,6 +244,24 @@ function LeadsPageContent() {
       }
     } catch (e) {
       showToast('Failed to delete lead', 'error');
+    }
+  };
+
+  const handleDeleteMultipleLeads = async (leadIds: string[]) => {
+    if (!confirm(`Are you sure you want to delete ${leadIds.length} selected lead(s)?`)) return;
+    try {
+      await Promise.all(leadIds.map((id) => api.delete(`/leads/${id}`).catch((err) => err)));
+      leadIds.forEach((id) => {
+        useCRMStore.getState().deleteLead(id);
+      });
+      showToast(`${leadIds.length} lead(s) deleted successfully`, 'success');
+      fetchData();
+      if (selectedLead && leadIds.includes(selectedLead.id)) {
+        setSelectedLead(null);
+        setLeadDetails(null);
+      }
+    } catch (e) {
+      showToast('Failed to delete selected leads', 'error');
     }
   };
 
@@ -519,6 +538,7 @@ function LeadsPageContent() {
             paginatedLeads={paginatedLeads}
             onViewLeadProfile={handleViewLeadProfile}
             onDeleteLead={handleDeleteLead}
+            onDeleteMultipleLeads={handleDeleteMultipleLeads}
           />
         </>
       ) : (

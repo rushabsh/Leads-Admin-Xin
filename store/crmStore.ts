@@ -92,7 +92,7 @@ interface CRMState {
   updateTaskStatus: (taskId: string, status: string) => Promise<void>;
 
   // Campaign & Custom Tort operations
-  addCustomMassTort: (name: string, description: string) => Promise<void>;
+  addCustomMassTort: (name: string, description: string) => Promise<any>;
 }
 
 const activePromises: { [key: string]: Promise<any> | null } = {};
@@ -144,10 +144,10 @@ export const useCRMStore = create<CRMState>((set, get) => ({
         const campaigns = get().campaigns.length ? get().campaigns : getFromStorage<MockCampaign[]>('mc_campaigns', []);
         const vendors = get().vendors.length ? get().vendors : getFromStorage<MockVendor[]>('mc_vendors', []);
         const lawFirms = get().lawFirms.length ? get().lawFirms : getFromStorage<MockLawFirm[]>('mc_lawfirms', []);
-        
+
         const totalLeads = leads.length;
         const today = new Date();
-        today.setHours(0,0,0,0);
+        today.setHours(0, 0, 0, 0);
         const todaysLeads = leads.filter(l => new Date(l.createdAt) >= today).length;
         const qualifiedLeads = leads.filter(l => l.status === 'QUALIFIED').length;
         const disqualifiedLeads = leads.filter(l => l.status === 'REJECTED').length;
@@ -603,13 +603,13 @@ export const useCRMStore = create<CRMState>((set, get) => ({
       else if (disposition === 'REJECTED') nextStatus = 'REJECTED';
       else nextStatus = 'CONTACTED';
 
-      const updatedLeads = get().leads.map(l => 
-        l.id === leadId 
-          ? { 
-              ...l, 
-              status: nextStatus,
-              caseDetails: `${l.caseDetails || ''}\n[Call log]: ${notes}`.trim() 
-            } 
+      const updatedLeads = get().leads.map(l =>
+        l.id === leadId
+          ? {
+            ...l,
+            status: nextStatus,
+            caseDetails: `${l.caseDetails || ''}\n[Call log]: ${notes}`.trim()
+          }
           : l
       );
 
@@ -716,27 +716,7 @@ export const useCRMStore = create<CRMState>((set, get) => ({
   },
 
   addCustomMassTort: async (name, description) => {
-    const currentCampaigns = get().campaigns;
-    const newCamp: MockCampaign = {
-      id: `camp-${Date.now()}`,
-      name: `${name} General Campaign`,
-      tortName: name,
-      budget: 10000,
-      roi: 0,
-      revenue: 0,
-      leadCount: 0,
-      conversionRate: 0,
-      status: 'ACTIVE',
-      vendorName: 'Premier Leads LLC'
-    };
-    const updated = [...currentCampaigns, newCamp];
-    set({ campaigns: updated });
-    saveToStorage('mc_campaigns', updated);
-
-    try {
-      await api.post('/settings/mass-torts', { name, description });
-    } catch (e) {
-      console.warn('API error adding custom mass tort, keeping local campaign.', e);
-    }
+    const response = await api.post('/settings/mass-torts', { name, description });
+    return response.data;
   }
 }));

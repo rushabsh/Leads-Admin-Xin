@@ -1,5 +1,11 @@
 import Link from "next/link";
-import { Shield, User, Lock, Eye, ShieldAlert } from "lucide-react";
+import {
+  Shield, User, Lock,
+  Eye,
+  ShieldCheck,
+  FileLock2,
+  ShieldAlertIcon,
+} from "lucide-react";
 
 export default function LandingPage() {
   return (
@@ -132,9 +138,11 @@ export default function LandingPage() {
         </nav>
 
         {/* --- Inline Status Monitor Box --- */}
-        <div className="w-full max-w-2xl px-4">
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 p-4 rounded-xl border border-zinc-900 bg-zinc-950/40 backdrop-blur-sm text-center sm:text-left">
-            <div className="flex items-center justify-center sm:justify-start gap-3 px-2">
+        <div className="w-full max-w-full px-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4 p-4 rounded-xl border border-zinc-900 bg-zinc-950/40 backdrop-blur-sm">
+
+            {/* Secure Access */}
+            <div className="flex items-center justify-start gap-3 px-3">
               <Lock className="w-4 h-4 text-purple-400 shrink-0" />
               <div className="font-mono text-[11px]">
                 <p className="text-zinc-400 font-medium">Secure Access</p>
@@ -142,21 +150,44 @@ export default function LandingPage() {
               </div>
             </div>
 
-            <div className="flex items-center justify-center sm:justify-start gap-3 px-2 border-t sm:border-t-0 sm:border-x border-zinc-900 pt-3 sm:pt-0">
-              <ShieldAlert className="w-4 h-4 text-blue-400 shrink-0" />
+            {/* Authorized Only */}
+            <div className="flex items-center justify-start gap-3 px-3 lg:border-l border-zinc-900">
+              <ShieldAlertIcon className="w-4 h-4 text-blue-400 shrink-0" />
               <div className="font-mono text-[11px]">
                 <p className="text-zinc-400 font-medium">Authorized Only</p>
                 <p className="text-zinc-600">Restricted Access</p>
               </div>
             </div>
 
-            <div className="flex items-center justify-center sm:justify-start gap-3 px-2 border-t sm:border-t-0 pt-3 sm:pt-0">
+            {/* Activity Logged */}
+            <div className="flex items-center justify-start gap-3 px-3 lg:border-l border-zinc-900">
               <Eye className="w-4 h-4 text-zinc-500 shrink-0" />
               <div className="font-mono text-[11px]">
                 <p className="text-zinc-400 font-medium">Activity Logged</p>
-                <p className="text-zinc-600">All actions monitored</p>
+                <p className="text-zinc-600">Security Monitoring</p>
               </div>
             </div>
+
+            {/* SSL Secured */}
+            <div className="flex items-center justify-start gap-3 px-3 lg:border-l border-zinc-900">
+              <ShieldCheck className="w-4 h-4 text-emerald-400 shrink-0" />
+              <div className="font-mono text-[11px]">
+                <p className="text-zinc-400 font-medium">SSL Secured</p>
+                <p className="text-zinc-600">Encrypted Connection</p>
+              </div>
+            </div>
+
+            {/* Confidential */}
+            <div className="flex items-center justify-start gap-3 px-3 lg:border-l border-zinc-900">
+              <FileLock2 className="w-4 h-4 text-amber-400 shrink-0" />
+              <div className="font-mono text-[11px]">
+                <p className="text-zinc-400 font-medium">
+                  Confidential Submission
+                </p>
+                <p className="text-zinc-600">Data Kept Private</p>
+              </div>
+            </div>
+
           </div>
         </div>
 

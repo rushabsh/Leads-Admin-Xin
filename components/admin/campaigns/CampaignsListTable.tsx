@@ -72,9 +72,9 @@ export default function CampaignsListTable({
               setStatusFilter(e.target.value);
               setPage(1);
             }}
-            className="rounded-xl border border-slate-200 bg-slate-50/50 px-3 py-2.5 text-sm outline-none dark:border-slate-800 dark:bg-slate-955"
+            className="rounded-xl border border-slate-200 bg-[#020618] px-3 py-2.5 text-sm outline-none dark:border-slate-800 dark:bg-slate-955"
           >
-            <option value="">All Statuses</option>
+            <option value="">All Status</option>
             <option value="ACTIVE">Active</option>
             <option value="PAUSED">Paused</option>
             <option value="INACTIVE">Inactive</option>
@@ -104,9 +104,8 @@ export default function CampaignsListTable({
                 >
                   Campaign Name{' '}
                   <ArrowUpDown
-                    className={`inline h-3.5 w-3.5 ml-1 transition-opacity ${
-                      sortField === 'name' ? 'opacity-100' : 'opacity-40'
-                    }`}
+                    className={`inline h-3.5 w-3.5 ml-1 transition-opacity ${sortField === 'name' ? 'opacity-100' : 'opacity-40'
+                      }`}
                   />
                 </th>
                 <th className="p-4 font-semibold">Mass Tort</th>
@@ -118,9 +117,8 @@ export default function CampaignsListTable({
                 >
                   Budget{' '}
                   <ArrowUpDown
-                    className={`inline h-3.5 w-3.5 ml-1 transition-opacity ${
-                      sortField === 'budget' ? 'opacity-100' : 'opacity-40'
-                    }`}
+                    className={`inline h-3.5 w-3.5 ml-1 transition-opacity ${sortField === 'budget' ? 'opacity-100' : 'opacity-40'
+                      }`}
                   />
                 </th>
                 <th
@@ -129,9 +127,8 @@ export default function CampaignsListTable({
                 >
                   Leads{' '}
                   <ArrowUpDown
-                    className={`inline h-3.5 w-3.5 ml-1 transition-opacity ${
-                      sortField === 'leadCount' ? 'opacity-100' : 'opacity-40'
-                    }`}
+                    className={`inline h-3.5 w-3.5 ml-1 transition-opacity ${sortField === 'leadCount' ? 'opacity-100' : 'opacity-40'
+                      }`}
                   />
                 </th>
                 <th className="p-4 font-semibold">Status</th>
@@ -173,22 +170,20 @@ export default function CampaignsListTable({
                   <td className="p-4">{camp.leadCount || 0}</td>
                   <td className="p-4">
                     <span
-                      className={`inline-flex items-center gap-1.5 rounded-full px-2 py-1 text-xs font-semibold ${
-                        camp.status === 'ACTIVE'
-                          ? 'bg-emerald-500/10 text-emerald-500'
-                          : camp.status === 'PAUSED'
+                      className={`inline-flex items-center gap-1.5 rounded-full px-2 py-1 text-xs font-semibold ${camp.status === 'ACTIVE'
+                        ? 'bg-emerald-500/10 text-emerald-500'
+                        : camp.status === 'PAUSED'
                           ? 'bg-amber-500/10 text-amber-500'
                           : 'bg-slate-500/10 text-slate-550'
-                      }`}
+                        }`}
                     >
                       <span
-                        className={`h-1.5 w-1.5 rounded-full ${
-                          camp.status === 'ACTIVE'
-                            ? 'bg-emerald-500'
-                            : camp.status === 'PAUSED'
+                        className={`h-1.5 w-1.5 rounded-full ${camp.status === 'ACTIVE'
+                          ? 'bg-emerald-500'
+                          : camp.status === 'PAUSED'
                             ? 'bg-amber-500'
                             : 'bg-slate-500'
-                        }`}
+                          }`}
                       />
                       {camp.status}
                     </span>

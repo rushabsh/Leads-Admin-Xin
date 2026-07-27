@@ -67,7 +67,7 @@ export default function KpiCards({
           {/* Card 2 */}
           <motion.div variants={itemVariants} className="glass-card p-5 flex flex-col justify-between">
             <div className="flex items-center justify-between">
-              <span className="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider">Today&apos;s Leads</span>
+              <span className="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider">InProgress Leads</span>
               <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-secondary/10 text-secondary">
                 <Clock className="h-4 w-4" />
               </div>
@@ -89,7 +89,7 @@ export default function KpiCards({
             className="glass-card p-5 flex flex-col justify-between cursor-pointer hover:border-success/30 hover:shadow-md hover:-translate-y-0.5 transition-all duration-200"
           >
             <div className="flex items-center justify-between">
-              <span className="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider">Qualified Leads</span>
+              <span className="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider">Expected Leads</span>
               <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-success/10 text-success">
                 <UserCheck className="h-4 w-4" />
               </div>
@@ -113,7 +113,7 @@ export default function KpiCards({
             className="glass-card p-5 flex flex-col justify-between cursor-pointer hover:border-rose-500/30 hover:shadow-md hover:-translate-y-0.5 transition-all duration-200"
           >
             <div className="flex items-center justify-between">
-              <span className="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider">Disqualified Leads</span>
+              <span className="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider">Closed Leads</span>
               <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-rose-500/10 text-rose-500">
                 <Users className="h-4 w-4" />
               </div>
@@ -158,7 +158,7 @@ export default function KpiCards({
 
       <div>
         <h2 className="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider mb-3">Operations & Finance Analytics</h2>
-        <div className="grid grid-cols-2 gap-5 sm:grid-cols-2 lg:grid-cols-6">
+        <div className="grid grid-cols-2 gap-5 sm:grid-cols-2 lg:grid-cols-4">
           {/* Card 6 */}
           <motion.div variants={itemVariants} className="glass-card p-5 flex flex-col justify-between">
             <div className="flex items-center justify-between">
@@ -178,7 +178,7 @@ export default function KpiCards({
           </motion.div>
 
           {/* Card 7 */}
-          <motion.div variants={itemVariants} className="glass-card p-5 flex flex-col justify-between">
+          {/* <motion.div variants={itemVariants} className="glass-card p-5 flex flex-col justify-between">
             <div className="flex items-center justify-between">
               <span className="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider">Total Revenue</span>
               <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary/10 text-primary">
@@ -195,10 +195,10 @@ export default function KpiCards({
                 Settlements finalized
               </span>
             </div>
-          </motion.div>
+          </motion.div> */}
 
           {/* Card 8 */}
-          <motion.div variants={itemVariants} className="glass-card p-5 flex flex-col justify-between">
+          {/* <motion.div variants={itemVariants} className="glass-card p-5 flex flex-col justify-between">
             <div className="flex items-center justify-between">
               <span className="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider">Pending Payments</span>
               <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-danger/10 text-danger">
@@ -213,7 +213,7 @@ export default function KpiCards({
               )}
               <span className="text-[10px] text-danger font-semibold mt-1 block">Invoices outstanding</span>
             </div>
-          </motion.div>
+          </motion.div> */}
 
           {/* Card 9 */}
           <motion.div variants={itemVariants} className="glass-card p-5 flex flex-col justify-between">

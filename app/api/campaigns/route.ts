@@ -6,9 +6,17 @@ export async function GET(req: NextRequest) {
   try {
     const user = await verifyAuth(req);
     if (!user) return NextResponse.json({ success: false, message: 'Unauthenticated' }, { status: 401 });
-    if (!checkPermission(user, 'read:campaigns')) return NextResponse.json({ success: false, message: 'Forbidden' }, { status: 403 });
+    if (!checkPermission(user, 'read:campaigns') && user.roleName !== 'Vendor') {
+      return NextResponse.json({ success: false, message: 'Forbidden' }, { status: 403 });
+    }
+
+    const where: any = {};
+    if (user.roleName === 'Vendor') {
+      where.vendorId = user.vendorId || 'none';
+    }
 
     const campaigns = await prisma.campaign.findMany({
+      where,
       include: {
         massTort: true,
         vendor: true,

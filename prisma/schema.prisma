@@ -45,6 +45,7 @@ model User {
   assignedLeads Lead[]       @relation("IntakeAgentLeads")
   tasks        Task[]        @relation("UserTasks")
   meetings     Meeting[]
+  comments     Comment[]
 }
 
 model Session {
@@ -123,6 +124,7 @@ model Lead {
   meetings          Meeting[]
   documents         Document[]
   activityLogs      ActivityLog[]
+  comments          Comment[]
   case              Case?
 }
 
@@ -319,3 +321,16 @@ model AuditLog {
   newValues String?
   createdAt DateTime @default(now())
 }
+
+model Comment {
+  id         String   @id @default(auto()) @map("_id") @db.ObjectId
+  leadId     String   @db.ObjectId
+  lead       Lead     @relation(fields: [leadId], references: [id], onDelete: Cascade)
+  userId     String?  @db.ObjectId
+  user       User?    @relation(fields: [userId], references: [id])
+  authorName String
+  content    String
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+}
+

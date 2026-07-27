@@ -94,7 +94,7 @@ export default function CampaignsPage() {
 
   useEffect(() => {
     fetchData();
-    api.get('/settings/mass-torts').then(res => setMassTorts(res.data.massTorts || [])).catch(() => {
+    api.get('/settings/mass-torts').then(res => setMassTorts(res.data.massTorts || res.data.data || [])).catch(() => {
       setMassTorts([
         { id: '1', name: 'Camp Lejeune' },
         { id: '2', name: 'Roundup' },

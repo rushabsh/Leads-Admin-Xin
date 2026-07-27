@@ -37,9 +37,14 @@ const escapeCSV = (val: any): string => {
   return str;
 };
 
-export default function useCsvImport(showToast: (msg: string, type: 'success' | 'error') => void) {
+export default function useCsvImport(
+  showToast: (msg: string, type: 'success' | 'error') => void,
+  defaultVendorId?: string,
+  defaultVendorName?: string
+) {
   const { leads, campaigns, vendors, fetchData } = useCRMStore();
 
+  const [showImportModal, setShowImportModal] = useState(false);
   const [csvStep, setCsvStep] = useState<'upload' | 'preview' | 'validate' | 'import'>('upload');
   const [csvFile, setCsvFile] = useState<File | null>(null);
   const [parsedCsvData, setParsedCsvData] = useState<any[]>([]);
@@ -154,6 +159,8 @@ export default function useCsvImport(showToast: (msg: string, type: 'success' | 
 
       const vendorNameVal = row.vendor || row.Vendor || '';
       const matchingVendor = vendors.find(v => v.name.toLowerCase().includes(vendorNameVal.toLowerCase())) || vendors[0];
+      const targetVendorId = defaultVendorId || matchingVendor?.id || vendors[0]?.id || '';
+      const targetVendorName = defaultVendorName || matchingVendor?.name || 'Vendor';
 
       const leadPayload = {
         firstName: row.firstName,
@@ -164,7 +171,7 @@ export default function useCsvImport(showToast: (msg: string, type: 'success' | 
         priority: row.priority || 'MEDIUM',
         status: row.status || 'NEW',
         campaignId: matchingCamp?.id || campaigns[0]?.id || '',
-        vendorId: matchingVendor?.id || vendors[0]?.id || '',
+        vendorId: targetVendorId,
         dob: row.dob || '',
         gender: row.gender || 'Male',
         address: row.address || '',
@@ -288,6 +295,8 @@ export default function useCsvImport(showToast: (msg: string, type: 'success' | 
   };
 
   return {
+    showImportModal,
+    setShowImportModal,
     csvStep,
     setCsvStep,
     csvFile,

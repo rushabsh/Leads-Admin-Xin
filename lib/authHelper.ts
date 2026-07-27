@@ -60,7 +60,7 @@ export async function verifyAuth(req: NextRequest): Promise<AuthenticatedUser | 
 }
 
 export function checkPermission(user: AuthenticatedUser, permission: string): boolean {
-  if (user.roleName === 'Super Admin') return true;
+  if (user.roleName === 'Super Admin' || user.roleName === 'Admin') return true;
   if (user.permissions.includes(permission)) return true;
 
   // Map fine-grained action permissions (e.g. read:campaigns) to general management permission (e.g. manage:campaigns)

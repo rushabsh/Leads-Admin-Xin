@@ -224,7 +224,7 @@ export default function VendorsPage() {
       </div>
 
       {/* Main Table Card */}
-      <div className="rounded-2xl border border-slate-200 bg-white shadow-sm dark:border-slate-800 dark:bg-slate-900/50">
+      <div className="rounded-2xl border border-slate-200 bg-[#020618] shadow-sm dark:border-slate-800 dark:bg-slate-900/50">
         {/* Filters */}
         <div className="flex flex-col gap-4 border-b border-slate-100 p-5 dark:border-slate-850 md:flex-row md:items-center">
           <div className="relative flex-1">
@@ -234,7 +234,7 @@ export default function VendorsPage() {
               placeholder="Search by vendor name, email..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full rounded-xl border border-slate-200 bg-slate-50/50 py-2.5 pr-4 pl-10 text-sm outline-none transition-all placeholder:text-slate-400 focus:border-primary focus:bg-white dark:border-slate-800 dark:bg-slate-950 dark:focus:border-primary"
+              className="w-full rounded-xl border border-slate-200 bg-[#020618] py-2.5 pr-4 pl-10 text-sm outline-none transition-all placeholder:text-slate-400 focus:border-primary focus:bg-black dark:border-slate-800 dark:bg-slate-950 dark:focus:border-primary"
             />
           </div>
           <div className="flex items-center gap-2">
@@ -242,10 +242,10 @@ export default function VendorsPage() {
             <select
               value={statusFilter}
               onChange={(e) => setStatusFilter(e.target.value)}
-              className="rounded-xl border border-slate-200 bg-slate-50/50 px-3 py-2.5 text-sm outline-none dark:border-slate-800 dark:bg-slate-950"
+              className="rounded-xl border border-slate-200 px-3 py-2.5 text-sm outline-none dark:border-slate-800 dark:bg-slate-950"
             >
-              <option value="">All Statuses</option>
-              <option value="ACTIVE">Active</option>
+              <option value="" >All Status</option>
+              <option value="ACTIVE" >Active</option>
               <option value="INACTIVE">Inactive</option>
             </select>
           </div>
@@ -401,7 +401,7 @@ export default function VendorsPage() {
                   value={formData.name}
                   onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                   placeholder="e.g. Premier Leads LLC"
-                  className="mt-1 block w-full rounded-xl border border-slate-250 bg-slate-50/50 px-3 py-2 outline-none focus:border-primary focus:bg-white dark:border-slate-800 dark:bg-slate-950"
+                  className="mt-1 block w-full rounded-xl border border-slate-250 bg-slate-50/50 px-3 py-2 outline-none focus:border-primary focus:bg-black dark:border-slate-800 dark:bg-slate-950"
                 />
               </div>
 
@@ -413,7 +413,7 @@ export default function VendorsPage() {
                   value={formData.contactPerson}
                   onChange={(e) => setFormData({ ...formData, contactPerson: e.target.value })}
                   placeholder="e.g. Alex Vendor Manager"
-                  className="mt-1 block w-full rounded-xl border border-slate-250 bg-slate-50/50 px-3 py-2 outline-none focus:border-primary focus:bg-white dark:border-slate-800 dark:bg-slate-950"
+                  className="mt-1 block w-full rounded-xl border border-slate-250 bg-slate-50/50 px-3 py-2 outline-none focus:border-primary focus:bg-black dark:border-slate-800 dark:bg-slate-950"
                 />
               </div>
 
@@ -425,7 +425,7 @@ export default function VendorsPage() {
                   value={formData.email}
                   onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                   placeholder="admin@premierleads.com"
-                  className="mt-1 block w-full rounded-xl border border-slate-250 bg-slate-50/50 px-3 py-2 outline-none focus:border-primary focus:bg-white dark:border-slate-800 dark:bg-slate-950"
+                  className="mt-1 block w-full rounded-xl border border-slate-250 bg-slate-50/50 px-3 py-2 outline-none focus:border-primary focus:bg-black dark:border-slate-800 dark:bg-slate-950"
                 />
               </div>
 
@@ -437,7 +437,7 @@ export default function VendorsPage() {
                     value={formData.phone}
                     onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
                     placeholder="(555) 012-3456"
-                    className="mt-1 block w-full rounded-xl border border-slate-250 bg-slate-50/50 px-3 py-2 outline-none focus:border-primary focus:bg-white dark:border-slate-800 dark:bg-slate-950"
+                    className="mt-1 block w-full rounded-xl border border-slate-250 bg-slate-50/50 px-3 py-2 outline-none focus:border-primary focus:bg-black dark:border-slate-800 dark:bg-slate-950"
                   />
                 </div>
                 <div>
@@ -445,7 +445,7 @@ export default function VendorsPage() {
                   <select
                     value={formData.status}
                     onChange={(e) => setFormData({ ...formData, status: e.target.value })}
-                    className="mt-1 block w-full rounded-xl border border-slate-250 bg-slate-50/50 px-3 py-2 outline-none focus:border-primary dark:border-slate-800 dark:bg-slate-950"
+                    className="mt-1 block w-full rounded-xl border border-slate-250 bg-[#020618] px-3 py-2 outline-none focus:border-primary dark:border-slate-800 dark:bg-slate-950"
                   >
                     <option value="ACTIVE">Active</option>
                     <option value="INACTIVE">Inactive</option>
@@ -460,7 +460,7 @@ export default function VendorsPage() {
                   value={formData.address}
                   onChange={(e) => setFormData({ ...formData, address: e.target.value })}
                   placeholder="e.g. 500 Broadway, New York, NY"
-                  className="mt-1 block w-full rounded-xl border border-slate-250 bg-slate-50/50 px-3 py-2 outline-none focus:border-primary focus:bg-white dark:border-slate-800 dark:bg-slate-950"
+                  className="mt-1 block w-full rounded-xl border border-slate-250 bg-[#020618] text-white px-3 py-2 outline-none focus:border-primary focus:bg-black dark:border-slate-800 dark:bg-slate-950"
                 />
               </div>
 
@@ -473,7 +473,7 @@ export default function VendorsPage() {
                     value={formData.username}
                     onChange={(e) => setFormData({ ...formData, username: e.target.value })}
                     placeholder="e.g. vendoruser"
-                    className="mt-1 block w-full rounded-xl border border-slate-250 bg-slate-50/50 px-3 py-2 outline-none focus:border-primary focus:bg-white dark:border-slate-800 dark:bg-slate-950"
+                    className="mt-1 block w-full rounded-xl border border-slate-250 bg-[#020618] text-white px-3 py-2 outline-none focus:border-primary focus:bg-black dark:border-slate-800 dark:bg-slate-950"
                   />
                 </div>
                 <div>
@@ -484,7 +484,7 @@ export default function VendorsPage() {
                     value={formData.password}
                     onChange={(e) => setFormData({ ...formData, password: e.target.value })}
                     placeholder={editingVendor ? "Leave blank to keep same" : "••••••••"}
-                    className="mt-1 block w-full rounded-xl border border-slate-250 bg-slate-50/50 px-3 py-2 outline-none focus:border-primary focus:bg-white dark:border-slate-800 dark:bg-slate-950"
+                    className="mt-1 block w-full rounded-xl border border-slate-250 bg-slate-50/50 px-3 py-2 outline-none focus:border-primary focus:bg-black dark:border-slate-800 dark:bg-slate-950"
                   />
                 </div>
               </div>

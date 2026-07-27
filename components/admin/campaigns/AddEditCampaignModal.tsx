@@ -68,7 +68,7 @@ export default function AddEditCampaignModal({
               value={formData.description}
               onChange={(e) => setFormData({ ...formData, description: e.target.value })}
               placeholder="Details about acquisition method, targets, etc..."
-              className="mt-1 block w-full rounded-xl border border-slate-250 bg-slate-50/50 px-3 py-2 outline-none focus:border-primary dark:border-slate-800 dark:bg-slate-955"
+              className="mt-1 block w-full rounded-xl border border-slate-250 bg-[#020618] px-3 py-2 outline-none focus:border-primary dark:border-slate-800 dark:bg-slate-955"
             />
           </div>
 
@@ -81,7 +81,7 @@ export default function AddEditCampaignModal({
                 value={formData.budget}
                 onChange={(e) => setFormData({ ...formData, budget: parseFloat(e.target.value) || 0 })}
                 placeholder="10000"
-                className="mt-1 block w-full rounded-xl border border-slate-250 bg-slate-50/50 px-3 py-2 outline-none focus:border-primary dark:border-slate-800 dark:bg-slate-955"
+                className="mt-1 block w-full rounded-xl border border-slate-250 bg-[#020618] px-3 py-2 outline-none focus:border-primary dark:border-slate-800 dark:bg-slate-955"
               />
             </div>
             <div>
@@ -89,7 +89,7 @@ export default function AddEditCampaignModal({
               <select
                 value={formData.status}
                 onChange={(e) => setFormData({ ...formData, status: e.target.value })}
-                className="mt-1 block w-full rounded-xl border border-slate-250 bg-slate-50/50 px-3 py-2 outline-none focus:border-primary dark:border-slate-800 dark:bg-slate-955"
+                className="mt-1 block w-full rounded-xl border border-slate-250 bg-[#020618] px-3 py-2 outline-none focus:border-primary dark:border-slate-800 dark:bg-slate-955"
               >
                 <option value="ACTIVE">Active</option>
                 <option value="PAUSED">Paused</option>
@@ -105,7 +105,7 @@ export default function AddEditCampaignModal({
                 required
                 value={formData.massTortId}
                 onChange={(e) => setFormData({ ...formData, massTortId: e.target.value })}
-                className="mt-1 block w-full rounded-xl border border-slate-250 bg-slate-50/50 px-3 py-2 outline-none focus:border-primary dark:border-slate-800 dark:bg-slate-955"
+                className="mt-1 block w-full rounded-xl border border-slate-250 bg-[#020618] px-3 py-2 outline-none focus:border-primary dark:border-slate-800 dark:bg-slate-955"
               >
                 <option value="" disabled>
                   Select Mass Tort
@@ -122,7 +122,7 @@ export default function AddEditCampaignModal({
               <select
                 value={formData.vendorId}
                 onChange={(e) => setFormData({ ...formData, vendorId: e.target.value })}
-                className="mt-1 block w-full rounded-xl border border-slate-250 bg-slate-50/50 px-3 py-2 outline-none focus:border-primary dark:border-slate-800 dark:bg-slate-955"
+                className="mt-1 block w-full rounded-xl border border-slate-250 bg-[#020618] px-3 py-2 outline-none focus:border-primary dark:border-slate-800 dark:bg-slate-955"
               >
                 <option value="">Direct Integration / Internal</option>
                 {vendors.map((v) => (
@@ -142,7 +142,7 @@ export default function AddEditCampaignModal({
               <select
                 value={formData.lawFirmId}
                 onChange={(e) => setFormData({ ...formData, lawFirmId: e.target.value })}
-                className="mt-1 block w-full rounded-xl border border-slate-250 bg-slate-50/50 px-3 py-2 outline-none focus:border-primary dark:border-slate-800 dark:bg-slate-955"
+                className="mt-1 block w-full rounded-xl border border-slate-250 bg-[#020618] px-3 py-2 outline-none focus:border-primary dark:border-slate-800 dark:bg-slate-955"
               >
                 <option value="">No Direct Preferred Firm</option>
                 {lawFirms.map((f) => (
@@ -159,7 +159,7 @@ export default function AddEditCampaignModal({
               <select
                 value={formData.marketingSource}
                 onChange={(e) => setFormData({ ...formData, marketingSource: e.target.value })}
-                className="mt-1 block w-full rounded-xl border border-slate-250 bg-slate-50/50 px-3 py-2 outline-none focus:border-primary dark:border-slate-800 dark:bg-slate-955"
+                className="mt-1 block w-full rounded-xl border border-slate-250 bg-[#020618] px-3 py-2 outline-none focus:border-primary dark:border-slate-800 dark:bg-slate-955"
               >
                 <option value="Facebook Ads">Facebook Ads</option>
                 <option value="Google Search">Google Search</option>
@@ -178,7 +178,7 @@ export default function AddEditCampaignModal({
                 type="date"
                 value={formData.startDate}
                 onChange={(e) => setFormData({ ...formData, startDate: e.target.value })}
-                className="mt-1 block w-full rounded-xl border border-slate-250 bg-slate-50/50 px-3 py-2 outline-none focus:border-primary dark:border-slate-800 dark:bg-slate-955"
+                className="mt-1 block w-full rounded-xl border border-slate-250 bg-[#020618] px-3 py-2 outline-none focus:border-primary dark:border-slate-800 dark:bg-slate-955"
               />
             </div>
             <div>
@@ -187,7 +187,7 @@ export default function AddEditCampaignModal({
                 type="date"
                 value={formData.endDate}
                 onChange={(e) => setFormData({ ...formData, endDate: e.target.value })}
-                className="mt-1 block w-full rounded-xl border border-slate-250 bg-slate-50/50 px-3 py-2 outline-none focus:border-primary dark:border-slate-800 dark:bg-slate-955"
+                className="mt-1 block w-full rounded-xl border border-slate-250 bg-[#020618] px-3 py-2 outline-none focus:border-primary dark:border-slate-800 dark:bg-slate-955"
               />
             </div>
           </div>
@@ -202,7 +202,7 @@ export default function AddEditCampaignModal({
                 value={formData.costPerLeadTarget}
                 onChange={(e) => setFormData({ ...formData, costPerLeadTarget: parseFloat(e.target.value) || 0 })}
                 placeholder="50"
-                className="mt-1 block w-full rounded-xl border border-slate-250 bg-slate-50/50 px-3 py-2 outline-none focus:border-primary dark:border-slate-800 dark:bg-slate-955"
+                className="mt-1 block w-full rounded-xl border border-slate-250 bg-[#020618] px-3 py-2 outline-none focus:border-primary dark:border-slate-800 dark:bg-slate-955"
               />
             </div>
             <div>
@@ -214,7 +214,7 @@ export default function AddEditCampaignModal({
                 value={formData.expectedLeadTarget}
                 onChange={(e) => setFormData({ ...formData, expectedLeadTarget: parseInt(e.target.value) || 0 })}
                 placeholder="200"
-                className="mt-1 block w-full rounded-xl border border-slate-250 bg-slate-50/50 px-3 py-2 outline-none focus:border-primary dark:border-slate-800 dark:bg-slate-955"
+                className="mt-1 block w-full rounded-xl border border-slate-250 bg-[#020618] px-3 py-2 outline-none focus:border-primary dark:border-slate-800 dark:bg-slate-955"
               />
             </div>
           </div>

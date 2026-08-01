@@ -48,9 +48,9 @@ export default function CampaignsListTable({
   onDeleteCampaign
 }: CampaignsListTableProps) {
   return (
-    <div className="rounded-2xl border border-slate-200 bg-white shadow-sm dark:border-slate-800 dark:bg-slate-900/50">
+    <div className="rounded-2xl border border-slate-200 bg-white shadow-sm overflow-hidden">
       {/* Filters Header */}
-      <div className="flex flex-col gap-4 border-b border-slate-100 p-5 dark:border-slate-850 md:flex-row md:items-center">
+      <div className="flex flex-col gap-4 border-b border-slate-100 bg-slate-50/50 p-5 md:flex-row md:items-center">
         <div className="relative flex-1">
           <Search className="absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-slate-400" />
           <input
@@ -61,7 +61,7 @@ export default function CampaignsListTable({
               setSearchTerm(e.target.value);
               setPage(1);
             }}
-            className="w-full rounded-xl border border-slate-200 bg-slate-50/50 py-2.5 pr-4 pl-10 text-sm outline-none transition-all placeholder:text-slate-400 focus:border-primary dark:border-slate-800 dark:bg-slate-950 dark:focus:border-primary"
+            className="w-full rounded-xl border border-slate-200 bg-white py-2 pr-4 pl-10 text-xs text-slate-900 outline-none transition-all placeholder:text-slate-400 focus:border-blue-600 focus:ring-2 focus:ring-blue-100 shadow-xs"
           />
         </div>
         <div className="flex items-center gap-2">
@@ -72,7 +72,7 @@ export default function CampaignsListTable({
               setStatusFilter(e.target.value);
               setPage(1);
             }}
-            className="rounded-xl border border-slate-200 bg-[#020618] px-3 py-2.5 text-sm outline-none dark:border-slate-800 dark:bg-slate-955"
+            className="rounded-xl border border-slate-200 bg-white px-3 py-2 text-xs text-slate-900 outline-none focus:border-blue-600 shadow-xs"
           >
             <option value="">All Status</option>
             <option value="ACTIVE">Active</option>
@@ -85,22 +85,22 @@ export default function CampaignsListTable({
       {/* Table content */}
       {isLoading ? (
         <div className="flex h-64 items-center justify-center">
-          <div className="h-8 w-8 animate-spin rounded-full border-4 border-primary border-t-transparent"></div>
+          <div className="h-8 w-8 animate-spin rounded-full border-4 border-blue-600 border-t-transparent"></div>
         </div>
       ) : paginatedCampaigns.length === 0 ? (
         <div className="flex flex-col items-center justify-center p-12 text-center">
-          <FolderKanban className="h-12 w-12 text-slate-300 dark:text-slate-700" />
-          <h3 className="mt-4 text-lg font-semibold">No campaigns found</h3>
-          <p className="mt-1 text-sm text-slate-500">Try adjusting your filters or search options.</p>
+          <FolderKanban className="h-12 w-12 text-slate-300" />
+          <h3 className="mt-4 text-sm font-bold text-slate-900">No campaigns found</h3>
+          <p className="mt-1 text-xs text-slate-500">Try adjusting your filters or search options.</p>
         </div>
       ) : (
         <div className="overflow-x-auto">
-          <table className="w-full border-collapse text-left text-sm">
+          <table className="w-full border-collapse text-left text-xs">
             <thead>
-              <tr className="border-b border-slate-100 bg-slate-50/30 text-slate-550 dark:border-slate-850 dark:bg-slate-950/20">
+              <tr className="border-b border-slate-200 bg-slate-50 text-slate-500 uppercase tracking-wider text-xs font-semibold">
                 <th
                   onClick={() => onRequestSort('name')}
-                  className="cursor-pointer p-4 font-semibold hover:text-primary transition-all"
+                  className="cursor-pointer p-4 hover:text-blue-600 transition-all"
                 >
                   Campaign Name{' '}
                   <ArrowUpDown
@@ -108,12 +108,12 @@ export default function CampaignsListTable({
                       }`}
                   />
                 </th>
-                <th className="p-4 font-semibold">Mass Tort</th>
-                <th className="p-4 font-semibold">Lead Source</th>
-                <th className="p-4 font-semibold">Law Firm</th>
+                <th className="p-4">Mass Tort</th>
+                <th className="p-4">Lead Source</th>
+                <th className="p-4">Law Firm</th>
                 <th
                   onClick={() => onRequestSort('budget')}
-                  className="cursor-pointer p-4 font-semibold hover:text-primary transition-all"
+                  className="cursor-pointer p-4 hover:text-blue-600 transition-all"
                 >
                   Budget{' '}
                   <ArrowUpDown
@@ -123,7 +123,7 @@ export default function CampaignsListTable({
                 </th>
                 <th
                   onClick={() => onRequestSort('leadCount')}
-                  className="cursor-pointer p-4 font-semibold hover:text-primary transition-all"
+                  className="cursor-pointer p-4 hover:text-blue-600 transition-all"
                 >
                   Leads{' '}
                   <ArrowUpDown
@@ -131,57 +131,57 @@ export default function CampaignsListTable({
                       }`}
                   />
                 </th>
-                <th className="p-4 font-semibold">Status</th>
-                <th className="p-4 text-right font-semibold">Actions</th>
+                <th className="p-4">Status</th>
+                <th className="p-4 text-right">Actions</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-slate-100 dark:divide-slate-850">
+            <tbody className="divide-y divide-slate-100">
               {paginatedCampaigns.map((camp) => (
                 <tr
                   key={camp.id}
-                  className="hover:bg-slate-50/50 dark:hover:bg-slate-900/30 transition-all duration-150"
+                  className="hover:bg-slate-50/60 transition-colors"
                 >
-                  <td className="p-4 font-medium text-slate-900 dark:text-white">
+                  <td className="p-4 font-medium text-slate-900">
                     <button
                       onClick={() => onViewDetails(camp)}
-                      className="font-semibold text-primary hover:underline text-left focus:outline-none"
+                      className="font-bold text-blue-600 hover:underline text-left focus:outline-none"
                     >
                       {camp.name}
                     </button>
                     {camp.description && (
-                      <div className="text-xs font-normal text-slate-400">{camp.description}</div>
+                      <div className="text-xs font-normal text-slate-400 mt-0.5">{camp.description}</div>
                     )}
                   </td>
                   <td className="p-4">
-                    <span className="inline-flex items-center rounded-lg bg-primary/10 px-2 py-1 text-xs font-semibold text-primary">
+                    <span className="inline-flex items-center rounded-lg bg-blue-50 border border-blue-200 px-2.5 py-1 text-xs font-semibold text-blue-700">
                       {camp.massTort?.name || camp.tortName || 'No tort'}
                     </span>
                   </td>
-                  <td className="p-4 text-slate-600 dark:text-slate-300">
+                  <td className="p-4 text-slate-700">
                     <div>
-                      <span className="font-semibold">{camp.marketingSource || 'Direct'}</span>
-                      <div className="text-2xs text-slate-400">{camp.vendor?.name || 'Internal'}</div>
+                      <span className="font-semibold text-slate-900">{camp.marketingSource || 'Direct'}</span>
+                      <div className="text-xs text-slate-400">{camp.vendor?.name || 'Internal'}</div>
                     </div>
                   </td>
-                  <td className="p-4 text-slate-600 dark:text-slate-300">
+                  <td className="p-4 text-slate-700">
                     {camp.lawFirm?.name || 'Direct Assign'}
                   </td>
-                  <td className="p-4 font-semibold">${camp.budget.toLocaleString()}</td>
-                  <td className="p-4">{camp.leadCount || 0}</td>
+                  <td className="p-4 font-semibold text-slate-900">${camp.budget.toLocaleString()}</td>
+                  <td className="p-4 font-semibold text-slate-900">{camp.leadCount || 0}</td>
                   <td className="p-4">
                     <span
-                      className={`inline-flex items-center gap-1.5 rounded-full px-2 py-1 text-xs font-semibold ${camp.status === 'ACTIVE'
-                        ? 'bg-emerald-500/10 text-emerald-500'
+                      className={`inline-flex items-center gap-1.5 rounded-full px-2.5 py-0.5 text-xs font-semibold ${camp.status === 'ACTIVE'
+                        ? 'bg-emerald-50 text-emerald-700 border border-emerald-200'
                         : camp.status === 'PAUSED'
-                          ? 'bg-amber-500/10 text-amber-500'
-                          : 'bg-slate-500/10 text-slate-550'
+                          ? 'bg-amber-50 text-amber-700 border border-amber-200'
+                          : 'bg-slate-100 text-slate-600 border border-slate-200'
                         }`}
                     >
                       <span
                         className={`h-1.5 w-1.5 rounded-full ${camp.status === 'ACTIVE'
-                          ? 'bg-emerald-500'
+                          ? 'bg-emerald-600'
                           : camp.status === 'PAUSED'
-                            ? 'bg-amber-500'
+                            ? 'bg-amber-600'
                             : 'bg-slate-500'
                           }`}
                       />
@@ -193,14 +193,14 @@ export default function CampaignsListTable({
                       <button
                         onClick={() => onViewDetails(camp)}
                         title="Analytics Details"
-                        className="rounded-lg p-1.5 text-slate-400 hover:bg-slate-100 hover:text-primary dark:hover:bg-slate-800"
+                        className="rounded-lg p-1.5 text-slate-400 hover:bg-slate-100 hover:text-blue-600 transition-colors"
                       >
                         <Eye className="h-4 w-4" />
                       </button>
                       <button
                         onClick={() => onToggleStatus(camp)}
                         title={camp.status === 'ACTIVE' ? 'Pause Campaign' : 'Resume Campaign'}
-                        className="rounded-lg p-1.5 text-slate-400 hover:bg-slate-100 hover:text-slate-600 dark:hover:bg-slate-800"
+                        className="rounded-lg p-1.5 text-slate-400 hover:bg-slate-100 hover:text-slate-700 transition-colors"
                       >
                         {camp.status === 'ACTIVE' ? (
                           <Pause className="h-4 w-4" />
@@ -211,14 +211,14 @@ export default function CampaignsListTable({
                       <button
                         onClick={() => onOpenEditModal(camp)}
                         title="Edit"
-                        className="rounded-lg p-1.5 text-slate-400 hover:bg-slate-100 hover:text-primary dark:hover:bg-slate-800"
+                        className="rounded-lg p-1.5 text-slate-400 hover:bg-slate-100 hover:text-blue-600 transition-colors"
                       >
                         <Edit2 className="h-4 w-4" />
                       </button>
                       <button
                         onClick={() => onDeleteCampaign(camp.id)}
                         title="Delete"
-                        className="rounded-lg p-1.5 text-slate-400 hover:bg-slate-100 hover:text-rose-500 dark:hover:bg-slate-800"
+                        className="rounded-lg p-1.5 text-slate-400 hover:bg-slate-100 hover:text-rose-600 transition-colors"
                       >
                         <Trash2 className="h-4 w-4" />
                       </button>
@@ -233,7 +233,7 @@ export default function CampaignsListTable({
 
       {/* Pagination Footer */}
       {filteredCampaignsCount > 0 && (
-        <div className="flex items-center justify-between border-t border-slate-100 p-5 dark:border-slate-850">
+        <div className="flex items-center justify-between border-t border-slate-100 p-5">
           <span className="text-xs text-slate-500">
             Showing {(page - 1) * itemsPerPage + 1} to{' '}
             {Math.min(page * itemsPerPage, filteredCampaignsCount)} of {filteredCampaignsCount} campaigns
@@ -242,14 +242,14 @@ export default function CampaignsListTable({
             <button
               onClick={() => setPage((p) => Math.max(p - 1, 1))}
               disabled={page === 1}
-              className="rounded-lg border border-slate-200 p-1.5 text-slate-500 hover:bg-slate-50 disabled:opacity-50 dark:border-slate-855 dark:hover:bg-slate-900"
+              className="rounded-lg border border-slate-200 p-1.5 text-slate-600 hover:bg-slate-50 disabled:opacity-50 transition-colors"
             >
               <ChevronLeft className="h-4 w-4" />
             </button>
             <button
               onClick={() => setPage((p) => Math.min(p + 1, totalPages))}
               disabled={page === totalPages}
-              className="rounded-lg border border-slate-200 p-1.5 text-slate-500 hover:bg-slate-50 disabled:opacity-50 dark:border-slate-855 dark:hover:bg-slate-900"
+              className="rounded-lg border border-slate-200 p-1.5 text-slate-600 hover:bg-slate-50 disabled:opacity-50 transition-colors"
             >
               <ChevronRight className="h-4 w-4" />
             </button>

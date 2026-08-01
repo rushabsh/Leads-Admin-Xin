@@ -21,14 +21,14 @@ export default function VendorReportsCharts({
   return (
     <div className="grid gap-6 lg:grid-cols-2">
       {/* Ingestion Trend */}
-      <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm dark:border-slate-800 dark:bg-slate-900/50">
+      <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
         <div className="flex items-center justify-between mb-4">
-          <h3 className="text-md font-bold">Leads Ingestion Trend</h3>
+          <h3 className="text-md font-bold text-slate-900">Leads Ingestion Trend</h3>
           <TrendingUp className="h-4 w-4 text-slate-400" />
         </div>
         <div className="h-72 w-full">
           {trendData.length === 0 ? (
-            <div className="flex h-full items-center justify-center text-slate-405 text-sm">
+            <div className="flex h-full items-center justify-center text-slate-400 text-sm">
               No data available for this range
             </div>
           ) : (
@@ -36,15 +36,15 @@ export default function VendorReportsCharts({
               <AreaChart data={trendData}>
                 <defs>
                   <linearGradient id="leadsGradient" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="5%" stopColor="#7367F0" stopOpacity={0.2} />
-                    <stop offset="95%" stopColor="#7367F0" stopOpacity={0} />
+                    <stop offset="5%" stopColor="#2563EB" stopOpacity={0.25} />
+                    <stop offset="95%" stopColor="#2563EB" stopOpacity={0} />
                   </linearGradient>
                 </defs>
-                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#E2E8F0" className="dark:stroke-slate-800" />
-                <XAxis dataKey="date" stroke="#94A3B8" fontSize={11} tickLine={false} />
-                <YAxis stroke="#94A3B8" fontSize={11} tickLine={false} axisLine={false} />
-                <Tooltip />
-                <Area type="monotone" dataKey="Leads" stroke="#7367F0" strokeWidth={2.5} fillOpacity={1} fill="url(#leadsGradient)" />
+                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#E2E8F0" />
+                <XAxis dataKey="date" stroke="#64748B" fontSize={11} tickLine={false} />
+                <YAxis stroke="#64748B" fontSize={11} tickLine={false} axisLine={false} />
+                <Tooltip contentStyle={{ background: '#FFFFFF', border: '1px solid #E5E7EB', borderRadius: '12px', color: '#0F172A', fontSize: '12px', boxShadow: '0 4px 6px -1px rgba(0,0,0,0.1)' }} />
+                <Area type="monotone" dataKey="Leads" stroke="#2563EB" strokeWidth={2.5} fillOpacity={1} fill="url(#leadsGradient)" />
               </AreaChart>
             </ResponsiveContainer>
           )}
@@ -52,14 +52,14 @@ export default function VendorReportsCharts({
       </div>
 
       {/* Lead Status Distribution */}
-      <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm dark:border-slate-800 dark:bg-slate-900/50">
+      <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
         <div className="flex items-center justify-between mb-4">
-          <h3 className="text-md font-bold">Leads Status Breakdown</h3>
+          <h3 className="text-md font-bold text-slate-900">Leads Status Breakdown</h3>
           <PieIcon className="h-4 w-4 text-slate-400" />
         </div>
         <div className="h-72 w-full flex flex-col sm:flex-row items-center justify-center gap-4">
           {statusData.length === 0 ? (
-            <div className="text-slate-450 text-sm">No data available for this range</div>
+            <div className="text-slate-400 text-sm">No data available for this range</div>
           ) : (
             <>
               <div className="h-56 w-56">
@@ -78,7 +78,7 @@ export default function VendorReportsCharts({
                         <Cell key={`cell-${index}`} fill={entry.color} />
                       ))}
                     </Pie>
-                    <Tooltip />
+                    <Tooltip contentStyle={{ background: '#FFFFFF', border: '1px solid #E5E7EB', borderRadius: '12px', color: '#0F172A', fontSize: '12px' }} />
                   </PieChart>
                 </ResponsiveContainer>
               </div>
@@ -86,8 +86,8 @@ export default function VendorReportsCharts({
                 {statusData.map((item, idx) => (
                   <div key={idx} className="flex items-center gap-2">
                     <span className="h-3 w-3 rounded-full" style={{ backgroundColor: item.color }} />
-                    <span className="text-xs text-slate-600 dark:text-slate-400">
-                      {item.name}: <span className="font-bold text-slate-900 dark:text-white">{item.value}</span>
+                    <span className="text-xs text-slate-600">
+                      {item.name}: <span className="font-bold text-slate-900">{item.value}</span>
                     </span>
                   </div>
                 ))}
@@ -98,26 +98,26 @@ export default function VendorReportsCharts({
       </div>
 
       {/* Campaign Performance */}
-      <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm dark:border-slate-800 dark:bg-slate-900/50 sm:col-span-2">
+      <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm sm:col-span-2">
         <div className="flex items-center justify-between mb-4">
-          <h3 className="text-md font-bold">Leads volume by Campaign</h3>
+          <h3 className="text-md font-bold text-slate-900">Leads volume by Campaign</h3>
           <BarChart3 className="h-4 w-4 text-slate-400" />
         </div>
         <div className="h-72 w-full">
           {campaignData.length === 0 ? (
-            <div className="flex h-full items-center justify-center text-slate-450 text-sm">
+            <div className="flex h-full items-center justify-center text-slate-400 text-sm">
               No campaign lead data recorded in this range
             </div>
           ) : (
             <ResponsiveContainer width="100%" height="100%">
               <BarChart data={campaignData}>
-                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#E2E8F0" className="dark:stroke-slate-800" />
-                <XAxis dataKey="name" stroke="#94A3B8" fontSize={11} tickLine={false} />
-                <YAxis stroke="#94A3B8" fontSize={11} tickLine={false} axisLine={false} />
-                <Tooltip />
-                <Bar dataKey="leads" fill="#7367F0" radius={[4, 4, 0, 0]}>
+                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#E2E8F0" />
+                <XAxis dataKey="name" stroke="#64748B" fontSize={11} tickLine={false} />
+                <YAxis stroke="#64748B" fontSize={11} tickLine={false} axisLine={false} />
+                <Tooltip contentStyle={{ background: '#FFFFFF', border: '1px solid #E5E7EB', borderRadius: '12px', color: '#0F172A', fontSize: '12px', boxShadow: '0 4px 6px -1px rgba(0,0,0,0.1)' }} />
+                <Bar dataKey="leads" fill="#2563EB" radius={[4, 4, 0, 0]}>
                   {campaignData.map((entry, index) => (
-                    <Cell key={`cell-${index}`} fill={index % 2 === 0 ? '#7367F0' : '#8F85F3'} />
+                    <Cell key={`cell-${index}`} fill={index % 2 === 0 ? '#2563EB' : '#3B82F6'} />
                   ))}
                 </Bar>
               </BarChart>

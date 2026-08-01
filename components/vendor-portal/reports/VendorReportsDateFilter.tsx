@@ -21,7 +21,7 @@ export default function VendorReportsDateFilter({
   setCustomEnd
 }: VendorReportsDateFilterProps) {
   return (
-    <div className="flex flex-col gap-4 rounded-2xl border border-slate-200 bg-white p-4 shadow-sm dark:border-slate-800 dark:bg-slate-900/50 md:flex-row md:items-center md:justify-between">
+    <div className="flex flex-col gap-4 rounded-2xl border border-slate-200 bg-white p-4 shadow-sm md:flex-row md:items-center md:justify-between">
       <div className="flex flex-wrap items-center gap-2">
         <Calendar className="h-4 w-4 text-slate-400" />
         <span className="text-sm font-semibold text-slate-500 mr-2">Timeline:</span>
@@ -31,8 +31,8 @@ export default function VendorReportsDateFilter({
             onClick={() => setDateRange(mode)}
             className={`rounded-lg px-3 py-1.5 text-xs font-semibold uppercase tracking-wider transition-all ${
               dateRange === mode
-                ? 'bg-primary text-white'
-                : 'bg-slate-50 text-slate-600 hover:bg-slate-100 dark:bg-slate-950 dark:text-slate-400 dark:hover:bg-slate-900'
+                ? 'bg-blue-600 text-white shadow-sm'
+                : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
             }`}
           >
             {mode}
@@ -46,14 +46,14 @@ export default function VendorReportsDateFilter({
             type="date"
             value={customStart}
             onChange={(e) => setCustomStart(e.target.value)}
-            className="rounded-lg border border-slate-200 bg-slate-50 px-2 py-1 text-xs outline-none dark:border-slate-800 dark:bg-slate-950"
+            className="rounded-lg border border-slate-200 bg-white px-2 py-1 text-xs text-slate-900 outline-none focus:border-blue-600 shadow-xs"
           />
           <span className="text-xs text-slate-400">to</span>
           <input
             type="date"
             value={customEnd}
             onChange={(e) => setCustomEnd(e.target.value)}
-            className="rounded-lg border border-slate-200 bg-slate-50 px-2 py-1 text-xs outline-none dark:border-slate-800 dark:bg-slate-950"
+            className="rounded-lg border border-slate-200 bg-white px-2 py-1 text-xs text-slate-900 outline-none focus:border-blue-600 shadow-xs"
           />
         </div>
       )}

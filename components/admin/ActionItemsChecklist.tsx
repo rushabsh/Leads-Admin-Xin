@@ -31,14 +31,14 @@ export default function ActionItemsChecklist({
   const router = useRouter();
 
   return (
-    <motion.div variants={itemVariants} className="glass-panel p-6">
+    <motion.div variants={itemVariants} className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
       <div className="mb-4 flex items-center justify-between">
-        <h2 className="text-sm font-bold text-slate-800 dark:text-white uppercase tracking-wider">
+        <h2 className="text-sm font-bold text-slate-900 uppercase tracking-wider">
           Action Items Checklist
         </h2>
         <button
           onClick={() => router.push('/admin/tasks')}
-          className="text-xs text-primary font-semibold flex items-center hover:underline"
+          className="text-xs text-blue-600 font-semibold flex items-center hover:underline"
         >
           View All <ChevronRight className="h-3.5 w-3.5" />
         </button>
@@ -48,15 +48,15 @@ export default function ActionItemsChecklist({
           Array.from({ length: 3 }).map((_, idx) => (
             <div
               key={idx}
-              className="flex gap-3 rounded-xl border border-slate-100 p-3 dark:border-slate-850 bg-slate-50/50 dark:bg-slate-900/30 animate-pulse"
+              className="flex gap-3 rounded-xl border border-slate-200 p-3 bg-slate-50 animate-pulse"
             >
-              <div className="h-4 w-4 bg-slate-200 dark:bg-slate-800 rounded mt-1 shrink-0" />
+              <div className="h-4 w-4 bg-slate-200 rounded mt-1 shrink-0" />
               <div className="flex-1 space-y-2">
-                <div className="h-3.5 w-2/3 bg-slate-200 dark:bg-slate-800 rounded" />
-                <div className="h-2.5 w-full bg-slate-200 dark:bg-slate-800 rounded" />
+                <div className="h-3.5 w-2/3 bg-slate-200 rounded" />
+                <div className="h-2.5 w-full bg-slate-200 rounded" />
                 <div className="flex justify-between mt-2 pt-1">
-                  <div className="h-2 w-1/3 bg-slate-200 dark:bg-slate-800 rounded" />
-                  <div className="h-3 w-10 bg-slate-200 dark:bg-slate-800 rounded-full" />
+                  <div className="h-2 w-1/3 bg-slate-200 rounded" />
+                  <div className="h-3 w-10 bg-slate-200 rounded-full" />
                 </div>
               </div>
             </div>
@@ -67,28 +67,28 @@ export default function ActionItemsChecklist({
           tasks.slice(0, 3).map((task) => (
             <div
               key={task.id}
-              className="flex gap-3 rounded-xl border border-slate-100 p-3 dark:border-slate-850 bg-slate-50/50 dark:bg-slate-900/30"
+              className="flex gap-3 rounded-xl border border-slate-200 p-3 bg-slate-50/70"
             >
               <input
                 type="checkbox"
                 checked={task.status === 'COMPLETED'}
                 readOnly
-                className="mt-1 h-4 w-4 rounded border-slate-300 bg-slate-100 text-primary focus:ring-primary"
+                className="mt-1 h-4 w-4 rounded border-slate-300 bg-white text-blue-600 focus:ring-blue-500"
               />
               <div className="flex-1">
                 <h4
-                  className={`text-xs font-bold ${
-                    task.status === 'COMPLETED' ? 'line-through text-slate-450' : ''
+                  className={`text-xs font-bold text-slate-900 ${
+                    task.status === 'COMPLETED' ? 'line-through text-slate-400' : ''
                   }`}
                 >
                   {task.title}
                 </h4>
-                <p className="text-[10px] text-slate-450 mt-0.5 line-clamp-1">{task.description}</p>
+                <p className="text-[10px] text-slate-500 mt-0.5 line-clamp-1">{task.description}</p>
                 <div className="mt-2 flex items-center justify-between text-[10px] text-slate-400">
                   <span>Due: {task.dueDate}</span>
                   <span
                     className={`px-2 py-0.5 rounded-full font-bold ${
-                      task.priority === 'HIGH' ? 'bg-danger/10 text-danger' : 'bg-warning/10 text-warning'
+                      task.priority === 'HIGH' ? 'bg-rose-50 text-rose-600 border border-rose-200' : 'bg-amber-50 text-amber-600 border border-amber-200'
                     }`}
                   >
                     {task.priority}

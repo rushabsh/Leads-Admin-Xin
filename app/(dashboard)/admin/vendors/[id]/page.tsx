@@ -128,8 +128,8 @@ export default function VendorDetailPage({ params }: { params: Promise<{ id: str
 
   if (isLoading && !vendor) {
     return (
-      <div className="flex h-screen w-full items-center justify-center bg-slate-50 dark:bg-[#0B0F19]">
-        <div className="h-8 w-8 animate-spin rounded-full border-4 border-primary border-t-transparent" />
+      <div className="flex h-screen w-full items-center justify-center bg-white">
+        <div className="h-8 w-8 animate-spin rounded-full border-4 border-blue-600 border-t-transparent" />
       </div>
     );
   }
@@ -137,9 +137,9 @@ export default function VendorDetailPage({ params }: { params: Promise<{ id: str
   if (!vendor) {
     return (
       <div className="flex flex-col h-64 w-full items-center justify-center text-center gap-4">
-        <ShieldAlert className="h-12 w-12 text-rose-500" />
-        <h2 className="text-lg font-bold">Vendor Not Found</h2>
-        <button onClick={() => router.push('/admin')} className="rounded-xl bg-primary px-4 py-2 text-xs font-semibold text-white hover:bg-primary-hover">
+        <ShieldAlert className="h-12 w-12 text-rose-600" />
+        <h2 className="text-lg font-bold text-slate-900">Vendor Not Found</h2>
+        <button onClick={() => router.push('/admin')} className="rounded-xl bg-blue-600 px-4 py-2 text-xs font-semibold text-white hover:bg-blue-700 transition-colors shadow-sm cursor-pointer">
           Back to Dashboard
         </button>
       </div>
@@ -164,22 +164,22 @@ export default function VendorDetailPage({ params }: { params: Promise<{ id: str
       </div>
 
       {/* Main Tabbed section */}
-      <div className="glass-panel p-6">
-        <div className="flex items-center gap-1.5 rounded-xl bg-slate-100/50 p-1 dark:bg-slate-950/40 border border-slate-200/20 mb-5 max-w-xs">
+      <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
+        <div className="flex items-center gap-1.5 rounded-xl bg-slate-100 p-1 border border-slate-200 mb-5 max-w-xs">
           <button
             onClick={() => setActiveTab('campaigns')}
-            className={`flex-1 rounded-lg py-1.5 text-xs font-bold transition-all ${activeTab === 'campaigns'
-                ? 'bg-white text-slate-900 shadow-sm dark:bg-slate-800 dark:text-white'
-                : 'text-slate-400 hover:text-slate-700 dark:hover:text-slate-250'
+            className={`flex-1 rounded-lg py-1.5 text-xs font-bold transition-all cursor-pointer ${activeTab === 'campaigns'
+                ? 'bg-white text-slate-900 shadow-sm'
+                : 'text-slate-500 hover:text-slate-900'
               }`}
           >
             Campaigns ({vendorCampaigns.length})
           </button>
           <button
             onClick={() => setActiveTab('leads')}
-            className={`flex-1 rounded-lg py-1.5 text-xs font-bold transition-all ${activeTab === 'leads'
-                ? 'bg-white text-slate-900 shadow-sm dark:bg-slate-800 dark:text-white'
-                : 'text-slate-400 hover:text-slate-700 dark:hover:text-slate-250'
+            className={`flex-1 rounded-lg py-1.5 text-xs font-bold transition-all cursor-pointer ${activeTab === 'leads'
+                ? 'bg-white text-slate-900 shadow-sm'
+                : 'text-slate-500 hover:text-slate-900'
               }`}
           >
             Leads Ingested ({filteredLeads.length})

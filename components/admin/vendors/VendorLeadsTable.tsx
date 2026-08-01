@@ -49,7 +49,7 @@ export default function VendorLeadsTable({
   return (
     <div className="space-y-4">
       {/* Filters */}
-      <div className="grid gap-3 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 bg-slate-50/50 dark:bg-slate-900/30 p-4 rounded-xl border border-slate-100 dark:border-slate-850">
+      <div className="grid gap-3 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 bg-slate-50 p-4 rounded-xl border border-slate-200">
         <div className="relative col-span-1 lg:col-span-2">
           <Search className="absolute top-1/2 left-3 h-4.5 w-4.5 -translate-y-1/2 text-slate-400" />
           <input
@@ -60,7 +60,7 @@ export default function VendorLeadsTable({
               setSearchTerm(e.target.value);
               setPage(1);
             }}
-            className="w-full rounded-xl border border-slate-200/80 bg-white py-1.5 pr-4 pl-9 text-xs outline-none focus:border-primary dark:border-slate-800 dark:bg-slate-950 dark:focus:border-primary"
+            className="w-full rounded-xl border border-slate-200 bg-white py-1.5 pr-4 pl-9 text-xs text-slate-900 outline-none focus:border-blue-600 shadow-xs"
           />
         </div>
 
@@ -71,7 +71,7 @@ export default function VendorLeadsTable({
               setStatusFilter(e.target.value);
               setPage(1);
             }}
-            className="w-full rounded-xl border border-slate-200/80 bg-white px-3 py-1.5 text-xs outline-none dark:border-slate-800 dark:bg-slate-950"
+            className="w-full rounded-xl border border-slate-200 bg-white px-3 py-1.5 text-xs text-slate-900 outline-none focus:border-blue-600 shadow-xs"
           >
             <option value="">All Statuses</option>
             <option value="NEW">New</option>
@@ -89,7 +89,7 @@ export default function VendorLeadsTable({
               setPriorityFilter(e.target.value);
               setPage(1);
             }}
-            className="w-full rounded-xl border border-slate-200/80 bg-white px-3 py-1.5 text-xs outline-none dark:border-slate-800 dark:bg-slate-950"
+            className="w-full rounded-xl border border-slate-200 bg-white px-3 py-1.5 text-xs text-slate-900 outline-none focus:border-blue-600 shadow-xs"
           >
             <option value="">All Priorities</option>
             <option value="HIGH">High</option>
@@ -105,7 +105,7 @@ export default function VendorLeadsTable({
               setStateFilter(e.target.value);
               setPage(1);
             }}
-            className="w-full rounded-xl border border-slate-200/80 bg-white px-3 py-1.5 text-xs outline-none dark:border-slate-800 dark:bg-slate-950"
+            className="w-full rounded-xl border border-slate-200 bg-white px-3 py-1.5 text-xs text-slate-900 outline-none focus:border-blue-600 shadow-xs"
           >
             <option value="">All States</option>
             {uniqueStates.map((st) => (
@@ -120,71 +120,71 @@ export default function VendorLeadsTable({
       {/* Table */}
       {filteredLeadsCount === 0 ? (
         <div className="flex flex-col items-center justify-center p-8 text-center text-slate-400">
-          <Users className="h-10 w-10 text-slate-350 dark:text-slate-700" />
-          <h3 className="mt-2 text-xs font-bold text-slate-655">No leads found</h3>
+          <Users className="h-10 w-10 text-slate-300" />
+          <h3 className="mt-2 text-xs font-bold text-slate-700">No leads found</h3>
           <p className="text-[10px] text-slate-500">Try adjusting your filters.</p>
         </div>
       ) : (
-        <div className="overflow-x-auto border border-slate-100 dark:border-slate-855 rounded-xl">
+        <div className="overflow-x-auto border border-slate-200 rounded-xl bg-white shadow-xs">
           <table className="w-full border-collapse text-left text-xs">
             <thead>
-              <tr className="border-b border-slate-100 bg-slate-50/30 text-slate-555 dark:border-slate-850 dark:bg-slate-950/20">
-                <th className="p-3.5 font-semibold">Lead ID</th>
-                <th className="p-3.5 font-semibold">Client Name</th>
-                <th className="p-3.5 font-semibold">Contact Info</th>
-                <th className="p-3.5 font-semibold">Status</th>
-                <th className="p-3.5 font-semibold">Campaign</th>
-                <th className="p-3.5 font-semibold">State</th>
-                <th className="p-3.5 font-semibold">Priority</th>
-                <th className="p-3.5 font-semibold">Date Received</th>
-                <th className="p-3.5 text-right font-semibold">Action</th>
+              <tr className="border-b border-slate-200 bg-slate-50 text-slate-500">
+                <th className="p-3.5 font-semibold uppercase tracking-wider text-xs">Lead ID</th>
+                <th className="p-3.5 font-semibold uppercase tracking-wider text-xs">Client Name</th>
+                <th className="p-3.5 font-semibold uppercase tracking-wider text-xs">Contact Info</th>
+                <th className="p-3.5 font-semibold uppercase tracking-wider text-xs">Status</th>
+                <th className="p-3.5 font-semibold uppercase tracking-wider text-xs">Campaign</th>
+                <th className="p-3.5 font-semibold uppercase tracking-wider text-xs">State</th>
+                <th className="p-3.5 font-semibold uppercase tracking-wider text-xs">Priority</th>
+                <th className="p-3.5 font-semibold uppercase tracking-wider text-xs">Date Received</th>
+                <th className="p-3.5 text-right font-semibold uppercase tracking-wider text-xs">Action</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-slate-100 dark:divide-slate-850">
+            <tbody className="divide-y divide-slate-100">
               {paginatedLeads.map((lead) => (
                 <tr
                   key={lead.id}
-                  className="hover:bg-slate-50/50 dark:hover:bg-slate-900/30 transition-all duration-150"
+                  className="hover:bg-slate-50/60 transition-colors"
                 >
-                  <td className="p-3.5 font-mono font-bold text-slate-900 dark:text-white">
-                    <button onClick={() => onOpenLead(lead.id)} className="text-primary hover:underline text-left">
+                  <td className="p-3.5 font-mono font-bold text-blue-600">
+                    <button onClick={() => onOpenLead(lead.id)} className="text-blue-600 hover:underline text-left">
                       {lead.leadId}
                     </button>
                   </td>
-                  <td className="p-3.5 font-semibold text-slate-900 dark:text-white">
+                  <td className="p-3.5 font-semibold text-slate-900">
                     {lead.firstName} {lead.lastName}
                   </td>
-                  <td className="p-3.5 text-slate-555 dark:text-slate-400">
+                  <td className="p-3.5 text-slate-600">
                     <div>{lead.email}</div>
-                    <div>{lead.phone}</div>
+                    <div className="text-slate-400">{lead.phone}</div>
                   </td>
                   <td className="p-3.5">
                     <span
-                      className={`inline-flex items-center gap-1.5 rounded-full px-2 py-0.5 text-3xs font-bold uppercase ${
+                      className={`inline-flex items-center gap-1.5 rounded-full px-2.5 py-0.5 text-xs font-semibold ${
                         lead.status === 'NEW'
-                          ? 'bg-primary/10 text-primary border border-primary/10'
+                          ? 'bg-blue-50 text-blue-700 border border-blue-200'
                           : lead.status === 'QUALIFIED'
-                            ? 'bg-success/15 text-success border border-success/10'
+                            ? 'bg-emerald-50 text-emerald-700 border border-emerald-200'
                             : lead.status === 'SIGNED_RETAINER'
-                              ? 'bg-warning/15 text-warning border border-warning/10'
+                              ? 'bg-amber-50 text-amber-700 border border-amber-200'
                               : lead.status === 'REJECTED'
-                                ? 'bg-rose-500/15 text-rose-500 border border-rose-500/10'
-                                : 'bg-slate-100 text-slate-500'
+                                ? 'bg-rose-50 text-rose-700 border border-rose-200'
+                                : 'bg-slate-100 text-slate-600'
                       }`}
                     >
                       {lead.status === 'REJECTED' ? 'Disqualified' : lead.status.replace(/_/g, ' ')}
                     </span>
                   </td>
-                  <td className="p-3.5 font-medium text-indigo-500">
+                  <td className="p-3.5 font-medium text-blue-600">
                     {lead.campaign?.name || lead.campaignName || 'General Inbound'}
                   </td>
-                  <td className="p-3.5 font-bold text-slate-800 dark:text-slate-200">{lead.state}</td>
+                  <td className="p-3.5 font-bold text-slate-800">{lead.state}</td>
                   <td className="p-3.5">
                     <span
-                      className={`inline-flex items-center rounded px-1.5 py-0.5 text-3xs font-semibold ${
+                      className={`inline-flex items-center rounded-md px-2 py-0.5 text-xs font-semibold ${
                         lead.priority === 'HIGH'
-                          ? 'bg-rose-500/10 text-rose-500'
-                          : 'bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-400'
+                          ? 'bg-rose-50 text-rose-700 border border-rose-200'
+                          : 'bg-slate-100 text-slate-600'
                       }`}
                     >
                       {lead.priority}
@@ -194,7 +194,7 @@ export default function VendorLeadsTable({
                   <td className="p-3.5 text-right">
                     <button
                       onClick={() => onOpenLead(lead.id)}
-                      className="rounded-lg p-1 text-slate-450 hover:bg-slate-100 hover:text-primary dark:hover:bg-slate-800"
+                      className="rounded-lg p-1.5 text-slate-400 hover:bg-slate-100 hover:text-blue-600 transition-colors"
                       title="Open Profile"
                     >
                       <Eye className="h-4 w-4" />
@@ -210,7 +210,7 @@ export default function VendorLeadsTable({
       {/* Pagination */}
       {filteredLeadsCount > itemsPerPage && (
         <div className="flex items-center justify-between pt-2">
-          <span className="text-2xs text-slate-450">
+          <span className="text-xs text-slate-500">
             Showing {(page - 1) * itemsPerPage + 1} to {Math.min(page * itemsPerPage, filteredLeadsCount)} of{' '}
             {filteredLeadsCount} leads
           </span>
@@ -218,16 +218,16 @@ export default function VendorLeadsTable({
             <button
               onClick={() => setPage((p) => Math.max(p - 1, 1))}
               disabled={page === 1}
-              className="rounded-lg border border-slate-200 p-1 hover:bg-slate-50 disabled:opacity-50 dark:border-slate-800 dark:hover:bg-slate-900"
+              className="rounded-lg border border-slate-200 p-1 hover:bg-slate-50 disabled:opacity-50 transition-colors"
             >
-              <ChevronLeft className="h-4 w-4 text-slate-500" />
+              <ChevronLeft className="h-4 w-4 text-slate-600" />
             </button>
             <button
               onClick={() => setPage((p) => Math.min(p + 1, totalPages))}
               disabled={page === totalPages}
-              className="rounded-lg border border-slate-200 p-1 hover:bg-slate-50 disabled:opacity-50 dark:border-slate-800 dark:hover:bg-slate-900"
+              className="rounded-lg border border-slate-200 p-1 hover:bg-slate-50 disabled:opacity-50 transition-colors"
             >
-              <ChevronRight className="h-4 w-4 text-slate-500" />
+              <ChevronRight className="h-4 w-4 text-slate-600" />
             </button>
           </div>
         </div>

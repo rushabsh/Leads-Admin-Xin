@@ -175,50 +175,50 @@ export default function VendorCampaignDetailPage({ params }: PageProps) {
       </div>
 
       {/* Main Campaign Header Banner */}
-      <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm dark:border-slate-800 dark:bg-slate-900/50">
+      <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
         <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
           <div className="space-y-2">
             <div className="flex items-center gap-3">
-              <h1 className="text-2xl font-bold tracking-tight">{campaign.name}</h1>
+              <h1 className="text-2xl font-bold tracking-tight text-slate-900">{campaign.name}</h1>
               <span className={`inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-semibold ${
                 campaign.status === 'ACTIVE'
-                  ? 'bg-emerald-500/10 text-emerald-500'
+                  ? 'bg-emerald-50 text-emerald-700 border border-emerald-200'
                   : campaign.status === 'PAUSED'
-                  ? 'bg-amber-500/10 text-amber-500'
-                  : 'bg-slate-500/10 text-slate-500'
+                  ? 'bg-amber-50 text-amber-700 border border-amber-200'
+                  : 'bg-slate-100 text-slate-600 border border-slate-200'
               }`}>
                 <span className={`h-1.5 w-1.5 rounded-full ${
-                  campaign.status === 'ACTIVE' ? 'bg-emerald-500' : campaign.status === 'PAUSED' ? 'bg-amber-500' : 'bg-slate-500'
+                  campaign.status === 'ACTIVE' ? 'bg-emerald-600' : campaign.status === 'PAUSED' ? 'bg-amber-600' : 'bg-slate-500'
                 }`} />
                 {campaign.status}
               </span>
             </div>
-            <p className="text-sm text-slate-500 dark:text-slate-400">
+            <p className="text-sm text-slate-500">
               {campaign.description || 'Dedicated media campaign targeting qualified mass tort lead volume.'}
             </p>
-            <div className="flex flex-wrap items-center gap-3 pt-1 text-xs text-slate-400">
-              <span className="inline-flex items-center gap-1.5 rounded-lg bg-primary/10 px-2.5 py-1 font-semibold text-primary">
+            <div className="flex flex-wrap items-center gap-3 pt-1 text-xs text-slate-500">
+              <span className="inline-flex items-center gap-1.5 rounded-lg bg-blue-50 px-2.5 py-1 font-bold text-blue-600 border border-blue-200">
                 <Tag className="h-3.5 w-3.5" />
                 {tortName}
               </span>
               {campaign.marketingSource && (
-                <span className="inline-flex items-center gap-1.5 rounded-lg bg-slate-100 dark:bg-slate-800 px-2.5 py-1 font-medium text-slate-600 dark:text-slate-300">
-                  <Activity className="h-3.5 w-3.5 text-indigo-400" />
+                <span className="inline-flex items-center gap-1.5 rounded-lg bg-slate-100 px-2.5 py-1 font-semibold text-slate-700 border border-slate-200">
+                  <Activity className="h-3.5 w-3.5 text-indigo-600" />
                   Channel: {campaign.marketingSource}
                 </span>
               )}
             </div>
           </div>
 
-          <div className="flex items-center gap-3 border-t border-slate-100 pt-4 dark:border-slate-800 md:border-t-0 md:pt-0">
-            <div className="rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-950 p-3 text-right">
-              <span className="text-xs text-slate-400 block font-medium uppercase">Budget Cap</span>
-              <span className="text-lg font-bold text-slate-900 dark:text-white">${budget.toLocaleString()}</span>
+          <div className="flex items-center gap-3 border-t border-slate-100 pt-4 md:border-t-0 md:pt-0">
+            <div className="rounded-xl border border-slate-200 bg-slate-50 p-3 text-right">
+              <span className="text-xs text-slate-500 block font-bold uppercase tracking-wider">Budget Cap</span>
+              <span className="text-lg font-bold text-slate-900">${budget.toLocaleString()}</span>
             </div>
             {costPerLeadTarget > 0 && (
-              <div className="rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-950 p-3 text-right">
-                <span className="text-xs text-slate-400 block font-medium uppercase">Target CPL</span>
-                <span className="text-lg font-bold text-indigo-500">${costPerLeadTarget}</span>
+              <div className="rounded-xl border border-slate-200 bg-slate-50 p-3 text-right">
+                <span className="text-xs text-slate-500 block font-bold uppercase tracking-wider">Target CPL</span>
+                <span className="text-lg font-bold text-indigo-600">${costPerLeadTarget}</span>
               </div>
             )}
           </div>
@@ -227,66 +227,66 @@ export default function VendorCampaignDetailPage({ params }: PageProps) {
 
       {/* KPI Cards */}
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-        <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm dark:border-slate-800 dark:bg-slate-900/50">
+        <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
           <div className="flex items-center justify-between">
-            <span className="text-xs font-bold uppercase tracking-wider text-slate-400">Total Leads Ingested</span>
-            <div className="rounded-lg bg-primary/10 p-2 text-primary">
+            <span className="text-xs font-bold uppercase tracking-wider text-slate-500">Total Leads Ingested</span>
+            <div className="rounded-xl bg-blue-50 p-2.5 text-blue-600">
               <Users className="h-4 w-4" />
             </div>
           </div>
-          <div className="mt-4">
-            <h3 className="text-2xl font-bold">{totalLeadsCount}</h3>
-            <p className="mt-1 text-xs text-slate-400">Submissions under this campaign</p>
+          <div className="mt-3">
+            <h3 className="text-2xl font-bold text-slate-900">{totalLeadsCount}</h3>
+            <p className="mt-1 text-xs text-slate-500">Submissions under this campaign</p>
           </div>
         </div>
 
-        <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm dark:border-slate-800 dark:bg-slate-900/50">
+        <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
           <div className="flex items-center justify-between">
-            <span className="text-xs font-bold uppercase tracking-wider text-slate-400">Qualified Leads</span>
-            <div className="rounded-lg bg-emerald-500/10 p-2 text-emerald-500">
+            <span className="text-xs font-bold uppercase tracking-wider text-slate-500">Qualified Leads</span>
+            <div className="rounded-xl bg-emerald-50 p-2.5 text-emerald-600">
               <CheckCircle2 className="h-4 w-4" />
             </div>
           </div>
-          <div className="mt-4">
-            <h3 className="text-2xl font-bold">{qualifiedLeadsCount}</h3>
-            <p className="mt-1 text-xs text-slate-400">Qualified & Retainer signed</p>
+          <div className="mt-3">
+            <h3 className="text-2xl font-bold text-slate-900">{qualifiedLeadsCount}</h3>
+            <p className="mt-1 text-xs text-slate-500">Qualified & Retainer signed</p>
           </div>
         </div>
 
-        <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm dark:border-slate-800 dark:bg-slate-900/50">
+        <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
           <div className="flex items-center justify-between">
-            <span className="text-xs font-bold uppercase tracking-wider text-slate-400">Conversion Rate</span>
-            <div className="rounded-lg bg-indigo-500/10 p-2 text-indigo-500">
+            <span className="text-xs font-bold uppercase tracking-wider text-slate-500">Conversion Rate</span>
+            <div className="rounded-xl bg-indigo-50 p-2.5 text-indigo-600">
               <Percent className="h-4 w-4" />
             </div>
           </div>
-          <div className="mt-4">
-            <h3 className="text-2xl font-bold text-indigo-500">{conversionRate}%</h3>
-            <p className="mt-1 text-xs text-slate-400">Ingestion to qualification ratio</p>
+          <div className="mt-3">
+            <h3 className="text-2xl font-bold text-indigo-600">{conversionRate}%</h3>
+            <p className="mt-1 text-xs text-slate-500">Ingestion to qualification ratio</p>
           </div>
         </div>
 
-        <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm dark:border-slate-800 dark:bg-slate-900/50">
+        <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
           <div className="flex items-center justify-between">
-            <span className="text-xs font-bold uppercase tracking-wider text-slate-400">Expected Lead Goal</span>
-            <div className="rounded-lg bg-amber-500/10 p-2 text-amber-500">
+            <span className="text-xs font-bold uppercase tracking-wider text-slate-500">Expected Lead Goal</span>
+            <div className="rounded-xl bg-amber-50 p-2.5 text-amber-600">
               <FolderKanban className="h-4 w-4" />
             </div>
           </div>
-          <div className="mt-4">
-            <h3 className="text-2xl font-bold">{campaign.expectedLeadTarget || 50}</h3>
-            <p className="mt-1 text-xs text-slate-400">Target Volume Allocation</p>
+          <div className="mt-3">
+            <h3 className="text-2xl font-bold text-slate-900">{campaign.expectedLeadTarget || 50}</h3>
+            <p className="mt-1 text-xs text-slate-500">Target Volume Allocation</p>
           </div>
         </div>
       </div>
 
       {/* Leads Table Container */}
-      <div className="rounded-2xl border border-slate-200 bg-white shadow-sm dark:border-slate-800 dark:bg-slate-900/50">
+      <div className="rounded-2xl border border-slate-200 bg-white shadow-sm overflow-hidden">
         {/* Filter Bar */}
-        <div className="flex flex-col gap-4 border-b border-slate-100 p-5 dark:border-slate-850 md:flex-row md:items-center md:justify-between">
+        <div className="flex flex-col gap-4 border-b border-slate-100 bg-slate-50/50 p-5 md:flex-row md:items-center md:justify-between">
           <div>
-            <h2 className="text-lg font-bold">Campaign Leads Ingested</h2>
-            <p className="text-xs text-slate-400">All database submissions originating from this campaign.</p>
+            <h2 className="text-sm font-bold text-slate-900">Campaign Leads Ingested</h2>
+            <p className="text-xs text-slate-500 mt-0.5">All database submissions originating from this campaign.</p>
           </div>
 
           <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
@@ -297,7 +297,7 @@ export default function VendorCampaignDetailPage({ params }: PageProps) {
                 placeholder="Search leads by name, email, city..."
                 value={searchTerm}
                 onChange={(e) => { setSearchTerm(e.target.value); setPage(1); }}
-                className="w-full sm:w-64 rounded-xl border border-slate-200 bg-slate-50/50 py-2 pr-4 pl-10 text-xs outline-none transition-all placeholder:text-slate-400 focus:border-primary focus:bg-black dark:border-slate-800 dark:bg-slate-950 dark:focus:border-primary"
+                className="w-full sm:w-64 rounded-xl border border-slate-200 bg-white py-2 pr-4 pl-10 text-xs text-slate-900 outline-none focus:border-blue-600 shadow-xs"
               />
             </div>
 
@@ -306,7 +306,7 @@ export default function VendorCampaignDetailPage({ params }: PageProps) {
               <select
                 value={statusFilter}
                 onChange={(e) => { setStatusFilter(e.target.value); setPage(1); }}
-                className="rounded-xl border border-slate-200 bg-[#020618] px-3 py-2 text-xs outline-none dark:border-slate-800 dark:bg-slate-950"
+                className="rounded-xl border border-slate-200 bg-white px-3 py-2 text-xs text-slate-900 outline-none focus:border-blue-600 shadow-xs"
               >
                 <option value="">All Statuses</option>
                 <option value="NEW">New</option>
@@ -319,7 +319,7 @@ export default function VendorCampaignDetailPage({ params }: PageProps) {
 
             <button
               onClick={() => { setShowImportModal(true); setCsvStep('upload'); }}
-              className="inline-flex items-center gap-1.5 rounded-xl border border-slate-200 bg-white px-3 py-2 text-xs font-semibold text-slate-700 shadow-sm hover:border-primary hover:bg-primary/5 hover:text-primary transition-all dark:border-slate-800 dark:bg-slate-950 dark:text-slate-300 dark:hover:border-primary dark:hover:bg-primary/10 dark:hover:text-primary active:scale-[0.98]"
+              className="inline-flex items-center gap-1.5 rounded-xl border border-slate-200 bg-white px-3 py-2 text-xs font-bold text-slate-700 shadow-xs hover:border-blue-600 hover:bg-blue-50 hover:text-blue-600 transition-colors cursor-pointer"
             >
               <Upload className="h-3.5 w-3.5" />
               Import CSV Leads
@@ -330,8 +330,8 @@ export default function VendorCampaignDetailPage({ params }: PageProps) {
         {/* Table Content */}
         {paginatedLeads.length === 0 ? (
           <div className="flex flex-col items-center justify-center p-12 text-center">
-            <Users className="h-12 w-12 text-slate-300 dark:text-slate-700" />
-            <h3 className="mt-4 text-base font-semibold">No leads found</h3>
+            <Users className="h-12 w-12 text-slate-300" />
+            <h3 className="mt-4 text-sm font-bold text-slate-900">No leads found</h3>
             <p className="mt-1 text-xs text-slate-500">
               {searchTerm || statusFilter
                 ? 'Try adjusting your search criteria or status filter.'
@@ -342,16 +342,16 @@ export default function VendorCampaignDetailPage({ params }: PageProps) {
           <div className="overflow-x-auto">
             <table className="w-full border-collapse text-left text-xs">
               <thead>
-                <tr className="border-b border-slate-100 bg-slate-50/30 text-slate-500 dark:border-slate-850 dark:bg-slate-950/20">
-                  <th className="p-4 font-semibold">Lead ID & Name</th>
-                  <th className="p-4 font-semibold">Contact Information</th>
-                  <th className="p-4 font-semibold">Location</th>
-                  <th className="p-4 font-semibold">Quality Score</th>
-                  <th className="p-4 font-semibold">Status</th>
-                  <th className="p-4 font-semibold text-right">Submitted Date</th>
+                <tr className="border-b border-slate-200 bg-slate-50 text-slate-500 uppercase tracking-wider text-xs font-semibold">
+                  <th className="p-4">Lead ID & Name</th>
+                  <th className="p-4">Contact Information</th>
+                  <th className="p-4">Location</th>
+                  <th className="p-4">Quality Score</th>
+                  <th className="p-4">Status</th>
+                  <th className="p-4 text-right">Submitted Date</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-slate-100 dark:divide-slate-850">
+              <tbody className="divide-y divide-slate-100">
                 {paginatedLeads.map((l: any) => {
                   const leadName = `${l.firstName || ''} ${l.lastName || ''}`.trim() || 'Anonymous Lead';
                   const createdDate = l.createdAt
@@ -363,29 +363,29 @@ export default function VendorCampaignDetailPage({ params }: PageProps) {
                     : 'N/A';
 
                   return (
-                    <tr key={l.id || l.leadId} className="hover:bg-slate-50/50 dark:hover:bg-slate-900/30 transition-all duration-150">
-                      <td className="p-4 font-medium">
-                        <div className="font-semibold text-slate-900 dark:text-white">{leadName}</div>
-                        <div className="text-[10px] text-slate-400 font-mono">{l.leadId || l.id}</div>
+                    <tr key={l.id || l.leadId} className="hover:bg-slate-50/60 transition-colors">
+                      <td className="p-4 font-bold text-slate-900">
+                        <div className="font-bold text-slate-900">{leadName}</div>
+                        <div className="text-[10px] text-slate-400 font-mono mt-0.5">{l.leadId || l.id}</div>
                       </td>
 
                       <td className="p-4 space-y-1">
                         {l.email && (
-                          <div className="flex items-center gap-1.5 text-slate-400">
-                            <Mail className="h-3 w-3 text-slate-500" />
+                          <div className="flex items-center gap-1.5 text-slate-600">
+                            <Mail className="h-3 w-3 text-slate-400" />
                             <span>{l.email}</span>
                           </div>
                         )}
                         {l.phone && (
-                          <div className="flex items-center gap-1.5 text-slate-400">
-                            <Phone className="h-3 w-3 text-slate-500" />
+                          <div className="flex items-center gap-1.5 text-slate-600">
+                            <Phone className="h-3 w-3 text-slate-400" />
                             <span>{l.phone}</span>
                           </div>
                         )}
                       </td>
 
                       <td className="p-4">
-                        <div className="flex items-center gap-1 text-slate-300">
+                        <div className="flex items-center gap-1 text-slate-600">
                           <MapPin className="h-3 w-3 text-slate-400" />
                           <span>{[l.city, l.state].filter(Boolean).join(', ') || 'N/A'}</span>
                         </div>
@@ -394,39 +394,39 @@ export default function VendorCampaignDetailPage({ params }: PageProps) {
                       <td className="p-4">
                         <span className={`inline-flex items-center rounded-md px-2 py-0.5 text-[10px] font-bold ${
                           (l.leadScore || 70) >= 80
-                            ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20'
+                            ? 'bg-emerald-50 text-emerald-700 border border-emerald-200'
                             : (l.leadScore || 70) >= 60
-                            ? 'bg-indigo-500/10 text-indigo-400 border border-indigo-500/20'
-                            : 'bg-amber-500/10 text-amber-400 border border-amber-500/20'
+                            ? 'bg-indigo-50 text-indigo-700 border border-indigo-200'
+                            : 'bg-amber-50 text-amber-700 border border-amber-200'
                         }`}>
                           Score: {l.leadScore || 75}/100
                         </span>
                       </td>
 
                       <td className="p-4">
-                        <span className={`inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-[10px] font-semibold ${
+                        <span className={`inline-flex items-center gap-1.5 rounded-full px-2.5 py-0.5 text-xs font-semibold ${
                           ['QUALIFIED', 'SIGNED_RETAINER'].includes(l.status)
-                            ? 'bg-emerald-500/10 text-emerald-500'
+                            ? 'bg-emerald-50 text-emerald-700 border border-emerald-200'
                             : l.status === 'CONTACTED'
-                            ? 'bg-indigo-500/10 text-indigo-500'
+                            ? 'bg-indigo-50 text-indigo-700 border border-indigo-200'
                             : l.status === 'REJECTED'
-                            ? 'bg-rose-500/10 text-rose-500'
-                            : 'bg-amber-500/10 text-amber-500'
+                            ? 'bg-rose-50 text-rose-700 border border-rose-200'
+                            : 'bg-amber-50 text-amber-700 border border-amber-200'
                         }`}>
                           <span className={`h-1.5 w-1.5 rounded-full ${
                             ['QUALIFIED', 'SIGNED_RETAINER'].includes(l.status)
-                              ? 'bg-emerald-500'
+                              ? 'bg-emerald-600'
                               : l.status === 'CONTACTED'
-                              ? 'bg-indigo-500'
+                              ? 'bg-indigo-600'
                               : l.status === 'REJECTED'
-                              ? 'bg-rose-500'
-                              : 'bg-amber-500'
+                              ? 'bg-rose-600'
+                              : 'bg-amber-600'
                           }`} />
                           {l.status}
                         </span>
                       </td>
 
-                      <td className="p-4 text-right text-slate-400 font-mono text-[11px]">
+                      <td className="p-4 text-right text-slate-500 font-mono text-xs">
                         {createdDate}
                       </td>
                     </tr>
@@ -439,7 +439,7 @@ export default function VendorCampaignDetailPage({ params }: PageProps) {
 
         {/* Pagination Footer */}
         {filteredLeads.length > 0 && (
-          <div className="flex items-center justify-between border-t border-slate-100 p-4 dark:border-slate-850">
+          <div className="flex items-center justify-between border-t border-slate-100 p-4">
             <span className="text-xs text-slate-500">
               Showing {(page - 1) * itemsPerPage + 1} to {Math.min(page * itemsPerPage, filteredLeads.length)} of {filteredLeads.length} leads
             </span>
@@ -447,17 +447,17 @@ export default function VendorCampaignDetailPage({ params }: PageProps) {
               <button
                 disabled={page === 1}
                 onClick={() => setPage(p => Math.max(p - 1, 1))}
-                className="rounded-lg border border-slate-200 p-1.5 text-slate-600 disabled:opacity-40 hover:bg-slate-100 dark:border-slate-800 dark:text-slate-400 dark:hover:bg-slate-800"
+                className="rounded-lg border border-slate-200 p-1.5 text-slate-600 disabled:opacity-40 hover:bg-slate-50 transition-colors"
               >
                 <ChevronLeft className="h-4 w-4" />
               </button>
-              <span className="text-xs font-semibold px-2">
+              <span className="text-xs font-semibold px-2 text-slate-700">
                 {page} / {totalPages}
               </span>
               <button
                 disabled={page === totalPages}
                 onClick={() => setPage(p => Math.min(p + 1, totalPages))}
-                className="rounded-lg border border-slate-200 p-1.5 text-slate-600 disabled:opacity-40 hover:bg-slate-100 dark:border-slate-800 dark:text-slate-400 dark:hover:bg-slate-800"
+                className="rounded-lg border border-slate-200 p-1.5 text-slate-600 disabled:opacity-40 hover:bg-slate-50 transition-colors"
               >
                 <ChevronRight className="h-4 w-4" />
               </button>

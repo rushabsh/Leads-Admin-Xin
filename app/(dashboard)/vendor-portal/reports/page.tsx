@@ -128,22 +128,22 @@ export default function VendorReportsPage() {
       {/* Header */}
       <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
         <div>
-          <h1 className="text-2xl font-bold tracking-tight">Your Analytics Reports</h1>
-          <p className="text-sm text-slate-500 dark:text-slate-400">
+          <h1 className="text-2xl font-bold tracking-tight text-slate-900">Your Analytics Reports</h1>
+          <p className="text-sm text-slate-500">
             View ingestion volume, lead conversions, and account payouts metrics.
           </p>
         </div>
         <div className="flex flex-wrap gap-2">
           <button
             onClick={() => fetchData()}
-            className="inline-flex items-center gap-1.5 rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm font-semibold hover:bg-slate-55 dark:border-slate-800 dark:bg-slate-900"
+            className="inline-flex items-center gap-1.5 rounded-xl border border-slate-200 bg-white px-3 py-2 text-xs font-semibold text-slate-700 hover:bg-slate-50 shadow-xs cursor-pointer"
           >
             <RefreshCw className="h-4 w-4" />
             Refresh
           </button>
           <button
             onClick={handleExportCSV}
-            className="inline-flex items-center gap-1.5 rounded-xl bg-primary px-3 py-2 text-sm font-semibold text-white shadow-md shadow-primary/20 hover:bg-primary/95 transition-all"
+            className="inline-flex items-center gap-1.5 rounded-xl bg-blue-600 px-4 py-2 text-xs font-semibold text-white hover:bg-blue-700 transition-colors shadow-sm cursor-pointer"
           >
             <Download className="h-4 w-4" />
             Export CSV

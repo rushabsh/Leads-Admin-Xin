@@ -93,9 +93,9 @@ export default function LeadsListTable({
   };
 
   return (
-    <div className="rounded-2xl border border-slate-200 bg-white shadow-sm dark:border-slate-800 dark:bg-slate-900/50">
+    <div className="rounded-2xl border border-slate-200 bg-white shadow-sm overflow-hidden">
       {/* Multi Filters Header */}
-      <div className="grid gap-3 p-5 border-b border-slate-100 dark:border-slate-850 sm:grid-cols-2 md:grid-cols-4 lg:grid-cols-7">
+      <div className="grid gap-3 p-5 border-b border-slate-100 bg-slate-50/50 sm:grid-cols-2 md:grid-cols-4 lg:grid-cols-7">
         <div className="relative col-span-2">
           <Search className="absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-slate-400" />
           <input
@@ -106,7 +106,7 @@ export default function LeadsListTable({
               setSearchTerm(e.target.value);
               setPage(1);
             }}
-            className="w-full rounded-xl border border-slate-250 bg-slate-50/50 py-2 pr-4 pl-10 text-xs outline-none focus:border-primary focus:bg-white dark:border-slate-800 dark:bg-slate-950 dark:focus:border-primary"
+            className="w-full rounded-xl border border-slate-200 bg-white py-2 pr-4 pl-10 text-xs text-slate-900 outline-none transition-all placeholder:text-slate-400 focus:border-blue-600 focus:ring-2 focus:ring-blue-100 shadow-xs"
           />
         </div>
 
@@ -117,7 +117,7 @@ export default function LeadsListTable({
               setStatusFilter(e.target.value);
               setPage(1);
             }}
-            className="w-full rounded-xl border border-slate-250 bg-slate-50/50 px-3 py-2 text-xs outline-none dark:border-slate-800 dark:bg-slate-950"
+            className="w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-xs text-slate-900 outline-none focus:border-blue-600 shadow-xs"
           >
             <option value="">All Statuses</option>
             <option value="NEW">New</option>
@@ -135,7 +135,7 @@ export default function LeadsListTable({
               setCampaignFilter(e.target.value);
               setPage(1);
             }}
-            className="w-full rounded-xl border border-slate-250 bg-slate-50/50 px-3 py-2 text-xs outline-none dark:border-slate-800 dark:bg-slate-950"
+            className="w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-xs text-slate-900 outline-none focus:border-blue-600 shadow-xs"
           >
             <option value="">All Campaigns</option>
             {campaigns.map((c) => (
@@ -153,7 +153,7 @@ export default function LeadsListTable({
               setVendorFilter(e.target.value);
               setPage(1);
             }}
-            className="w-full rounded-xl border border-slate-250 bg-slate-50/50 px-3 py-2 text-xs outline-none dark:border-slate-800 dark:bg-slate-950"
+            className="w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-xs text-slate-900 outline-none focus:border-blue-600 shadow-xs"
           >
             <option value="">All Vendors</option>
             {vendors.map((v) => (
@@ -171,7 +171,7 @@ export default function LeadsListTable({
               setPriorityFilter(e.target.value);
               setPage(1);
             }}
-            className="w-full rounded-xl border border-slate-250 bg-slate-50/50 px-3 py-2 text-xs outline-none dark:border-slate-800 dark:bg-slate-950"
+            className="w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-xs text-slate-900 outline-none focus:border-blue-600 shadow-xs"
           >
             <option value="">All Priorities</option>
             <option value="HIGH">High</option>
@@ -187,7 +187,7 @@ export default function LeadsListTable({
               setStateFilter(e.target.value);
               setPage(1);
             }}
-            className="w-full rounded-xl border border-slate-250 bg-slate-50/50 px-3 py-2 text-xs outline-none dark:border-slate-800 dark:bg-slate-950"
+            className="w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-xs text-slate-900 outline-none focus:border-blue-600 shadow-xs"
           >
             <option value="">All States</option>
             {uniqueStates.map((st) => (
@@ -201,7 +201,7 @@ export default function LeadsListTable({
 
       {/* Bulk Action Banner */}
       {selectedLeadIds.length > 0 && (
-        <div className="flex flex-wrap items-center justify-between gap-3 bg-rose-500/10 border-b border-rose-500/20 px-5 py-3 dark:bg-rose-950/30 text-xs font-semibold text-rose-700 dark:text-rose-300">
+        <div className="flex flex-wrap items-center justify-between gap-3 bg-rose-50 border-b border-rose-200 px-5 py-3 text-xs font-semibold text-rose-700">
           <div className="flex items-center gap-2">
             <span className="inline-flex items-center justify-center rounded-full bg-rose-600 px-2.5 py-0.5 text-2xs text-white font-bold">
               {selectedLeadIds.length}
@@ -211,7 +211,7 @@ export default function LeadsListTable({
           <div className="flex items-center gap-2">
             <button
               onClick={() => setSelectedLeadIds([])}
-              className="rounded-xl px-3 py-1.5 border border-slate-200 bg-white text-slate-700 hover:bg-slate-100 dark:border-slate-800 dark:bg-slate-900 dark:text-slate-300 transition-all text-xs font-semibold"
+              className="rounded-xl px-3 py-1.5 border border-slate-200 bg-white text-slate-700 hover:bg-slate-50 transition-all text-xs font-semibold"
             >
               Deselect All
             </button>
@@ -229,9 +229,9 @@ export default function LeadsListTable({
       {/* Ingestion Table */}
       {paginatedLeads.length === 0 ? (
         <div className="flex flex-col items-center justify-center p-12 text-center">
-          <Users className="h-12 w-12 text-slate-350 dark:text-slate-700" />
-          <h3 className="mt-4 text-sm font-bold">No leads in pipeline</h3>
-          <p className="mt-1 text-xs text-slate-550">
+          <Users className="h-12 w-12 text-slate-300" />
+          <h3 className="mt-4 text-sm font-bold text-slate-900">No leads in pipeline</h3>
+          <p className="mt-1 text-xs text-slate-500">
             Wait for API ingestion or manually upload CSV records.
           </p>
         </div>
@@ -239,38 +239,38 @@ export default function LeadsListTable({
         <div className="overflow-x-auto">
           <table className="w-full border-collapse text-left text-xs">
             <thead>
-              <tr className="border-b border-slate-100 bg-slate-50/30 text-slate-500 dark:border-slate-850 dark:bg-slate-950/20">
+              <tr className="border-b border-slate-200 bg-slate-50 text-slate-500">
                 <th className="p-4 w-10">
                   <input
                     type="checkbox"
                     checked={isAllPageSelected}
                     onChange={toggleSelectAllPage}
                     title={isAllPageSelected ? 'Deselect Page' : 'Select All Page'}
-                    className="h-4 w-4 rounded border-slate-300 text-primary focus:ring-primary dark:border-slate-700 dark:bg-slate-900 cursor-pointer"
+                    className="h-4 w-4 rounded border-slate-300 text-blue-600 focus:ring-blue-500 cursor-pointer"
                   />
                 </th>
-                <th className="p-4 font-semibold">Lead ID</th>
-                <th className="p-4 font-semibold">Client Name</th>
-                <th className="p-4 font-semibold">Contact</th>
-                <th className="p-4 font-semibold">Campaign</th>
-                <th className="p-4 font-semibold">Vendor</th>
-                <th className="p-4 font-semibold">Intake Agent</th>
-                <th className="p-4 font-semibold">Status</th>
-                <th className="p-4 font-semibold">Priority</th>
-                <th className="p-4 font-semibold">Date Received</th>
-                <th className="p-4 text-right font-semibold">Actions</th>
+                <th className="p-4 font-semibold uppercase tracking-wider text-xs">Lead ID</th>
+                <th className="p-4 font-semibold uppercase tracking-wider text-xs">Client Name</th>
+                <th className="p-4 font-semibold uppercase tracking-wider text-xs">Contact</th>
+                <th className="p-4 font-semibold uppercase tracking-wider text-xs">Campaign</th>
+                <th className="p-4 font-semibold uppercase tracking-wider text-xs">Vendor</th>
+                <th className="p-4 font-semibold uppercase tracking-wider text-xs">Intake Agent</th>
+                <th className="p-4 font-semibold uppercase tracking-wider text-xs">Status</th>
+                <th className="p-4 font-semibold uppercase tracking-wider text-xs">Priority</th>
+                <th className="p-4 font-semibold uppercase tracking-wider text-xs">Date Received</th>
+                <th className="p-4 text-right font-semibold uppercase tracking-wider text-xs">Actions</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-slate-100 dark:divide-slate-850">
+            <tbody className="divide-y divide-slate-100">
               {paginatedLeads.map((lead: any) => {
                 const isSelected = selectedLeadIds.includes(lead.id);
                 return (
                   <tr
                     key={lead.id}
-                    className={`transition-all duration-150 ${
+                    className={`transition-colors ${
                       isSelected
-                        ? 'bg-rose-500/5 dark:bg-rose-950/20'
-                        : 'hover:bg-slate-50/50 dark:hover:bg-slate-900/30'
+                        ? 'bg-rose-50/50'
+                        : 'hover:bg-slate-50/60'
                     }`}
                   >
                     <td className="p-4 w-10">
@@ -278,98 +278,100 @@ export default function LeadsListTable({
                         type="checkbox"
                         checked={isSelected}
                         onChange={() => toggleSelectLead(lead.id)}
-                        className="h-4 w-4 rounded border-slate-300 text-primary focus:ring-primary dark:border-slate-700 dark:bg-slate-900 cursor-pointer"
+                        className="h-4 w-4 rounded border-slate-300 text-blue-600 focus:ring-blue-500 cursor-pointer"
                       />
                     </td>
-                    <td className="p-4 font-mono font-bold text-slate-900 dark:text-white">
-                    <button
-                      onClick={() => onViewLeadProfile(lead)}
-                      className="text-primary hover:underline text-left"
-                    >
-                      {lead.leadId}
-                    </button>
-                  </td>
-                  <td className="p-4">
-                    <div className="font-semibold text-slate-900 dark:text-white">
-                      {lead.firstName} {lead.lastName}
-                    </div>
-                    <div className="text-[10px] text-slate-400">
-                      {lead.dob ? `DOB: ${lead.dob}` : 'No DOB'}
-                    </div>
-                  </td>
-                  <td className="p-4">
-                    <div className="flex items-center gap-1">
-                      <Mail className="h-3 w-3 text-slate-400" /> {lead.email}
-                    </div>
-                    <div className="flex items-center gap-1 mt-0.5">
-                      <Phone className="h-3 w-3 text-slate-400" /> {lead.phone}
-                    </div>
-                  </td>
-                  <td className="p-4 font-medium text-indigo-500">
-                    {lead.campaign?.name || 'General Inbound'}
-                  </td>
-                  <td className="p-4 text-slate-600 dark:text-slate-355">
-                    {lead.vendor?.name || 'Direct API'}
-                  </td>
-                  <td className="p-4 text-slate-600 dark:text-slate-355">
-                    {lead.intakeAgent?.name || 'Unassigned'}
-                  </td>
-                  <td className="p-4">
-                    <span
-                      className={`inline-flex items-center gap-1.5 rounded-full px-2 py-0.5 text-2xs font-semibold ${lead.status === 'NEW'
-                          ? 'bg-primary/10 text-primary'
-                          : lead.status === 'QUALIFIED' || lead.status === 'SIGNED_RETAINER'
-                            ? 'bg-emerald-500/10 text-emerald-500'
-                            : lead.status === 'REJECTED'
-                              ? 'bg-rose-500/10 text-rose-500'
-                              : 'bg-amber-500/10 text-amber-500'
-                        }`}
-                    >
-                      {lead.status}
-                    </span>
-                  </td>
-                  <td className="p-4">
-                    <span
-                      className={`inline-flex items-center rounded px-1.5 py-0.5 text-3xs font-semibold ${lead.priority === 'HIGH'
-                          ? 'bg-rose-500/10 text-rose-500'
-                          : 'bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-400'
-                        }`}
-                    >
-                      {lead.priority}
-                    </span>
-                  </td>
-                  <td className="p-4 text-slate-400">
-                    {new Date(lead.createdAt).toLocaleDateString()}
-                  </td>
-                  <td className="p-4 text-right">
-                    <div className="flex justify-end gap-1.5">
+                    <td className="p-4 font-mono font-bold text-blue-600">
                       <button
                         onClick={() => onViewLeadProfile(lead)}
-                        title="Open Profile"
-                        className="rounded-lg p-1 text-slate-450 hover:bg-slate-100 hover:text-primary dark:hover:bg-slate-800"
+                        className="text-blue-600 hover:underline text-left"
                       >
-                        <Eye className="h-4 w-4" />
+                        {lead.leadId}
                       </button>
-                      <button
-                        onClick={() => onDeleteLead(lead.id)}
-                        title="Delete"
-                        className="rounded-lg p-1 text-slate-450 hover:bg-slate-100 hover:text-rose-500 dark:hover:bg-slate-800"
+                    </td>
+                    <td className="p-4">
+                      <div className="font-semibold text-slate-900">
+                        {lead.firstName} {lead.lastName}
+                      </div>
+                      <div className="text-[10px] text-slate-400">
+                        {lead.dob ? `DOB: ${lead.dob}` : 'No DOB'}
+                      </div>
+                    </td>
+                    <td className="p-4">
+                      <div className="flex items-center gap-1 text-slate-600">
+                        <Mail className="h-3 w-3 text-slate-400" /> {lead.email}
+                      </div>
+                      <div className="flex items-center gap-1 mt-0.5 text-slate-600">
+                        <Phone className="h-3 w-3 text-slate-400" /> {lead.phone}
+                      </div>
+                    </td>
+                    <td className="p-4 font-medium text-blue-600">
+                      {lead.campaign?.name || 'General Inbound'}
+                    </td>
+                    <td className="p-4 text-slate-600">
+                      {lead.vendor?.name || 'Direct API'}
+                    </td>
+                    <td className="p-4 text-slate-600">
+                      {lead.intakeAgent?.name || 'Unassigned'}
+                    </td>
+                    <td className="p-4">
+                      <span
+                        className={`inline-flex items-center gap-1.5 rounded-full px-2.5 py-0.5 text-xs font-semibold ${
+                          lead.status === 'NEW'
+                            ? 'bg-blue-50 text-blue-700 border border-blue-200'
+                            : lead.status === 'QUALIFIED' || lead.status === 'SIGNED_RETAINER'
+                              ? 'bg-emerald-50 text-emerald-700 border border-emerald-200'
+                              : lead.status === 'REJECTED'
+                                ? 'bg-rose-50 text-rose-700 border border-rose-200'
+                                : 'bg-amber-50 text-amber-700 border border-amber-200'
+                          }`}
                       >
-                        <Trash2 className="h-4 w-4" />
-                      </button>
-                    </div>
-                  </td>
-                </tr>
-              );
-            })}
-          </tbody>
+                        {lead.status}
+                      </span>
+                    </td>
+                    <td className="p-4">
+                      <span
+                        className={`inline-flex items-center rounded-md px-2 py-0.5 text-xs font-semibold ${
+                          lead.priority === 'HIGH'
+                            ? 'bg-rose-50 text-rose-700 border border-rose-200'
+                            : 'bg-slate-100 text-slate-600'
+                          }`}
+                      >
+                        {lead.priority}
+                      </span>
+                    </td>
+                    <td className="p-4 text-xs text-slate-400">
+                      {new Date(lead.createdAt).toLocaleDateString()}
+                    </td>
+                    <td className="p-4 text-right">
+                      <div className="flex justify-end gap-1.5">
+                        <button
+                          onClick={() => onViewLeadProfile(lead)}
+                          title="Open Profile"
+                          className="rounded-lg p-1.5 text-slate-400 hover:bg-slate-100 hover:text-blue-600 transition-colors"
+                        >
+                          <Eye className="h-4 w-4" />
+                        </button>
+                        <button
+                          onClick={() => onDeleteLead(lead.id)}
+                          title="Delete"
+                          className="rounded-lg p-1.5 text-slate-400 hover:bg-slate-100 hover:text-rose-600 transition-colors"
+                        >
+                          <Trash2 className="h-4 w-4" />
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                );
+              })}
+            </tbody>
           </table>
         </div>
       )}
 
       {/* Pagination Footer */}
       {filteredLeadsCount > 0 && (
-        <div className="flex items-center justify-between border-t border-slate-100 p-5 dark:border-slate-850">
+        <div className="flex items-center justify-between border-t border-slate-100 p-5">
           <span className="text-xs text-slate-500">
             Showing {(page - 1) * itemsPerPage + 1} to{' '}
             {Math.min(page * itemsPerPage, filteredLeadsCount)} of {filteredLeadsCount} leads
@@ -378,14 +380,14 @@ export default function LeadsListTable({
             <button
               onClick={() => setPage((p) => Math.max(p - 1, 1))}
               disabled={page === 1}
-              className="rounded-lg border border-slate-200 p-1.5 text-slate-500 hover:bg-slate-50 disabled:opacity-50 dark:border-slate-850 dark:hover:bg-slate-900"
+              className="rounded-lg border border-slate-200 p-1.5 text-slate-600 hover:bg-slate-50 disabled:opacity-50 transition-colors"
             >
               <ChevronLeft className="h-4 w-4" />
             </button>
             <button
               onClick={() => setPage((p) => Math.min(p + 1, totalPages))}
               disabled={page === totalPages}
-              className="rounded-lg border border-slate-200 p-1.5 text-slate-500 hover:bg-slate-50 disabled:opacity-50 dark:border-slate-850 dark:hover:bg-slate-900"
+              className="rounded-lg border border-slate-200 p-1.5 text-slate-600 hover:bg-slate-50 disabled:opacity-50 transition-colors"
             >
               <ChevronRight className="h-4 w-4" />
             </button>

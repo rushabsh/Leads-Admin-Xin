@@ -248,15 +248,22 @@ export default function VendorLeadsPage() {
       {/* Header */}
       <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
         <div>
-          <h1 className="text-2xl font-bold tracking-tight">Your Submitted Leads</h1>
-          <p className="text-sm text-slate-500 dark:text-slate-400">
+          <h1 className="text-2xl font-bold tracking-tight text-slate-900">Your Submitted Leads</h1>
+          <p className="text-sm text-slate-500">
             View history, real-time qualification statuses, and submit leads directly.
           </p>
         </div>
         <div className="flex flex-wrap items-center gap-3">
           <button
             onClick={() => { setShowImportModal(true); setCsvStep('upload'); }}
-            className="inline-flex items-center gap-2 rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm font-semibold text-slate-700 shadow-sm hover:border-primary hover:bg-primary/5 hover:text-primary transition-all dark:border-slate-800 dark:bg-slate-900 dark:text-slate-300 dark:hover:border-primary dark:hover:bg-primary/10 dark:hover:text-primary active:scale-[0.98]"
+            className="inline-flex items-center gap-2 rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-xs font-bold text-slate-700 shadow-xs hover:border-blue-600 hover:bg-blue-50 hover:text-blue-600 transition-colors active:scale-[0.98] cursor-pointer"
+          >
+            <Upload className="h-4 w-4" />
+            Import CSV Leads
+          </button>
+          <button
+            onClick={handleOpenSubmitModal}
+            className="inline-flex items-center gap-2 rounded-xl bg-blue-600 px-4 py-2.5 text-xs font-bold text-white shadow-sm hover:bg-blue-700 transition-colors active:scale-[0.98] cursor-pointer"
           >
             <Upload className="h-4 w-4" />
             Import CSV Leads

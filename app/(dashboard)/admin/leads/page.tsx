@@ -487,27 +487,27 @@ function LeadsPageContent() {
           {/* Header */}
           <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
             <div>
-              <h1 className="text-2xl font-bold tracking-tight">Leads Ingestion Pipeline</h1>
-              <p className="text-sm text-slate-500 dark:text-slate-400">
+              <h1 className="text-2xl font-bold tracking-tight text-slate-900">Leads Ingestion Pipeline</h1>
+              <p className="text-sm text-slate-500">
                 Track client intake, qualify status details, and allocate cases.
               </p>
             </div>
             <div className="flex items-center gap-2 flex-wrap">
               <button
                 onClick={() => setShowImportModal(true)}
-                className="inline-flex items-center gap-1.5 rounded-xl border border-slate-200 bg-white px-3 py-2 text-xs font-semibold hover:bg-slate-55 dark:border-slate-850 dark:bg-slate-900"
+                className="inline-flex items-center gap-1.5 rounded-xl border border-slate-200 bg-white px-3 py-2 text-xs font-semibold text-slate-700 hover:bg-slate-50 transition-colors shadow-xs"
               >
                 <Upload className="h-3.5 w-3.5" /> CSV Import
               </button>
               <button
                 onClick={() => handleExportCSV('filtered')}
-                className="inline-flex items-center gap-1.5 rounded-xl border border-slate-200 bg-white px-3 py-2 text-xs font-semibold hover:bg-slate-55 dark:border-slate-855 dark:bg-slate-900"
+                className="inline-flex items-center gap-1.5 rounded-xl border border-slate-200 bg-white px-3 py-2 text-xs font-semibold text-slate-700 hover:bg-slate-50 transition-colors shadow-xs"
               >
                 <Download className="h-3.5 w-3.5" /> Export CSV
               </button>
               <button
                 onClick={() => setShowAddModal(true)}
-                className="inline-flex items-center gap-1.5 rounded-xl bg-primary px-4 py-2.5 text-xs font-bold text-white shadow-lg hover:bg-primary/95"
+                className="inline-flex items-center gap-1.5 rounded-xl bg-blue-600 px-4 py-2.5 text-xs font-bold text-white shadow-sm hover:bg-blue-700 transition-colors"
               >
                 <Plus className="h-4 w-4" /> Add Lead
               </button>

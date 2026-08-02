@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect, useMemo } from 'react';
+import { useRouter } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Plus, Check } from 'lucide-react';
 import { useCRMStore } from '../../../../store/crmStore';
@@ -53,6 +54,7 @@ interface LawFirmData {
 }
 
 export default function CampaignsPage() {
+  const router = useRouter();
   const { campaigns: rawCampaigns, fetchData, isLoading } = useCRMStore();
   const campaigns = rawCampaigns as any[] as CampaignData[];
   const [massTorts, setMassTorts] = useState<MassTortData[]>([]);
@@ -148,21 +150,8 @@ export default function CampaignsPage() {
     setShowAddEditModal(true);
   };
 
-  const handleViewDetails = async (camp: CampaignData) => {
-    setIsLoadingDetails(true);
-    setSelectedCampaign(camp);
-    setActiveDetailTab('overview');
-    try {
-      const res = await api.get(`/campaigns/${camp.id}`);
-      const c = res.data.campaign;
-      setSelectedCampaign(c);
-      setCampaignLeads(c.leads || []);
-    } catch (e) {
-      console.error(e);
-      setCampaignLeads([]);
-    } finally {
-      setIsLoadingDetails(false);
-    }
+  const handleViewDetails = (camp: CampaignData) => {
+    router.push(`/admin/campaigns/${camp.id}`);
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -367,14 +356,14 @@ export default function CampaignsPage() {
           {/* Header */}
           <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
             <div>
-              <h1 className="text-2xl font-bold tracking-tight">Campaigns Manager</h1>
-              <p className="text-sm text-slate-500 dark:text-slate-400">
+              <h1 className="text-2xl font-bold tracking-tight text-slate-900">Campaigns Manager</h1>
+              <p className="text-sm text-slate-500">
                 Configure acquisition channels, media buying budgets, and lead vendors.
               </p>
             </div>
             <button
               onClick={handleOpenAddModal}
-              className="inline-flex items-center gap-2 rounded-xl bg-primary px-4 py-2.5 text-sm font-semibold text-white shadow-lg shadow-primary/25 hover:bg-primary/90 transition-all active:scale-[0.98]"
+              className="inline-flex items-center gap-2 rounded-xl bg-blue-600 px-4 py-2.5 text-xs font-semibold text-white shadow-sm hover:bg-blue-700 transition-colors cursor-pointer"
             >
               <Plus className="h-4 w-4" />
               Create Campaign

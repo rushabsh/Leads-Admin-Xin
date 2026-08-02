@@ -127,16 +127,16 @@ export default function SettingsPage() {
         <div className="space-y-6">
             {/* Header */}
             <div>
-                <h1 className="text-2xl font-bold tracking-tight">System Settings</h1>
-                <p className="text-sm text-slate-500 dark:text-slate-400">Configure client feeds, add custom mass tort litigations, and audit security events.</p>
+                <h1 className="text-2xl font-bold tracking-tight text-slate-900">System Settings</h1>
+                <p className="text-sm text-slate-500">Configure client feeds, add custom mass tort litigations, and audit security events.</p>
             </div>
 
             <div className="grid grid-cols-1 gap-6 md:grid-cols-4">
                 {/* Left Side: Nav Tabs */}
-                <div className="glass-panel p-4 h-fit space-y-1">
+                <div className="rounded-2xl border border-slate-200 bg-white p-3 shadow-sm h-fit space-y-1">
                     <button
                         onClick={() => setSettingsTab('mass-torts')}
-                        className={`w-full flex items-center gap-2.5 rounded-lg px-3.5 py-2 text-xs font-bold transition-all ${settingsTab === 'mass-torts' ? 'bg-primary text-white' : 'text-slate-450 hover:bg-slate-100 dark:hover:bg-slate-900'
+                        className={`w-full flex items-center gap-2.5 rounded-xl px-3.5 py-2 text-xs font-bold transition-all cursor-pointer ${settingsTab === 'mass-torts' ? 'bg-blue-600 text-white shadow-xs' : 'text-slate-600 hover:bg-slate-50'
                             }`}
                     >
                         <Sparkles className="h-4.5 w-4.5" />
@@ -145,7 +145,7 @@ export default function SettingsPage() {
 
                     <button
                         onClick={() => setSettingsTab('smtp')}
-                        className={`w-full flex items-center gap-2.5 rounded-lg px-3.5 py-2 text-xs font-bold transition-all ${settingsTab === 'smtp' ? 'bg-primary text-white' : 'text-slate-450 hover:bg-slate-100 dark:hover:bg-slate-900'
+                        className={`w-full flex items-center gap-2.5 rounded-xl px-3.5 py-2 text-xs font-bold transition-all cursor-pointer ${settingsTab === 'smtp' ? 'bg-blue-600 text-white shadow-xs' : 'text-slate-600 hover:bg-slate-50'
                             }`}
                     >
                         <Mail className="h-4.5 w-4.5" />
@@ -154,7 +154,7 @@ export default function SettingsPage() {
 
                     <button
                         onClick={() => setSettingsTab('branding')}
-                        className={`w-full flex items-center gap-2.5 rounded-lg px-3.5 py-2 text-xs font-bold transition-all ${settingsTab === 'branding' ? 'bg-primary text-white' : 'text-slate-450 hover:bg-slate-100 dark:hover:bg-slate-900'
+                        className={`w-full flex items-center gap-2.5 rounded-xl px-3.5 py-2 text-xs font-bold transition-all cursor-pointer ${settingsTab === 'branding' ? 'bg-blue-600 text-white shadow-xs' : 'text-slate-600 hover:bg-slate-50'
                             }`}
                     >
                         <Building className="h-4.5 w-4.5" />
@@ -163,7 +163,7 @@ export default function SettingsPage() {
 
                     <button
                         onClick={() => setSettingsTab('audits')}
-                        className={`w-full flex items-center gap-2.5 rounded-lg px-3.5 py-2 text-xs font-bold transition-all ${settingsTab === 'audits' ? 'bg-primary text-white' : 'text-slate-450 hover:bg-slate-100 dark:hover:bg-slate-900'
+                        className={`w-full flex items-center gap-2.5 rounded-xl px-3.5 py-2 text-xs font-bold transition-all cursor-pointer ${settingsTab === 'audits' ? 'bg-blue-600 text-white shadow-xs' : 'text-slate-600 hover:bg-slate-50'
                             }`}
                     >
                         <History className="h-4.5 w-4.5" />
@@ -172,40 +172,40 @@ export default function SettingsPage() {
                 </div>
 
                 {/* Right Side: Tab Panel Content */}
-                <div className="glass-panel p-6 md:col-span-3 min-h-[400px]">
+                <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm md:col-span-3 min-h-[400px]">
                     {/* Tab 1: Mass Torts Manager */}
                     {settingsTab === 'mass-torts' && (
                         <div className="space-y-6">
-                            <div className="border-b border-slate-100 pb-3 dark:border-slate-850">
-                                <h3 className="text-sm font-bold uppercase tracking-wider text-slate-800 dark:text-white">Mass Tort Litigations</h3>
-                                <p className="text-2xs text-slate-450 mt-1">Configure active built-in cases or define new customized tort templates.</p>
+                            <div className="border-b border-slate-100 pb-3">
+                                <h3 className="text-sm font-bold uppercase tracking-wider text-slate-900">Mass Tort Litigations</h3>
+                                <p className="text-xs text-slate-500 mt-1">Configure active built-in cases or define new customized tort templates.</p>
                             </div>
 
                             {successMsg && (
-                                <div className="rounded-lg bg-success/15 border border-success/20 p-3 text-xs text-success font-semibold">
+                                <div className="rounded-xl bg-emerald-50 border border-emerald-200 p-3 text-xs text-emerald-700 font-semibold">
                                     {successMsg}
                                 </div>
                             )}
 
                             {errorMsg && (
-                                <div className="rounded-lg bg-danger/15 border border-danger/20 p-3 text-xs text-danger font-semibold flex items-center justify-between">
+                                <div className="rounded-xl bg-rose-50 border border-rose-200 p-3 text-xs text-rose-700 font-semibold flex items-center justify-between">
                                     <div className="flex items-center gap-2">
                                         <AlertTriangle className="h-4 w-4 shrink-0" />
                                         <span>{errorMsg}</span>
                                     </div>
-                                    <button type="button" onClick={() => setErrorMsg('')} className="text-danger hover:opacity-75 font-bold text-sm">✕</button>
+                                    <button type="button" onClick={() => setErrorMsg('')} className="text-rose-700 hover:opacity-75 font-bold text-sm cursor-pointer">✕</button>
                                 </div>
                             )}
 
                             {user?.roleName !== 'Admin' && user?.role !== 'Admin' && user?.roleName !== 'Super Admin' && user?.role !== 'Super Admin' ? (
-                                <div className="rounded-xl bg-warning/10 border border-warning/20 p-4 text-xs text-warning flex items-center gap-2">
-                                    <AlertTriangle className="h-4.5 w-4.5" />
+                                <div className="rounded-xl bg-amber-50 border border-amber-200 p-4 text-xs text-amber-800 flex items-center gap-2">
+                                    <AlertTriangle className="h-4.5 w-4.5 text-amber-600" />
                                     <span>Only Administrators can register custom campaign cases.</span>
                                 </div>
                             ) : (
-                                <form onSubmit={handleAddCustomTort} className="grid grid-cols-1 md:grid-cols-3 gap-3 text-xs items-end bg-slate-50 dark:bg-slate-900/30 p-4 rounded-xl border border-slate-100 dark:border-slate-850">
+                                <form onSubmit={handleAddCustomTort} className="grid grid-cols-1 md:grid-cols-3 gap-3 text-xs items-end bg-slate-50 p-4 rounded-xl border border-slate-200">
                                     <div className="md:col-span-1">
-                                        <label className="font-semibold text-slate-400 block mb-1">Lawsuit Name</label>
+                                        <label className="font-bold uppercase tracking-wider text-slate-500 block mb-1">Lawsuit Name</label>
                                         <input
                                             type="text"
                                             required
@@ -214,24 +214,24 @@ export default function SettingsPage() {
                                                 setNewTortName(e.target.value);
                                                 if (errorMsg) setErrorMsg('');
                                             }}
-                                            className="w-full rounded-lg border border-slate-200 bg-white px-3 py-1.5 focus:border-primary focus:outline-none dark:border-slate-800 dark:bg-slate-900"
+                                            className="w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-xs text-slate-900 outline-none focus:border-blue-600 shadow-xs"
                                             placeholder="e.g. PFAS Contamination"
                                         />
                                     </div>
                                     <div className="md:col-span-1">
-                                        <label className="font-semibold text-slate-400 block mb-1">Litigation Details</label>
+                                        <label className="font-bold uppercase tracking-wider text-slate-500 block mb-1">Litigation Details</label>
                                         <input
                                             type="text"
                                             value={newTortDesc}
                                             onChange={(e) => setNewTortDesc(e.target.value)}
-                                            className="w-full rounded-lg border border-slate-200 bg-white px-3 py-1.5 focus:border-primary focus:outline-none dark:border-slate-800 dark:bg-slate-900"
+                                            className="w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-xs text-slate-900 outline-none focus:border-blue-600 shadow-xs"
                                             placeholder="General description..."
                                         />
                                     </div>
                                     <button
                                         type="submit"
                                         disabled={isSubmitting}
-                                        className="flex justify-center items-center gap-1.5 rounded-lg bg-primary py-2 text-white hover:bg-primary-hover font-semibold shadow shadow-primary/20 disabled:opacity-50"
+                                        className="flex justify-center items-center gap-1.5 rounded-xl bg-blue-600 py-2.5 text-xs text-white hover:bg-blue-700 font-bold transition-colors disabled:opacity-50 cursor-pointer shadow-sm"
                                     >
                                         {isSubmitting ? (
                                             <Loader2 className="h-4 w-4 animate-spin" />
@@ -245,15 +245,15 @@ export default function SettingsPage() {
 
                             {/* Tort List */}
                             <div className="space-y-2">
-                                <h4 className="text-2xs font-bold text-slate-450 uppercase tracking-wider">Litigations Catalog</h4>
+                                <h4 className="text-xs font-bold text-slate-500 uppercase tracking-wider">Litigations Catalog</h4>
                                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 max-h-56 overflow-y-auto pr-1">
                                     {tortsList.map(tort => (
-                                        <div key={tort.id} className="flex justify-between items-center rounded-lg border border-slate-100 p-2.5 dark:border-slate-850 bg-slate-50/20">
-                                            <span className="text-xs font-semibold">{tort.name}</span>
+                                        <div key={tort.id} className="flex justify-between items-center rounded-xl border border-slate-200 p-2.5 bg-slate-50/50">
+                                            <span className="text-xs font-bold text-slate-900">{tort.name}</span>
                                             {tort.isCustom ? (
-                                                <span className="text-[9px] bg-primary/10 text-primary font-bold px-1.5 py-0.5 rounded">Custom</span>
+                                                <span className="text-xs bg-blue-50 text-blue-700 border border-blue-200 font-semibold px-2 py-0.5 rounded-full">Custom</span>
                                             ) : (
-                                                <span className="text-[9px] bg-slate-100 text-slate-400 dark:bg-slate-900 dark:text-slate-500 font-bold px-1.5 py-0.5 rounded">Built-In</span>
+                                                <span className="text-xs bg-slate-100 text-slate-600 border border-slate-200 font-semibold px-2 py-0.5 rounded-full">Built-In</span>
                                             )}
                                         </div>
                                     ))}
@@ -265,42 +265,42 @@ export default function SettingsPage() {
                     {/* Tab 2: SMTP Config */}
                     {settingsTab === 'smtp' && (
                         <div className="space-y-6">
-                            <div className="border-b border-slate-100 pb-3 dark:border-slate-850">
-                                <h3 className="text-sm font-bold uppercase tracking-wider text-slate-800 dark:text-white">Communication Servers</h3>
-                                <p className="text-2xs text-slate-450 mt-1">Configure SMTP relays and Twilio webhook integration configurations.</p>
+                            <div className="border-b border-slate-100 pb-3">
+                                <h3 className="text-sm font-bold uppercase tracking-wider text-slate-900">Communication Servers</h3>
+                                <p className="text-xs text-slate-500 mt-1">Configure SMTP relays and Twilio webhook integration configurations.</p>
                             </div>
 
                             <div className="space-y-4 text-xs">
-                                <h4 className="text-2xs font-bold text-slate-450 uppercase tracking-wider">SMTP Server Relay</h4>
+                                <h4 className="text-xs font-bold text-slate-500 uppercase tracking-wider">SMTP Server Relay</h4>
                                 <div className="grid grid-cols-2 gap-3">
                                     <div>
-                                        <label className="font-semibold block text-slate-400">SMTP Host</label>
+                                        <label className="font-bold block text-slate-500 uppercase tracking-wider">SMTP Host</label>
                                         <input
                                             type="text"
                                             value={smtpHost}
                                             onChange={(e) => setSmtpHost(e.target.value)}
-                                            className="mt-1 block w-full rounded-lg border border-slate-200 bg-slate-50/50 px-3 py-1.5 focus:outline-none dark:border-slate-800 dark:bg-slate-900"
+                                            className="mt-1 block w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-xs text-slate-900 outline-none focus:border-blue-600 shadow-xs"
                                         />
                                     </div>
                                     <div>
-                                        <label className="font-semibold block text-slate-400">SMTP Port</label>
+                                        <label className="font-bold block text-slate-500 uppercase tracking-wider">SMTP Port</label>
                                         <input
                                             type="text"
                                             value={smtpPort}
                                             onChange={(e) => setSmtpPort(e.target.value)}
-                                            className="mt-1 block w-full rounded-lg border border-slate-200 bg-slate-50/50 px-3 py-1.5 focus:outline-none dark:border-slate-800 dark:bg-slate-900"
+                                            className="mt-1 block w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-xs text-slate-900 outline-none focus:border-blue-600 shadow-xs"
                                         />
                                     </div>
                                 </div>
 
-                                <div className="pt-4 border-t border-slate-100 dark:border-slate-850 space-y-4">
-                                    <h4 className="text-2xs font-bold text-slate-450 uppercase tracking-wider">Twilio SMS / WhatsApp API</h4>
-                                    <div className="flex justify-between items-center bg-slate-50 dark:bg-slate-900/30 p-3 rounded-lg border border-slate-150 dark:border-slate-850">
+                                <div className="pt-4 border-t border-slate-100 space-y-4">
+                                    <h4 className="text-xs font-bold text-slate-500 uppercase tracking-wider">Twilio SMS / WhatsApp API</h4>
+                                    <div className="flex justify-between items-center bg-slate-50 p-4 rounded-xl border border-slate-200">
                                         <div>
-                                            <p className="font-bold text-slate-800 dark:text-slate-200">Twilio Status Connected</p>
-                                            <p className="text-[10px] text-slate-400">Twilio Account SID: ACxxxxxxxxxxxxxxxxxxxxxx</p>
+                                            <p className="font-bold text-slate-900">Twilio Status Connected</p>
+                                            <p className="text-xs text-slate-500 font-mono">Twilio Account SID: ACxxxxxxxxxxxxxxxxxxxxxx</p>
                                         </div>
-                                        <span className="h-2.5 w-2.5 rounded-full bg-success"></span>
+                                        <span className="h-3 w-3 rounded-full bg-emerald-500"></span>
                                     </div>
                                 </div>
                             </div>
@@ -310,34 +310,34 @@ export default function SettingsPage() {
                     {/* Tab 3: Branding */}
                     {settingsTab === 'branding' && (
                         <div className="space-y-6">
-                            <div className="border-b border-slate-100 pb-3 dark:border-slate-850">
-                                <h3 className="text-sm font-bold uppercase tracking-wider text-slate-800 dark:text-white">Workspace Branding</h3>
-                                <p className="text-2xs text-slate-450 mt-1">Configure company logos, theme coloring schemes, and corner radiuses.</p>
+                            <div className="border-b border-slate-100 pb-3">
+                                <h3 className="text-sm font-bold uppercase tracking-wider text-slate-900">Workspace Branding</h3>
+                                <p className="text-xs text-slate-500 mt-1">Configure company logos, theme coloring schemes, and corner radiuses.</p>
                             </div>
 
                             <div className="space-y-4 text-xs">
                                 <div>
-                                    <label className="font-semibold block text-slate-400">Company Name</label>
+                                    <label className="font-bold block text-slate-500 uppercase tracking-wider">Company Name</label>
                                     <input
                                         type="text"
                                         defaultValue="MassCore CRM Inc."
-                                        className="mt-1 block w-full rounded-lg border border-slate-200 bg-slate-50/50 px-3 py-1.5 focus:outline-none dark:border-slate-800 dark:bg-slate-900"
+                                        className="mt-1 block w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-xs text-slate-900 outline-none focus:border-blue-600 shadow-xs"
                                     />
                                 </div>
                                 <div>
-                                    <label className="font-semibold block text-slate-400">Primary Color Theme</label>
+                                    <label className="font-bold block text-slate-500 uppercase tracking-wider">Primary Color Theme</label>
                                     <div className="mt-1 flex items-center gap-2">
-                                        <span className="h-6 w-6 rounded-full bg-primary"></span>
-                                        <span className="font-mono text-slate-500">#7367F0 (Indigo Violet)</span>
+                                        <span className="h-6 w-6 rounded-full bg-blue-600"></span>
+                                        <span className="font-mono text-slate-600">#2563EB (Royal Enterprise Blue)</span>
                                     </div>
                                 </div>
                                 <div>
-                                    <label className="font-semibold block text-slate-400">Border Radius (Radius)</label>
+                                    <label className="font-bold block text-slate-500 uppercase tracking-wider">Border Radius (Radius)</label>
                                     <input
                                         type="text"
-                                        defaultValue="20px"
+                                        defaultValue="16px"
                                         disabled
-                                        className="mt-1 block w-28 rounded-lg border border-slate-200 bg-slate-50/50 px-3 py-1.5 text-center dark:border-slate-800 dark:bg-slate-900"
+                                        className="mt-1 block w-28 rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 text-xs text-slate-700 text-center"
                                     />
                                 </div>
                             </div>
@@ -347,20 +347,20 @@ export default function SettingsPage() {
                     {/* Tab 4: Security Audits */}
                     {settingsTab === 'audits' && (
                         <div className="space-y-4">
-                            <div className="border-b border-slate-100 pb-3 dark:border-slate-850">
-                                <h3 className="text-sm font-bold uppercase tracking-wider text-slate-800 dark:text-white">Security Audits Feed</h3>
-                                <p className="text-2xs text-slate-450 mt-1">Audit security modifications, logins, and configurations updates.</p>
+                            <div className="border-b border-slate-100 pb-3">
+                                <h3 className="text-sm font-bold uppercase tracking-wider text-slate-900">Security Audits Feed</h3>
+                                <p className="text-xs text-slate-500 mt-1">Audit security modifications, logins, and configurations updates.</p>
                             </div>
 
-                            <div className="space-y-3.5 max-h-[300px] overflow-y-auto pr-1">
+                            <div className="space-y-3 max-h-[300px] overflow-y-auto pr-1">
                                 {logs.map(log => (
-                                    <div key={log.id} className="text-2xs rounded-lg border border-slate-100 p-3 dark:border-slate-850 bg-slate-50/20">
+                                    <div key={log.id} className="text-xs rounded-xl border border-slate-200 p-3 bg-slate-50/50">
                                         <div className="flex justify-between items-center font-bold">
-                                            <span className="text-primary uppercase">{log.action.replace('_', ' ')}</span>
-                                            <span className="text-slate-400">{new Date(log.createdAt).toLocaleString()}</span>
+                                            <span className="text-blue-600 uppercase">{log.action.replace('_', ' ')}</span>
+                                            <span className="text-slate-400 text-xs">{new Date(log.createdAt).toLocaleString()}</span>
                                         </div>
-                                        <p className="text-slate-550 dark:text-slate-400 mt-1">{log.details}</p>
-                                        <span className="text-slate-400 block mt-0.5">Author: {log.userName}</span>
+                                        <p className="text-slate-600 mt-1">{log.details}</p>
+                                        <span className="text-slate-400 block mt-0.5 font-mono text-xs">Author: {log.userName}</span>
                                     </div>
                                 ))}
                             </div>

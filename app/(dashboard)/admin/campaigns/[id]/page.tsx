@@ -3,26 +3,26 @@
 import { useState, useEffect, useMemo, use } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import {
   ArrowLeft, Search, Filter, FolderKanban, Users, CheckCircle2,
-  Percent, DollarSign, Calendar, Tag, Activity, Phone, Mail, MapPin, ChevronLeft, ChevronRight, Upload, Eye
+  Percent, DollarSign, Calendar, Tag, Activity, Phone, Mail, MapPin, ChevronLeft, ChevronRight, Upload, Eye, Trash2, Check
 } from 'lucide-react';
-import api from '../../../../../lib/api';
-import { useCRMStore } from '../../../../../store/crmStore';
-import { useAuthStore } from '../../../../../store/authStore';
-import CsvImportModal from '../../../../../components/admin/leads/CsvImportModal';
-import useCsvImport from '../../../admin/leads/useCsvImport';
+import api from '@/lib/api';
+import { useCRMStore } from '@/store/crmStore';
+import { useAuthStore } from '@/store/authStore';
+import CsvImportModal from '@/components/admin/leads/CsvImportModal';
+import useCsvImport from '@/app/(dashboard)/admin/leads/useCsvImport';
 
 interface PageProps {
   params: Promise<{ id: string }>;
 }
 
-export default function VendorCampaignDetailPage({ params }: PageProps) {
+export default function AdminCampaignDetailPage({ params }: PageProps) {
   const { id } = use(params);
   const router = useRouter();
   const { user } = useAuthStore();
-  const { campaigns: storeCampaigns, leads: storeLeads, fetchCampaigns, fetchLeads } = useCRMStore();
+  const { campaigns: storeCampaigns, leads: storeLeads, fetchCampaigns, fetchLeads, deleteLead, fetchData } = useCRMStore();
 
   const [campaign, setCampaign] = useState<any>(null);
   const [leads, setLeads] = useState<any[]>([]);
@@ -41,8 +41,6 @@ export default function VendorCampaignDetailPage({ params }: PageProps) {
     setTimeout(() => setToast(null), 3000);
   };
 
-  const vendorId = user?.vendorId || 'ven-1';
-
   const {
     showImportModal,
     setShowImportModal,
@@ -55,14 +53,13 @@ export default function VendorCampaignDetailPage({ params }: PageProps) {
     handleValidateCsv,
     handleCSVImportConfirm,
     handleDownloadTemplate,
-  } = useCsvImport(showToast, vendorId, user?.name);
+  } = useCsvImport(showToast);
 
   useEffect(() => {
     let isMounted = true;
     async function loadCampaignDetails() {
       setIsLoading(true);
       try {
-        // Try fetching campaign details from backend API
         const res = await api.get(`/campaigns/${id}`);
         if (res.data?.success && res.data?.campaign) {
           if (isMounted) {
@@ -71,8 +68,7 @@ export default function VendorCampaignDetailPage({ params }: PageProps) {
           }
         }
       } catch (err) {
-        console.warn('API error fetching campaign detail, falling back to CRM store...', err);
-        // Fallback to store data
+        console.warn('API error fetching admin campaign detail, falling back to CRM store...', err);
         await Promise.all([fetchCampaigns(), fetchLeads()]);
         const found = storeCampaigns.find((c: any) => c.id === id);
         if (found && isMounted) {
@@ -94,11 +90,25 @@ export default function VendorCampaignDetailPage({ params }: PageProps) {
     };
   }, [id, fetchCampaigns, fetchLeads, storeCampaigns, storeLeads]);
 
-  // Combine API leads with store leads if needed
+  // Combine API leads with store leads
   const campaignLeads = useMemo(() => {
-    if (leads.length > 0) return leads;
+    if (leads.length > 0) {
+      return leads.filter(l => storeLeads.some(sl => sl.id === l.id || sl.leadId === l.leadId));
+    }
     return storeLeads.filter((l: any) => l.campaignId === id || (campaign && l.campaignName === campaign.name));
   }, [leads, storeLeads, id, campaign]);
+
+  const handleDeleteLead = async (leadId: string) => {
+    if (!confirm('Are you sure you want to delete this lead? This operation will remove the lead from both Admin and Vendor portals.')) return;
+    try {
+      await deleteLead(leadId);
+      setLeads(prev => prev.filter(l => l.id !== leadId && l.leadId !== leadId));
+      showToast('Lead deleted successfully across all portals', 'success');
+      fetchData();
+    } catch (e) {
+      showToast('Failed to delete lead', 'error');
+    }
+  };
 
   // Filter leads by search term & status
   const filteredLeads = useMemo(() => {
@@ -140,8 +150,8 @@ export default function VendorCampaignDetailPage({ params }: PageProps) {
 
   if (isLoading) {
     return (
-      <div className="flex h-96 items-center justify-center">
-        <div className="h-10 w-10 animate-spin rounded-full border-4 border-primary border-t-transparent"></div>
+      <div className="flex h-96 items-center justify-center bg-white">
+        <div className="h-10 w-10 animate-spin rounded-full border-4 border-blue-600 border-t-transparent"></div>
       </div>
     );
   }
@@ -149,15 +159,15 @@ export default function VendorCampaignDetailPage({ params }: PageProps) {
   if (!campaign) {
     return (
       <div className="flex flex-col items-center justify-center p-16 text-center">
-        <FolderKanban className="h-16 w-16 text-slate-400 dark:text-slate-600" />
-        <h2 className="mt-4 text-xl font-bold">Campaign Not Found</h2>
-        <p className="mt-1 text-sm text-slate-500">The requested campaign does not exist or you do not have permission to view it.</p>
-        <Link
-          href="/vendor-portal/campaigns"
-          className="mt-6 inline-flex items-center gap-2 rounded-xl bg-primary px-4 py-2 text-sm font-semibold text-white shadow-md hover:bg-primary/90 transition-all"
+        <FolderKanban className="h-16 w-16 text-slate-400" />
+        <h2 className="mt-4 text-xl font-bold text-slate-900">Campaign Not Found</h2>
+        <p className="mt-1 text-sm text-slate-500">The requested campaign does not exist or has been removed.</p>
+        <button
+          onClick={() => router.back()}
+          className="mt-6 inline-flex items-center gap-2 rounded-xl bg-blue-600 px-4 py-2 text-sm font-semibold text-white shadow-md hover:bg-blue-700 transition-all cursor-pointer"
         >
-          <ArrowLeft className="h-4 w-4" /> Back to Campaigns
-        </Link>
+          <ArrowLeft className="h-4 w-4" /> Back
+        </button>
       </div>
     );
   }
@@ -166,14 +176,32 @@ export default function VendorCampaignDetailPage({ params }: PageProps) {
 
   return (
     <div className="space-y-6">
+      {/* Toast Notification */}
+      <AnimatePresence>
+        {toast && (
+          <motion.div
+            initial={{ opacity: 0, y: -20 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -20 }}
+            className={`fixed top-4 right-4 z-50 flex items-center gap-2 rounded-xl px-4 py-3 text-sm font-semibold shadow-lg transition-all ${toast.type === 'success'
+              ? 'bg-emerald-500/10 text-emerald-500 border border-emerald-500/20'
+              : 'bg-rose-500/10 text-rose-500 border border-rose-500/20'
+              }`}
+          >
+            <Check className="h-4 w-4" />
+            <span>{toast.message}</span>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
       {/* Top Bar with Back Button */}
       <div>
         <button
           type="button"
           onClick={() => router.back()}
-          className="inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-wider text-slate-500 hover:text-primary transition-colors cursor-pointer"
+          className="inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-wider text-slate-500 hover:text-blue-600 transition-colors cursor-pointer"
         >
-          <ArrowLeft className="h-4 w-4" /> Back to Campaigns
+          <ArrowLeft className="h-4 w-4" /> Back
         </button>
       </div>
 
@@ -202,10 +230,10 @@ export default function VendorCampaignDetailPage({ params }: PageProps) {
                 <Tag className="h-3.5 w-3.5" />
                 {tortName}
               </span>
-              {campaign.marketingSource && (
+              {campaign.vendorName && (
                 <span className="inline-flex items-center gap-1.5 rounded-lg bg-slate-100 px-2.5 py-1 font-semibold text-slate-700 border border-slate-200">
                   <Activity className="h-3.5 w-3.5 text-indigo-600" />
-                  Channel: {campaign.marketingSource}
+                  Vendor: {campaign.vendorName}
                 </span>
               )}
             </div>
@@ -286,8 +314,8 @@ export default function VendorCampaignDetailPage({ params }: PageProps) {
         {/* Filter Bar */}
         <div className="flex flex-col gap-4 border-b border-slate-100 bg-slate-50/50 p-5 md:flex-row md:items-center md:justify-between">
           <div>
-            <h2 className="text-sm font-bold text-slate-900">Campaign Leads Ingested</h2>
-            <p className="text-xs text-slate-500 mt-0.5">Click any lead in the table below to view its complete detail profile.</p>
+            <h2 className="text-sm font-bold text-slate-900">Campaign Leads List</h2>
+            <p className="text-xs text-slate-500 mt-0.5">Click any lead in the table below to view complete lead details.</p>
           </div>
 
           <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
@@ -368,12 +396,12 @@ export default function VendorCampaignDetailPage({ params }: PageProps) {
                   return (
                     <tr
                       key={l.id || l.leadId}
-                      onClick={() => router.push(`/vendor-portal/leads/${leadTargetId}`)}
+                      onClick={() => router.push(`/admin/leads/${leadTargetId}`)}
                       className="hover:bg-blue-50/50 transition-colors cursor-pointer group"
                     >
                       <td className="p-4 font-bold text-slate-900">
                         <Link
-                          href={`/vendor-portal/leads/${leadTargetId}`}
+                          href={`/admin/leads/${leadTargetId}`}
                           onClick={(e) => e.stopPropagation()}
                           className="font-bold text-slate-900 group-hover:text-blue-600 hover:underline block"
                         >
@@ -441,14 +469,26 @@ export default function VendorCampaignDetailPage({ params }: PageProps) {
                       </td>
 
                       <td className="p-4 text-right">
-                        <Link
-                          href={`/vendor-portal/leads/${leadTargetId}`}
-                          onClick={(e) => e.stopPropagation()}
-                          className="inline-flex items-center gap-1.5 rounded-xl border border-slate-200 bg-white px-3 py-1.5 text-xs font-semibold text-slate-700 shadow-xs hover:border-blue-600 hover:bg-blue-50 hover:text-blue-600 transition-colors"
-                        >
-                          <Eye className="h-3.5 w-3.5" />
-                          <span>View Detail</span>
-                        </Link>
+                        <div className="flex items-center justify-end gap-1.5">
+                          <Link
+                            href={`/admin/leads/${leadTargetId}`}
+                            onClick={(e) => e.stopPropagation()}
+                            className="inline-flex items-center gap-1.5 rounded-xl border border-slate-200 bg-white px-3 py-1.5 text-xs font-semibold text-slate-700 shadow-xs hover:border-blue-600 hover:bg-blue-50 hover:text-blue-600 transition-colors"
+                          >
+                            <Eye className="h-3.5 w-3.5" />
+                            <span>View Detail</span>
+                          </Link>
+                          <button
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              handleDeleteLead(leadTargetId);
+                            }}
+                            title="Delete Lead"
+                            className="rounded-xl border border-slate-200 bg-white p-1.5 text-slate-400 hover:border-rose-600 hover:bg-rose-50 hover:text-rose-600 transition-colors cursor-pointer"
+                          >
+                            <Trash2 className="h-3.5 w-3.5" />
+                          </button>
+                        </div>
                       </td>
                     </tr>
                   );

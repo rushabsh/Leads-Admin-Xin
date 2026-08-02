@@ -21,13 +21,13 @@ export default function ConversionFunnel({ funnelData }: ConversionFunnelProps) 
   return (
     <motion.div
       variants={itemVariants}
-      className="glass-panel p-6 col-span-1 md:col-span-2 flex flex-col justify-between"
+      className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm col-span-1 md:col-span-2 flex flex-col justify-between"
     >
       <div className="mb-4 flex items-center justify-between">
-        <h2 className="text-sm font-bold text-slate-800 dark:text-white uppercase tracking-wider">
+        <h2 className="text-sm font-bold text-slate-900 uppercase tracking-wider">
           Conversion Pipeline Funnel
         </h2>
-        <span className="text-xs text-slate-550">Lead Stages Overview</span>
+        <span className="text-xs text-slate-500">Lead Stages Overview</span>
       </div>
       <div className="space-y-4 py-4">
         {funnelData.map((item) => {
@@ -36,17 +36,17 @@ export default function ConversionFunnel({ funnelData }: ConversionFunnelProps) 
           return (
             <div key={item.name} className="space-y-1.5">
               <div className="flex justify-between text-xs font-semibold">
-                <span className="text-slate-700 dark:text-slate-300">{item.name}</span>
-                <span>
+                <span className="text-slate-800">{item.name}</span>
+                <span className="text-blue-600 font-bold">
                   {item.value} ({Math.round(pct)}%)
                 </span>
               </div>
-              <div className="h-3 w-full rounded-full bg-slate-100 dark:bg-slate-800 overflow-hidden">
+              <div className="h-3 w-full rounded-full bg-slate-100 overflow-hidden border border-slate-200/50">
                 <motion.div
                   initial={{ width: 0 }}
                   animate={{ width: `${pct}%` }}
                   transition={{ duration: 0.8, ease: 'easeOut' }}
-                  className="h-full rounded-full bg-gradient-to-r from-primary to-secondary"
+                  className="h-full rounded-full bg-blue-600"
                 />
               </div>
             </div>

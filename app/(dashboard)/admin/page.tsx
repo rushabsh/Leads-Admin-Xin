@@ -274,12 +274,12 @@ export default function AdminDashboard() {
       {/* ---------------------------------------------------- */}
       <div className="flex flex-col gap-2 md:flex-row md:items-center md:justify-between">
         <div>
-          <h1 className="text-2xl font-bold tracking-tight">MassCore Workspace</h1>
-          <p className="text-sm text-slate-500 dark:text-slate-400">
-            Welcome back, <span className="font-semibold text-primary">{user?.name}</span>. Here is today&apos;s litigation status.
+          <h1 className="text-2xl font-bold tracking-tight text-slate-900">MassCore Workspace</h1>
+          <p className="text-sm text-slate-500">
+            Welcome back, <span className="font-semibold text-blue-600">{user?.name}</span>. Here is today&apos;s litigation status.
           </p>
         </div>
-        <div className="flex items-center gap-2 rounded-xl bg-primary/10 border border-primary/20 px-3.5 py-1.5 text-xs text-primary font-semibold">
+        <div className="flex items-center gap-2 rounded-full bg-blue-50 border border-blue-200 px-3.5 py-1.5 text-xs text-blue-600 font-semibold shadow-xs">
           <ShieldCheck className="h-4 w-4" />
           <span>Security Clearance Level: {user?.role}</span>
         </div>
@@ -299,19 +299,19 @@ export default function AdminDashboard() {
       {/* ---------------------------------------------------- */}
       {/* INGESTION & VENDOR ANALYTICS PIPELINE TABS */}
       {/* ---------------------------------------------------- */}
-      <div id="ingestion-pipeline" className="glass-panel p-6 grid grid-cols-1 gap-6">
-        <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between border-b border-slate-100 dark:border-slate-800 pb-5">
+      <div id="ingestion-pipeline" className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm grid grid-cols-1 gap-6">
+        <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between border-b border-slate-100 pb-5">
           <div>
-            <h2 className="text-base font-bold tracking-tight">Ingestion & Vendor Analytics Pipeline</h2>
-            <p className="text-xs text-slate-400 dark:text-slate-500">Manage qualified/disqualified client files and monitor marketing vendor feeds.</p>
+            <h2 className="text-base font-bold tracking-tight text-slate-900">Ingestion & Vendor Analytics Pipeline</h2>
+            <p className="text-xs text-slate-400">Manage qualified/disqualified client files and monitor marketing vendor feeds.</p>
           </div>
 
-          <div className="flex items-center gap-1.5 rounded-xl bg-slate-100/50 p-1 dark:bg-slate-950/40 border border-slate-200/20">
+          <div className="flex items-center gap-1.5 rounded-xl bg-slate-100 p-1 border border-slate-200/60">
             <button
               onClick={() => { setActiveTab('qualified'); setQualPage(1); }}
               className={`rounded-lg px-3.5 py-1.5 text-xs font-bold transition-all ${activeTab === 'qualified'
-                ? 'bg-white text-slate-900 shadow-sm dark:bg-slate-800 dark:text-white'
-                : 'text-slate-400 hover:text-slate-700 dark:hover:text-slate-250'
+                ? 'bg-white text-slate-900 shadow-sm'
+                : 'text-slate-500 hover:text-slate-800'
                 }`}
             >
               Qualified ({filteredQualLeads.length})
@@ -319,8 +319,8 @@ export default function AdminDashboard() {
             <button
               onClick={() => { setActiveTab('disqualified'); setDisqPage(1); }}
               className={`rounded-lg px-3.5 py-1.5 text-xs font-bold transition-all ${activeTab === 'disqualified'
-                ? 'bg-white text-slate-900 shadow-sm dark:bg-slate-800 dark:text-white'
-                : 'text-slate-400 hover:text-slate-700 dark:hover:text-slate-250'
+                ? 'bg-white text-slate-900 shadow-sm'
+                : 'text-slate-500 hover:text-slate-800'
                 }`}
             >
               Disqualified ({filteredDisqLeads.length})
@@ -328,8 +328,8 @@ export default function AdminDashboard() {
             <button
               onClick={() => setActiveTab('vendors')}
               className={`rounded-lg px-3.5 py-1.5 text-xs font-bold transition-all ${activeTab === 'vendors'
-                ? 'bg-white text-slate-900 shadow-sm dark:bg-slate-800 dark:text-white'
-                : 'text-slate-400 hover:text-slate-700 dark:hover:text-slate-250'
+                ? 'bg-white text-slate-900 shadow-sm'
+                : 'text-slate-500 hover:text-slate-800'
                 }`}
             >
               Vendor List ({vendorsTableData.length})

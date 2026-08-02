@@ -117,10 +117,10 @@ export default function LandingPage() {
                   <span>Workspace Access</span>
                 </div>
                 <h2 className="text-2xl font-semibold text-zinc-100 tracking-wide">
-                  Employee Workspace
+                  Vendor Portal
                 </h2>
                 <p className="text-zinc-400 text-xs font-light max-w-[240px] leading-relaxed">
-                  Your personal workspace to manage daily activities.
+                  Your personal portal to manage daily activities.
                 </p>
               </div>
             </div>

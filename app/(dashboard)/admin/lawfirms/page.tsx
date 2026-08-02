@@ -274,14 +274,14 @@ export default function LawFirmsPage() {
           {/* Header */}
           <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
             <div>
-              <h1 className="text-2xl font-bold tracking-tight">Law Firms Management</h1>
-              <p className="text-sm text-slate-500 dark:text-slate-400">
+              <h1 className="text-2xl font-bold tracking-tight text-slate-900">Law Firms Management</h1>
+              <p className="text-sm text-slate-500">
                 Register law firms, assign legal partners, and review case transfer logs.
               </p>
             </div>
             <button
               onClick={handleOpenAddModal}
-              className="inline-flex items-center gap-2 rounded-xl bg-primary px-4 py-2.5 text-sm font-semibold text-white shadow-lg shadow-primary/25 hover:bg-primary/90 transition-all active:scale-[0.98]"
+              className="inline-flex items-center gap-2 rounded-xl bg-blue-600 px-4 py-2.5 text-xs font-semibold text-white shadow-sm hover:bg-blue-700 transition-colors cursor-pointer"
             >
               <Plus className="h-4 w-4" />
               Add Law Firm

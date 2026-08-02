@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect, useRef, Suspense, useMemo } from 'react';
-import { useSearchParams } from 'next/navigation';
+import { useSearchParams, useRouter } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Check, Upload, Download, Plus } from 'lucide-react';
 import { useCRMStore } from '../../../../store/crmStore';
@@ -27,6 +27,7 @@ const escapeCSV = (val: any): string => {
 
 function LeadsPageContent() {
   const searchParams = useSearchParams();
+  const router = useRouter();
   const { user } = useAuthStore();
   const {
     leads, campaigns, vendors, fetchData
@@ -159,19 +160,9 @@ function LeadsPageContent() {
   }, [campaigns, vendors, formData.campaignId, formData.vendorId]);
 
   // Load Lead Detailed Profile
-  const handleViewLeadProfile = async (lead: any) => {
-    setIsLoadingDetails(true);
-    setSelectedLead(lead);
-    setActiveProfileTab('personal');
-    try {
-      const res = await api.get(`/leads/${lead.id}`);
-      setLeadDetails(res.data.lead);
-    } catch (e) {
-      console.error(e);
-      setLeadDetails(lead);
-    } finally {
-      setIsLoadingDetails(false);
-    }
+  const handleViewLeadProfile = (lead: any) => {
+    const targetId = lead.id || lead.leadId;
+    router.push(`/admin/leads/${targetId}`);
   };
 
   const handleRefreshProfile = async () => {
@@ -487,27 +478,27 @@ function LeadsPageContent() {
           {/* Header */}
           <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
             <div>
-              <h1 className="text-2xl font-bold tracking-tight">Leads Ingestion Pipeline</h1>
-              <p className="text-sm text-slate-500 dark:text-slate-400">
+              <h1 className="text-2xl font-bold tracking-tight text-slate-900">Leads Ingestion Pipeline</h1>
+              <p className="text-sm text-slate-500">
                 Track client intake, qualify status details, and allocate cases.
               </p>
             </div>
             <div className="flex items-center gap-2 flex-wrap">
               <button
                 onClick={() => setShowImportModal(true)}
-                className="inline-flex items-center gap-1.5 rounded-xl border border-slate-200 bg-white px-3 py-2 text-xs font-semibold hover:bg-slate-55 dark:border-slate-850 dark:bg-slate-900"
+                className="inline-flex items-center gap-1.5 rounded-xl border border-slate-200 bg-white px-3 py-2 text-xs font-semibold text-slate-700 hover:bg-slate-50 transition-colors shadow-xs"
               >
                 <Upload className="h-3.5 w-3.5" /> CSV Import
               </button>
               <button
                 onClick={() => handleExportCSV('filtered')}
-                className="inline-flex items-center gap-1.5 rounded-xl border border-slate-200 bg-white px-3 py-2 text-xs font-semibold hover:bg-slate-55 dark:border-slate-855 dark:bg-slate-900"
+                className="inline-flex items-center gap-1.5 rounded-xl border border-slate-200 bg-white px-3 py-2 text-xs font-semibold text-slate-700 hover:bg-slate-50 transition-colors shadow-xs"
               >
                 <Download className="h-3.5 w-3.5" /> Export CSV
               </button>
               <button
                 onClick={() => setShowAddModal(true)}
-                className="inline-flex items-center gap-1.5 rounded-xl bg-primary px-4 py-2.5 text-xs font-bold text-white shadow-lg hover:bg-primary/95"
+                className="inline-flex items-center gap-1.5 rounded-xl bg-blue-600 px-4 py-2.5 text-xs font-bold text-white shadow-sm hover:bg-blue-700 transition-colors"
               >
                 <Plus className="h-4 w-4" /> Add Lead
               </button>

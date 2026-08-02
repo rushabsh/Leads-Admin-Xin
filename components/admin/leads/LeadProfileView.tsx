@@ -87,7 +87,7 @@ export default function LeadProfileView({
           <select
             value={leadDetails?.status || selectedLead.status}
             onChange={(e) => onUpdateStatus(e.target.value)}
-            className="rounded-xl border border-slate-200 bg-white px-3 py-1.5 text-xs font-semibold outline-none dark:border-slate-850 dark:bg-slate-900"
+            className="rounded-xl border border-slate-200 bg-white px-3 py-1.5 text-xs font-semibold outline-none dark:border-slate-850"
           >
             <option value="NEW">New</option>
             <option value="CONTACTED">Contacted</option>
@@ -179,11 +179,10 @@ export default function LeadProfileView({
                 <button
                   key={tab.id}
                   onClick={() => setActiveProfileTab(tab.id as any)}
-                  className={`flex items-center gap-1.5 pb-2.5 px-3 text-xs font-semibold border-b-2 transition-all duration-200 whitespace-nowrap focus:outline-none ${
-                    activeProfileTab === tab.id
-                      ? 'border-blue-600 text-blue-600 font-bold'
-                      : 'border-transparent text-slate-500 hover:text-slate-800'
-                  }`}
+                  className={`flex items-center gap-1.5 pb-2.5 px-3 text-xs font-semibold border-b-2 transition-all duration-200 whitespace-nowrap focus:outline-none ${activeProfileTab === tab.id
+                    ? 'border-blue-600 text-blue-600 font-bold'
+                    : 'border-transparent text-slate-500 hover:text-slate-800'
+                    }`}
                 >
                   <tab.icon className="h-4 w-4" />
                   {tab.label}
@@ -437,7 +436,7 @@ export default function LeadProfileView({
                   {/* Notes History */}
                   <div className="space-y-3">
                     {!leadDetails.activityLogs ||
-                    leadDetails.activityLogs.filter((log: any) => log.action === 'NOTE_ADDED').length === 0 ? (
+                      leadDetails.activityLogs.filter((log: any) => log.action === 'NOTE_ADDED').length === 0 ? (
                       <div className="rounded-2xl border border-dashed border-slate-200 p-8 text-center text-slate-400 text-xs">
                         No notes added for this lead yet.
                       </div>
@@ -491,9 +490,8 @@ export default function LeadProfileView({
                             </button>
                             <div>
                               <p
-                                className={`text-xs font-semibold text-slate-900 ${
-                                  task.status === 'COMPLETED' ? 'line-through text-slate-400' : ''
-                                }`}
+                                className={`text-xs font-semibold text-slate-900 ${task.status === 'COMPLETED' ? 'line-through text-slate-400' : ''
+                                  }`}
                               >
                                 {task.title}
                               </p>
@@ -503,11 +501,10 @@ export default function LeadProfileView({
                                   {new Date(task.dueDate).toLocaleDateString()}
                                 </span>
                                 <span
-                                  className={`inline-flex rounded px-1.5 py-0.5 text-xs font-bold ${
-                                    task.priority === 'HIGH'
-                                      ? 'bg-rose-50 text-rose-700 border border-rose-200'
-                                      : 'bg-slate-100 text-slate-600'
-                                  }`}
+                                  className={`inline-flex rounded px-1.5 py-0.5 text-xs font-bold ${task.priority === 'HIGH'
+                                    ? 'bg-rose-50 text-rose-700 border border-rose-200'
+                                    : 'bg-slate-100 text-slate-600'
+                                    }`}
                                 >
                                   {task.priority}
                                 </span>

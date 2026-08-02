@@ -106,7 +106,7 @@ export default function LeadsListTable({
               setSearchTerm(e.target.value);
               setPage(1);
             }}
-            className="w-full rounded-xl border border-slate-200 bg-white py-2 pr-4 pl-10 text-xs text-slate-900 outline-none transition-all placeholder:text-slate-400 focus:border-blue-600 focus:ring-2 focus:ring-blue-100 shadow-xs"
+            className="w-full rounded-xl border border-slate-200 bg-white py-2 pr-4 pl-10 text-xs text-slate-900 outline-none transition-all duration-200 placeholder:text-slate-400 focus:border-blue-600 focus:ring-2 focus:ring-blue-500/20 shadow-xs hover:border-slate-300"
           />
         </div>
 

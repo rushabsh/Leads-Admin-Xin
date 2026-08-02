@@ -502,7 +502,7 @@ export const useCRMStore = create<CRMState>((set, get) => ({
 
   deleteLead: async (leadId) => {
     const originalLeads = get().leads;
-    const updated = originalLeads.filter(l => l.id !== leadId);
+    const updated = originalLeads.filter(l => l.id !== leadId && l.leadId !== leadId);
     set({ leads: updated });
     saveToStorage('mc_leads', updated);
 

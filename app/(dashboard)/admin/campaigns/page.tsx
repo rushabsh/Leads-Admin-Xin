@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect, useMemo } from 'react';
+import { useRouter } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Plus, Check } from 'lucide-react';
 import { useCRMStore } from '../../../../store/crmStore';
@@ -53,6 +54,7 @@ interface LawFirmData {
 }
 
 export default function CampaignsPage() {
+  const router = useRouter();
   const { campaigns: rawCampaigns, fetchData, isLoading } = useCRMStore();
   const campaigns = rawCampaigns as any[] as CampaignData[];
   const [massTorts, setMassTorts] = useState<MassTortData[]>([]);
@@ -148,21 +150,8 @@ export default function CampaignsPage() {
     setShowAddEditModal(true);
   };
 
-  const handleViewDetails = async (camp: CampaignData) => {
-    setIsLoadingDetails(true);
-    setSelectedCampaign(camp);
-    setActiveDetailTab('overview');
-    try {
-      const res = await api.get(`/campaigns/${camp.id}`);
-      const c = res.data.campaign;
-      setSelectedCampaign(c);
-      setCampaignLeads(c.leads || []);
-    } catch (e) {
-      console.error(e);
-      setCampaignLeads([]);
-    } finally {
-      setIsLoadingDetails(false);
-    }
+  const handleViewDetails = (camp: CampaignData) => {
+    router.push(`/admin/campaigns/${camp.id}`);
   };
 
   const handleSubmit = async (e: React.FormEvent) => {

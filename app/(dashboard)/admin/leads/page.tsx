@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect, useRef, Suspense, useMemo } from 'react';
-import { useSearchParams } from 'next/navigation';
+import { useSearchParams, useRouter } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Check, Upload, Download, Plus } from 'lucide-react';
 import { useCRMStore } from '../../../../store/crmStore';
@@ -27,6 +27,7 @@ const escapeCSV = (val: any): string => {
 
 function LeadsPageContent() {
   const searchParams = useSearchParams();
+  const router = useRouter();
   const { user } = useAuthStore();
   const {
     leads, campaigns, vendors, fetchData
@@ -159,19 +160,9 @@ function LeadsPageContent() {
   }, [campaigns, vendors, formData.campaignId, formData.vendorId]);
 
   // Load Lead Detailed Profile
-  const handleViewLeadProfile = async (lead: any) => {
-    setIsLoadingDetails(true);
-    setSelectedLead(lead);
-    setActiveProfileTab('personal');
-    try {
-      const res = await api.get(`/leads/${lead.id}`);
-      setLeadDetails(res.data.lead);
-    } catch (e) {
-      console.error(e);
-      setLeadDetails(lead);
-    } finally {
-      setIsLoadingDetails(false);
-    }
+  const handleViewLeadProfile = (lead: any) => {
+    const targetId = lead.id || lead.leadId;
+    router.push(`/admin/leads/${targetId}`);
   };
 
   const handleRefreshProfile = async () => {

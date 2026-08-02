@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useMemo, use } from 'react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
   ArrowLeft, User, Phone, Mail, MapPin, Calendar, ShieldCheck, AlertTriangle,
@@ -41,6 +42,7 @@ interface ActivityFeedItem {
 
 export default function VendorLeadDetailPage({ params }: PageProps) {
   const { id } = use(params);
+  const router = useRouter();
   const { user } = useAuthStore();
   const { leads: storeLeads, fetchData } = useCRMStore();
 
@@ -348,6 +350,19 @@ export default function VendorLeadDetailPage({ params }: PageProps) {
   const acceptedDate = new Date(openedDate.getTime() + 3600000 * 2);
   const closedDate = new Date(openedDate.getTime() + 3600000 * 6);
 
+  // Safely parse JSON case details if present
+  let parsedDetails: any = null;
+  if (lead?.caseDetails && typeof lead.caseDetails === 'string' && lead.caseDetails.trim().startsWith('{')) {
+    try {
+      parsedDetails = JSON.parse(lead.caseDetails);
+    } catch (_) {}
+  }
+
+  const parsedLeadInfo = parsedDetails?.leadInfo || {};
+  const parsedContactInfo = parsedDetails?.contactInfo || {};
+  const parsedPOAInfo = parsedDetails?.poa || {};
+  const parsedDiagnosisInfo = parsedDetails?.diagnosisInfo || {};
+
   return (
     <div className="space-y-6 max-w-7xl mx-auto pb-16">
       {/* Toast Notification */}
@@ -367,13 +382,14 @@ export default function VendorLeadDetailPage({ params }: PageProps) {
 
       {/* Top Breadcrumb Nav */}
       <div className="flex items-center justify-between">
-        <Link
-          href="/vendor-portal/leads"
-          className="inline-flex items-center gap-2 text-xs font-semibold text-slate-600 hover:text-blue-600 transition-colors"
+        <button
+          type="button"
+          onClick={() => router.back()}
+          className="inline-flex items-center gap-2 text-xs font-semibold text-slate-600 hover:text-blue-600 transition-colors cursor-pointer"
         >
           <ArrowLeft className="h-4 w-4" />
-          <span>Back to Vendor Portal Leads</span>
-        </Link>
+          <span>Back</span>
+        </button>
 
         <div className="flex items-center gap-2 text-xs text-slate-400">
           <span>Vendor Portal</span>

@@ -1,10 +1,12 @@
 'use client';
 
+import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
   Search, Filter, Plus, Edit2, Trash2, Check, X,
-  Contact, Mail, Phone, MapPin, Activity, ChevronLeft, ChevronRight, BarChart3, FolderKanban
+  Contact, Mail, Phone, MapPin, Activity, ChevronLeft, ChevronRight, BarChart3, FolderKanban, Eye
 } from 'lucide-react';
 import { useCRMStore } from '../../../../store/crmStore';
 import api from '../../../../lib/api';
@@ -22,6 +24,7 @@ interface VendorData {
 }
 
 export default function VendorsPage() {
+  const router = useRouter();
   const { vendors: rawVendors, fetchData, isLoading } = useCRMStore();
   const vendors = rawVendors as any[] as VendorData[];
 
@@ -280,13 +283,23 @@ export default function VendorsPage() {
               </thead>
               <tbody className="divide-y divide-slate-100">
                 {paginatedVendors.map((vendor) => (
-                  <tr key={vendor.id} className="hover:bg-slate-50/60 transition-colors">
+                  <tr
+                    key={vendor.id}
+                    onClick={() => router.push(`/admin/vendors/${vendor.id}`)}
+                    className="hover:bg-slate-50/60 transition-colors cursor-pointer group"
+                  >
                     <td className="p-4 font-bold text-slate-900">
                       <div className="flex items-center gap-3">
                         <div className="rounded-lg bg-blue-50 p-2 text-blue-600">
                           <Contact className="h-4.5 w-4.5" />
                         </div>
-                        <span>{vendor.name}</span>
+                        <Link
+                          href={`/admin/vendors/${vendor.id}`}
+                          onClick={(e) => e.stopPropagation()}
+                          className="hover:text-blue-600 hover:underline font-bold text-slate-900 transition-colors"
+                        >
+                          {vendor.name}
+                        </Link>
                       </div>
                     </td>
                     <td className="p-4">
@@ -330,14 +343,22 @@ export default function VendorsPage() {
                     </td>
                     <td className="p-4 text-right">
                       <div className="flex items-center justify-end gap-1.5">
+                        <Link
+                          href={`/admin/vendors/${vendor.id}`}
+                          onClick={(e) => e.stopPropagation()}
+                          title="View Vendor Assigned Campaigns"
+                          className="rounded-lg p-1.5 text-slate-400 hover:bg-slate-100 hover:text-blue-600 transition-colors"
+                        >
+                          <Eye className="h-4 w-4" />
+                        </Link>
                         <button
-                          onClick={() => handleOpenEditModal(vendor)}
+                          onClick={(e) => { e.stopPropagation(); handleOpenEditModal(vendor); }}
                           className="rounded-lg p-1.5 text-slate-400 hover:bg-slate-100 hover:text-blue-600 transition-colors"
                         >
                           <Edit2 className="h-4 w-4" />
                         </button>
                         <button
-                          onClick={() => handleDelete(vendor.id)}
+                          onClick={(e) => { e.stopPropagation(); handleDelete(vendor.id); }}
                           className="rounded-lg p-1.5 text-slate-400 hover:bg-slate-100 hover:text-rose-600 transition-colors"
                         >
                           <Trash2 className="h-4 w-4" />

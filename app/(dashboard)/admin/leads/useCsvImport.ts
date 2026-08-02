@@ -88,21 +88,25 @@ export default function useCsvImport(
 
     parsedCsvData.forEach((row, index) => {
       const rowNum = index + 1;
-      if (!row.firstName || !row.lastName) {
-        errors.push(`Row ${rowNum}: Missing client name.`);
+      const firstName = row.firstName || row['First Name'] || row.contactName || row['Contact Name'];
+      const lastName = row.lastName || row['Last Name'] || 'Lead';
+      if (!firstName) {
+        errors.push(`Row ${rowNum}: Missing client first name / contact name.`);
       }
-      if (!row.phone) {
+      const phone = row.phone || row.phoneNumber || row['Phone Number'];
+      if (!phone) {
         errors.push(`Row ${rowNum}: Phone number is required.`);
       }
-      if (!row.email || !row.email.includes('@')) {
+      const email = row.email || row['Email'];
+      if (!email || !email.includes('@')) {
         errors.push(`Row ${rowNum}: Invalid or missing email address.`);
       }
       const rowLeadId = row.leadId || row['Lead ID'] || row.leadid;
       if (rowLeadId && existingLeadIds.has(rowLeadId.toUpperCase())) {
         errors.push(`Row ${rowNum}: Duplicate Lead ID '${rowLeadId}' found in existing leads.`);
       }
-      if (row.email && existingEmails.has(row.email.toLowerCase())) {
-        errors.push(`Row ${rowNum}: Duplicate email '${row.email}' already exists.`);
+      if (email && existingEmails.has(email.toLowerCase())) {
+        errors.push(`Row ${rowNum}: Duplicate email '${email}' already exists.`);
       }
     });
 
@@ -125,21 +129,10 @@ export default function useCsvImport(
       const row = parsedCsvData[i];
       const rowNum = i + 1;
 
-      if (!row.firstName || !row.lastName) {
-        failedCount++;
-        reports.push(`Row ${rowNum}: Skipped - Missing client name.`);
-        continue;
-      }
-      if (!row.phone) {
-        failedCount++;
-        reports.push(`Row ${rowNum}: Skipped - Phone number is required.`);
-        continue;
-      }
-      if (!row.email || !row.email.includes('@')) {
-        failedCount++;
-        reports.push(`Row ${rowNum}: Skipped - Invalid or missing email address.`);
-        continue;
-      }
+      const firstName = row.firstName || row['First Name'] || row.contactName || row['Contact Name'] || `Lead-${rowNum}`;
+      const lastName = row.lastName || row['Last Name'] || 'CSV';
+      const phone = row.phone || row.phoneNumber || row['Phone Number'] || '(555) 000-0000';
+      const email = row.email || row['Email'] || `lead${rowNum}@csvimport.com`;
 
       const rowLeadId = row.leadId || row['Lead ID'] || row.leadid;
       if (rowLeadId && existingLeadIds.has(rowLeadId.toUpperCase())) {
@@ -148,13 +141,14 @@ export default function useCsvImport(
         continue;
       }
 
-      if (row.email && existingEmails.has(row.email.toLowerCase())) {
+      if (email && existingEmails.has(email.toLowerCase())) {
         failedCount++;
-        reports.push(`Row ${rowNum}: Skipped - Email '${row.email}' already exists.`);
+        reports.push(`Row ${rowNum}: Skipped - Email '${email}' already exists.`);
         continue;
       }
 
-      const campaignNameVal = row.campaign || row.Campaign || '';
+      const tortTypeVal = row.type || row['Type'] || row.tortName || row['Tort Name'] || 'PFAS';
+      const campaignNameVal = row.campaign || row.Campaign || `${tortTypeVal} Campaign`;
       const matchingCamp = campaigns.find(c => c.name.toLowerCase().includes(campaignNameVal.toLowerCase())) || campaigns[0];
 
       const vendorNameVal = row.vendor || row.Vendor || '';
@@ -162,27 +156,77 @@ export default function useCsvImport(
       const targetVendorId = defaultVendorId || matchingVendor?.id || vendors[0]?.id || '';
       const targetVendorName = defaultVendorName || matchingVendor?.name || 'Vendor';
 
+      // Build complete Lead Follow Up structured caseDetails JSON
+      const caseDetailsFormatted = JSON.stringify({
+        leadInfo: {
+          contactName: row.contactName || row['Contact Name'] || `${firstName} ${lastName}`,
+          type: tortTypeVal,
+          status: row.status || row['Status'] || 'New',
+          leadName: row.leadName || row['Lead Name'] || `${firstName} ${lastName}`,
+          substatus: row.substatus || row['Substatus'] || 'None',
+          billable: row.billable !== undefined ? String(row.billable).toLowerCase() === 'true' : true,
+          reasonForRejection: row.reasonForRejection || row['Reason for Rejection'] || '',
+          dateSent: row.dateSent || row['Date Sent'] || new Date().toISOString().split('T')[0],
+          dateSubscribed: row.dateSubscribed || row['Date Subscribed'] || '',
+          tier: row.tier || row['Tier'] || 'Tier 1',
+          reasonForDQ: row.reasonForDQ || row['Reason for DQ'] || '',
+          reasonForDoesntMeetCriteria: row.reasonForDoesntMeetCriteria || row["Reason for Doesn't Meet Criteria"] || '',
+          reasonForSpam: row.reasonForSpam || row['Reason for Spam'] || '',
+          trustedForm: row.trustedForm || row['Trusted Form'] || '',
+          callDuration: row.callDuration || row['Call Duration'] || '',
+        },
+        contactInfo: {
+          firstName: firstName,
+          middleName: row.middleName || row['Middle Name'] || '',
+          lastName: lastName,
+          gender: row.gender || row['Gender'] || 'Male',
+          dateOfBirth: row.dateOfBirth || row['Date of Birth'] || row.dob || '',
+          phoneNumber: phone,
+          email: email,
+          addressStreet: row.addressStreet || row['Address Street'] || row.address || '',
+          city: row.city || row['City'] || '',
+          state: row.state || row['State'] || 'CA',
+          areaCode: row.areaCode || row['Area Code'] || '',
+        },
+        poa: {
+          powerOfAttorney: row.powerOfAttorney !== undefined ? String(row.powerOfAttorney).toLowerCase() === 'true' : false,
+          victimName: row.victimName || row['Victim Name'] || '',
+          victimFullName: row.victimFullName || row['Victim Full Name'] || '',
+          victimLastName: row.victimLastName || row['Victim Last Name'] || '',
+          victimDOB: row.victimDOB || row['Victim DOB'] || '',
+          victimDOD: row.victimDOD || row['Victim DOD'] || '',
+        },
+        diagnosisInfo: {
+          diagnosis: row.diagnosis || row['Diagnosis'] || 'Non-Hodgkin Lymphoma',
+          diagnosisYear: row.diagnosisYear || row['Diagnosis Year'] || '',
+          diagnosingDoctorName: row.diagnosingDoctorName || row["Diagnosing Doctor's Name"] || '',
+          treatingDoctorName: row.treatingDoctorName || row["Treating Doctor's Name"] || '',
+          diagnosingHospitalName: row.diagnosingHospitalName || row["Diagnosing Hospital's Name"] || row.hospital || '',
+          treatingFacilityName: row.treatingFacilityName || row['Treating Facility Name'] || '',
+          diagnosingHospitalAddress: row.diagnosingHospitalAddress || row["Diagnosing Hospital's Address"] || '',
+          treatingFacilityAddress: row.treatingFacilityAddress || row['Treating Facility Address'] || '',
+          diagnosingFacilityPhone: row.diagnosingFacilityPhone || row['Diagnosing Facility Phone Number'] || '',
+          treatingFacilityPhone: row.treatingFacilityPhone || row['Treating Facility Phone Number'] || '',
+        }
+      }, null, 2);
+
       const leadPayload = {
-        firstName: row.firstName,
-        lastName: row.lastName,
-        phone: row.phone,
-        email: row.email,
-        state: row.state || 'CA',
-        priority: row.priority || 'MEDIUM',
-        status: row.status || 'NEW',
+        firstName,
+        lastName,
+        phone,
+        email,
+        state: row.state || row['State'] || 'CA',
+        priority: row.tier === 'Tier 1' || row.priority === 'HIGH' ? 'HIGH' : 'MEDIUM',
+        status: (row.status || 'NEW').toUpperCase() === 'NEW' ? 'NEW' : (row.status || '').toUpperCase() === 'SENT' ? 'QUALIFIED' : 'CONTACTED',
         campaignId: matchingCamp?.id || campaigns[0]?.id || '',
         vendorId: targetVendorId,
-        dob: row.dob || '',
-        gender: row.gender || 'Male',
-        address: row.address || '',
-        ssn: row.ssn || '',
-        caseDetails: row.caseDetails || 'Imported from CSV',
-        incidentDate: row.incidentDate || row['Incident Date'] || row.incidentdate || '',
-        exposure: row.exposure || row['Exposure'] || row['Exposure Description / Date'] || row.exposuredescription || '',
-        symptoms: row.symptoms || row['Symptoms'] || '',
-        diagnosis: row.diagnosis || row['Diagnosis'] || row['Diagnosis Details'] || '',
-        hospital: row.hospital || row['Hospital'] || row['Treating Hospital'] || '',
-        attorney: row.attorney || row['Attorney'] || row['Litigation Attorney'] || ''
+        dob: row.dateOfBirth || row['Date of Birth'] || row.dob || '',
+        gender: row.gender || row['Gender'] || 'Male',
+        address: row.addressStreet || row.address || '',
+        diagnosis: row.diagnosis || row['Diagnosis'] || '',
+        hospital: row.diagnosingHospitalName || row.hospital || '',
+        caseDetails: caseDetailsFormatted,
+        tortName: tortTypeVal
       };
 
       try {
@@ -190,12 +234,12 @@ export default function useCsvImport(
         const actualLead = res.data.lead;
         newLeadsToAppend.push(actualLead);
         successCount++;
-        existingEmails.add(row.email.toLowerCase());
+        existingEmails.add(email.toLowerCase());
         if (actualLead.leadId) {
           existingLeadIds.add(actualLead.leadId.toUpperCase());
         }
       } catch (err) {
-        console.warn(`API lead creation failed for row ${rowNum}, falling back to local creation...`);
+        console.warn(`API lead creation failed for row ${rowNum}, falling back to store persistence...`);
         const totalCount = currentLeads.length + newLeadsToAppend.length;
         const generatedLeadId = rowLeadId || `MC-${10000 + totalCount + 1}`;
         const localLead = {
@@ -203,17 +247,17 @@ export default function useCsvImport(
           id: `ld-imported-${Date.now()}-${i}`,
           leadId: generatedLeadId,
           leadScore: leadPayload.state === 'FL' || leadPayload.state === 'CA' ? 92 : 72,
-          aiSummary: `AI LEAD SUMMARY:\nLead generated for ${leadPayload.firstName} ${leadPayload.lastName} via CSV.`,
+          aiSummary: `AI LEAD SUMMARY:\nLead generated for ${firstName} ${lastName} via Lead Follow Up CSV.`,
           duplicateDetected: false,
-          campaignName: matchingCamp?.name || 'General Inbound',
-          tortName: matchingCamp?.tortName || 'General Mass Tort',
-          vendorName: matchingVendor?.name || 'Internal',
-          sourceName: 'CSV Import',
+          campaignName: matchingCamp?.name || `${tortTypeVal} Campaign`,
+          tortName: tortTypeVal,
+          vendorName: targetVendorName,
+          sourceName: 'Lead Follow Up CSV Ingestion',
           createdAt: new Date().toISOString()
         };
         newLeadsToAppend.push(localLead);
         successCount++;
-        existingEmails.add(row.email.toLowerCase());
+        existingEmails.add(email.toLowerCase());
         existingLeadIds.add(generatedLeadId.toUpperCase());
       }
     }
@@ -238,57 +282,99 @@ export default function useCsvImport(
 
   const handleDownloadTemplate = () => {
     const headers = [
-      'leadId',
-      'firstName',
-      'lastName',
-      'phone',
-      'email',
-      'state',
+      'contactName',
+      'type',
       'status',
-      'priority',
-      'campaign',
-      'vendor',
-      'dob',
+      'leadName',
+      'substatus',
+      'billable',
+      'reasonForRejection',
+      'dateSent',
+      'dateSubscribed',
+      'tier',
+      'reasonForDQ',
+      'reasonForDoesntMeetCriteria',
+      'reasonForSpam',
+      'trustedForm',
+      'callDuration',
+      'firstName',
+      'middleName',
+      'lastName',
       'gender',
-      'address',
-      'ssn',
-      'caseDetails',
-      'exposure',
-      'incidentDate',
+      'dateOfBirth',
+      'phoneNumber',
+      'email',
+      'addressStreet',
+      'city',
+      'state',
+      'areaCode',
+      'powerOfAttorney',
+      'victimName',
+      'victimFullName',
+      'victimLastName',
+      'victimDOB',
+      'victimDOD',
       'diagnosis',
-      'symptoms',
-      'hospital',
-      'attorney'
+      'diagnosisYear',
+      'diagnosingDoctorName',
+      'treatingDoctorName',
+      'diagnosingHospitalName',
+      'treatingFacilityName',
+      'diagnosingHospitalAddress',
+      'treatingFacilityAddress',
+      'diagnosingFacilityPhone',
+      'treatingFacilityPhone'
     ];
     const sampleRow = [
-      'MC-99999',
-      'John',
+      'Jane Doe Contact',
+      'PFAS',
+      'New',
+      'Jane Lead',
+      'TCPA OK',
+      'true',
+      '',
+      '2026-08-02',
+      '2026-08-01',
+      'Tier 1',
+      '',
+      '',
+      '',
+      'https://cert.trustedform.com/sample',
+      '05:30',
+      'Jane',
+      'M',
       'Doe',
-      '305-555-0199',
-      'john.doe@example.com',
-      'FL',
-      'NEW',
-      'MEDIUM',
-      'Camp Lejeune Water Ads',
-      'Premier Leads LLC',
-      '1980-01-01',
-      'Male',
-      '123 Main St, Miami, FL 33101',
-      '000-12-3456',
-      'Exposed to contaminated water at Camp Lejeune from 1982 to 1984.',
-      'Camp Lejeune water 1980-1982',
-      '2021-03-15',
-      'Kidney cancer',
-      'Nausea, fatigue',
-      'Mercy Health Hospital',
-      'John Morgan Jr.'
+      'Female',
+      '1985-04-12',
+      '415-555-0199',
+      'jane.doe@example.com',
+      '100 Market St',
+      'San Francisco',
+      'CA',
+      '415',
+      'false',
+      '',
+      '',
+      '',
+      '',
+      '',
+      'Non-Hodgkin Lymphoma',
+      '2021',
+      'Dr. Vance',
+      'Dr. Rostova',
+      'St. Jude Medical Center',
+      'Johns Hopkins Hospital',
+      '123 Health Ave, Baltimore MD',
+      '600 N Wolfe St, Baltimore MD',
+      '410-555-0199',
+      '410-555-0244'
     ];
     const csvContent = '\uFEFF' + [headers.join(','), sampleRow.map(escapeCSV).join(',')].join('\n');
     const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
     const url = URL.createObjectURL(blob);
     const link = document.createElement('a');
     link.setAttribute('href', url);
-    link.setAttribute('download', 'leads_import_template.csv');
+    link.setAttribute('download', 'lead_followup_import_template.csv');
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);

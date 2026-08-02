@@ -1,8 +1,9 @@
 'use client';
 
+import Link from 'next/link';
 import { useState, useEffect } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
-import { Plus, Check, Upload } from 'lucide-react';
+import { Plus, Check, Upload, FileText } from 'lucide-react';
 import { useCRMStore } from '../../../../store/crmStore';
 import { useAuthStore } from '../../../../store/authStore';
 import api from '../../../../lib/api';
@@ -159,10 +160,9 @@ export default function VendorLeadsPage() {
   const handleDeleteLead = async (leadId: string) => {
     if (!confirm('Are you sure you want to delete this lead?')) return;
     try {
-      await api.delete(`/leads/${leadId}`);
-      deleteLead(leadId);
+      await deleteLead(leadId);
       showToast('Lead deleted successfully', 'success');
-      fetchData();
+      await fetchData(true);
     } catch (e) {
       showToast('Failed to delete lead', 'error');
     }
@@ -171,10 +171,9 @@ export default function VendorLeadsPage() {
   const handleDeleteMultipleLeads = async (leadIds: string[]) => {
     if (!confirm(`Are you sure you want to delete ${leadIds.length} selected lead(s)?`)) return;
     try {
-      await Promise.all(leadIds.map((id) => api.delete(`/leads/${id}`).catch((err) => err)));
-      leadIds.forEach((id) => deleteLead(id));
+      await Promise.all(leadIds.map((id) => deleteLead(id)));
       showToast(`${leadIds.length} lead(s) deleted successfully`, 'success');
-      fetchData();
+      await fetchData(true);
     } catch (e) {
       showToast('Failed to delete selected leads', 'error');
     }
@@ -261,20 +260,13 @@ export default function VendorLeadsPage() {
             <Upload className="h-4 w-4" />
             Import CSV Leads
           </button>
-          <button
-            onClick={handleOpenSubmitModal}
+          <Link
+            href="/vendor-portal/leads/follow-up"
             className="inline-flex items-center gap-2 rounded-xl bg-blue-600 px-4 py-2.5 text-xs font-bold text-white shadow-sm hover:bg-blue-700 transition-colors active:scale-[0.98] cursor-pointer"
           >
-            <Upload className="h-4 w-4" />
-            Import CSV Leads
-          </button>
-          <button
-            onClick={handleOpenSubmitModal}
-            className="inline-flex items-center gap-2 rounded-xl bg-primary px-4 py-2.5 text-sm font-semibold text-white shadow-lg shadow-primary/25 hover:bg-primary/90 transition-all active:scale-[0.98]"
-          >
-            <Plus className="h-4 w-4" />
-            Submit Lead manually
-          </button>
+            <FileText className="h-4 w-4" />
+            New Case: Lead Follow Up
+          </Link>
         </div>
       </div>
 
@@ -293,19 +285,6 @@ export default function VendorLeadsPage() {
         sortDirection={sortDirection}
         onRequestSort={requestSort}
         isLoading={isLoading}
-        onDeleteLead={handleDeleteLead}
-        onDeleteMultipleLeads={handleDeleteMultipleLeads}
-      />
-
-      <SubmitLeadModal
-        showSubmitModal={showSubmitModal}
-        setShowSubmitModal={setShowSubmitModal}
-        formData={formData}
-        setFormData={setFormData}
-        vendorCampaignsList={vendorCampaignsList}
-        onCampaignChange={handleCampaignChange}
-        onSubmit={handleSubmit}
-        isSubmitting={isSubmitting}
       />
 
       <CsvImportModal

@@ -19,8 +19,8 @@ export async function GET(req: NextRequest, { params }: { params: Promise<{ id: 
 
     const { id } = await params;
 
-    const lead = await prisma.lead.findUnique({
-      where: { id },
+    const lead = await prisma.lead.findFirst({
+      where: { OR: [{ id }, { leadId: id }] },
       include: {
         campaign: { include: { massTort: true } },
         vendor: true,
@@ -48,7 +48,7 @@ export async function GET(req: NextRequest, { params }: { params: Promise<{ id: 
     }
 
     const auditLogs = await prisma.auditLog.findMany({
-      where: { recordId: id, tableName: 'Lead' },
+      where: { recordId: lead.id, tableName: 'Lead' },
       include: { user: true },
       orderBy: { createdAt: 'desc' },
     });
@@ -83,7 +83,9 @@ export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: 
     const { id } = await params;
     const body = await req.json();
 
-    const existingLead = await prisma.lead.findUnique({ where: { id } });
+    const existingLead = await prisma.lead.findFirst({
+      where: { OR: [{ id }, { leadId: id }] },
+    });
     if (!existingLead) {
       return NextResponse.json({ success: false, message: 'Lead not found' }, { status: 404 });
     }
@@ -105,7 +107,7 @@ export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: 
     }
 
     const updatedLead = await prisma.lead.update({
-      where: { id },
+      where: { id: existingLead.id },
       data: body,
     });
 
@@ -115,7 +117,7 @@ export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: 
         userId: user.id,
         action: 'LEAD_UPDATED',
         tableName: 'Lead',
-        recordId: id,
+        recordId: existingLead.id,
         oldValues: JSON.stringify(existingLead),
         newValues: JSON.stringify(updatedLead),
       },
@@ -125,7 +127,7 @@ export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: 
     await prisma.activityLog.create({
       data: {
         userId: user.id,
-        leadId: id,
+        leadId: existingLead.id,
         action: 'LEAD_UPDATED',
         details: `Lead status updated from ${existingLead.status} to ${updatedLead.status}`,
       },
@@ -158,12 +160,14 @@ export async function DELETE(req: NextRequest, { params }: { params: Promise<{ i
 
     const { id } = await params;
 
-    const lead = await prisma.lead.findUnique({ where: { id } });
+    const lead = await prisma.lead.findFirst({
+      where: { OR: [{ id }, { leadId: id }] },
+    });
     if (!lead) {
       return NextResponse.json({ success: false, message: 'Lead not found' }, { status: 404 });
     }
 
-    await prisma.lead.delete({ where: { id } });
+    await prisma.lead.delete({ where: { id: lead.id } });
 
     // Create Audit Log
     await prisma.auditLog.create({
@@ -171,7 +175,7 @@ export async function DELETE(req: NextRequest, { params }: { params: Promise<{ i
         userId: user.id,
         action: 'LEAD_DELETED',
         tableName: 'Lead',
-        recordId: id,
+        recordId: lead.id,
         oldValues: JSON.stringify(lead),
       },
     });
@@ -185,6 +189,7 @@ export async function DELETE(req: NextRequest, { params }: { params: Promise<{ i
     return NextResponse.json({ success: false, message: 'Internal Server Error' }, { status: 500 });
   }
 }
+
 export async function OPTIONS() {
   return new NextResponse(null, {
     status: 200,

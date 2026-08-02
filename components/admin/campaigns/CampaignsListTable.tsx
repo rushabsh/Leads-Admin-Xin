@@ -139,12 +139,13 @@ export default function CampaignsListTable({
               {paginatedCampaigns.map((camp) => (
                 <tr
                   key={camp.id}
-                  className="hover:bg-slate-50/60 transition-colors"
+                  onClick={() => onViewDetails(camp)}
+                  className="hover:bg-blue-50/50 transition-colors cursor-pointer group"
                 >
                   <td className="p-4 font-medium text-slate-900">
                     <button
-                      onClick={() => onViewDetails(camp)}
-                      className="font-bold text-blue-600 hover:underline text-left focus:outline-none"
+                      onClick={(e) => { e.stopPropagation(); onViewDetails(camp); }}
+                      className="font-bold text-blue-600 group-hover:underline text-left focus:outline-none cursor-pointer"
                     >
                       {camp.name}
                     </button>

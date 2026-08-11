@@ -28,6 +28,7 @@ export const TYPE_OPTIONS = [
   'PFAS',
   'Rideshare',
   'Roblox',
+  'LA County JDC Sexual Abuse',
   'Roundup',
   'Storm',
   'Talcum',
@@ -49,7 +50,22 @@ export const TYPE_OPTIONS = [
 export const STATUS_OPTIONS = ['New', 'In Progress', 'Sent'];
 export const SUBSTATUS_OPTIONS = ['None', 'No TCPA', 'Redo TCPA', 'TCPA OK'];
 export const GENDER_OPTIONS = ['Male', 'Female', 'Other', 'Prefer Not to Say'];
+
+export const INCIDENT_TYPE_OPTIONS = [
+  'Oral Vaginal/anal – Rape',
+  'Vaginal/anal – Penetration',
+  'Digital penetration',
+  'Grooming / Sexual Exploitation',
+  'Physical Abuse',
+  'Other'
+];
+
 export const DIAGNOSIS_OPTIONS = [
+  'Sexual Dysfunction',
+  'PTSD (Post-Traumatic Stress Disorder)',
+  'Anxiety',
+  'Depression',
+  'Other',
   'Non-Hodgkin Lymphoma',
   'Renal Carcinoma / Kidney Cancer',
   'Leukemia / Blood Cancer',
@@ -67,6 +83,33 @@ export const DIAGNOSIS_OPTIONS = [
   'Property / Environmental Loss',
   'Other Medical Condition'
 ];
+
+export const LA_JDC_FACILITIES = [
+  'MacLaren Hall',
+  'Barry J. Nidorf Juvenile Hall (Sylmar)',
+  'Los Padrinos Juvenile Hall',
+  'Central Juvenile Hall',
+  'Camp David Gonzales',
+  'Camp Jarvis',
+  'Camp Karl Holton',
+  'Camp Kenyon Scudder',
+  'Camp Kilpatrick',
+  'Camp McNair',
+  'Camp Onizuka',
+  'Camp Resnick',
+  'Camp Scobee',
+  'Camp Scott',
+  'Camp Smith',
+  'Challenger Camps',
+  'Los Prietos Boys Camp',
+  'Dorothy F. Kirby Center',
+  'Fred C. Nelles Youth Correctional Facility',
+  'LAC Afflerbaugh-Paige Camp',
+  'Southern Youth Correctional Reception Center & Clinic',
+  'Other LA County Facility'
+];
+
+export const ROBLOX_EXCLUDED_STATES = ['CA', 'FL', 'CO', 'LA'];
 
 // ==========================================
 // FORM DATA INTERFACE & INITIAL STATE
@@ -111,7 +154,8 @@ export interface LeadFollowUpFormData {
   victimDOB: string;
   victimDOD: string;
 
-  // 4. Diagnosis Information
+  // 4. Incident & Diagnosis Information
+  incidentType: string;
   diagnosis: string;
   diagnosisYear: string;
   diagnosingDoctorName: string;
@@ -122,6 +166,36 @@ export interface LeadFollowUpFormData {
   treatingFacilityAddress: string;
   diagnosingFacilityPhone: string;
   treatingFacilityPhone: string;
+
+  // 5. Campaign Screening & Qualification Criteria
+  // Roblox specific
+  robloxGamertag: string;
+  robloxAccountAccess: string;
+  robloxEvidenceTypes: string;
+  robloxGroomingDoctorName: string;
+
+  // LA County JDC specific
+  jdcFacility: string;
+  jdcAbuserInfo: string;
+  jdcAbuserRole: string;
+  jdcWitnessAvailable: string;
+  jdcInmateOnInmate: string;
+
+  // Rideshare (Uber/Lyft) specific
+  rideshareProvider: string;
+  rideshareAssaulted: string;
+  rideshareProofOfRide: string;
+  rideshareDriverName: string;
+  rideshareIncidentAddress: string;
+  rideshareIncidentDate: string;
+  rideshareNarrative: string;
+  rideshareReportedTo: string;
+  rideshareSymptomsDate: string;
+  rideshareDiagnosisTestDate: string;
+  rideshareTreatmentDate: string;
+  legalRepresentation: string;
+  felonyConviction: string;
+  hasMedicalRecords: string;
 }
 
 export const DEFAULT_LEAD_FOLLOW_UP_FORM_DATA: LeadFollowUpFormData = {
@@ -161,7 +235,8 @@ export const DEFAULT_LEAD_FOLLOW_UP_FORM_DATA: LeadFollowUpFormData = {
   victimDOB: '',
   victimDOD: '',
 
-  diagnosis: 'Non-Hodgkin Lymphoma',
+  incidentType: 'Oral Vaginal/anal – Rape',
+  diagnosis: 'PTSD (Post-Traumatic Stress Disorder)',
   diagnosisYear: '',
   diagnosingDoctorName: '',
   treatingDoctorName: '',
@@ -171,6 +246,32 @@ export const DEFAULT_LEAD_FOLLOW_UP_FORM_DATA: LeadFollowUpFormData = {
   treatingFacilityAddress: '',
   diagnosingFacilityPhone: '',
   treatingFacilityPhone: '',
+
+  robloxGamertag: '',
+  robloxAccountAccess: 'Yes',
+  robloxEvidenceTypes: '',
+  robloxGroomingDoctorName: '',
+
+  jdcFacility: 'MacLaren Hall',
+  jdcAbuserInfo: '',
+  jdcAbuserRole: '',
+  jdcWitnessAvailable: 'Yes',
+  jdcInmateOnInmate: 'No',
+
+  rideshareProvider: 'Uber',
+  rideshareAssaulted: 'Yes',
+  rideshareProofOfRide: 'Yes',
+  rideshareDriverName: '',
+  rideshareIncidentAddress: '',
+  rideshareIncidentDate: '',
+  rideshareNarrative: '',
+  rideshareReportedTo: 'Parents',
+  rideshareSymptomsDate: '',
+  rideshareDiagnosisTestDate: '',
+  rideshareTreatmentDate: '',
+  legalRepresentation: 'No',
+  felonyConviction: 'No',
+  hasMedicalRecords: 'Yes',
 };
 
 // ==========================================
@@ -417,6 +518,7 @@ export default function NewCaseLeadFollowUpForm({
         victimDOD: data.victimDOD,
       },
       diagnosisInfo: {
+        incidentType: data.incidentType,
         diagnosis: data.diagnosis,
         diagnosisYear: data.diagnosisYear,
         diagnosingDoctorName: data.diagnosingDoctorName,
@@ -427,6 +529,34 @@ export default function NewCaseLeadFollowUpForm({
         treatingFacilityAddress: data.treatingFacilityAddress,
         diagnosingFacilityPhone: data.diagnosingFacilityPhone,
         treatingFacilityPhone: data.treatingFacilityPhone,
+      },
+      screeningCriteria: {
+        // Roblox
+        robloxGamertag: data.robloxGamertag,
+        robloxAccountAccess: data.robloxAccountAccess,
+        robloxEvidenceTypes: data.robloxEvidenceTypes,
+        robloxGroomingDoctorName: data.robloxGroomingDoctorName,
+        // LA JDC
+        jdcFacility: data.jdcFacility,
+        jdcAbuserInfo: data.jdcAbuserInfo,
+        jdcAbuserRole: data.jdcAbuserRole,
+        jdcWitnessAvailable: data.jdcWitnessAvailable,
+        jdcInmateOnInmate: data.jdcInmateOnInmate,
+        // Rideshare
+        rideshareProvider: data.rideshareProvider,
+        rideshareAssaulted: data.rideshareAssaulted,
+        rideshareProofOfRide: data.rideshareProofOfRide,
+        rideshareDriverName: data.rideshareDriverName,
+        rideshareIncidentAddress: data.rideshareIncidentAddress,
+        rideshareIncidentDate: data.rideshareIncidentDate,
+        rideshareNarrative: data.rideshareNarrative,
+        rideshareReportedTo: data.rideshareReportedTo,
+        rideshareSymptomsDate: data.rideshareSymptomsDate,
+        rideshareDiagnosisTestDate: data.rideshareDiagnosisTestDate,
+        rideshareTreatmentDate: data.rideshareTreatmentDate,
+        legalRepresentation: data.legalRepresentation,
+        felonyConviction: data.felonyConviction,
+        hasMedicalRecords: data.hasMedicalRecords
       }
     }, null, 2);
 
@@ -467,11 +597,31 @@ export default function NewCaseLeadFollowUpForm({
           createdLead = res.data.lead;
         }
       } catch (apiErr) {
-        console.warn('Direct API POST lead creation warning, falling back to addLead:', apiErr);
+        console.warn('Direct authenticated API POST lead creation failed, attempting public submit fallback:', apiErr);
+        try {
+          const publicRes = await fetch('/api/public/submit-lead', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              vendorToken: activeVendorId,
+              vendorId: activeVendorId,
+              vendorName: activeVendorName,
+              ...formData
+            })
+          });
+          const publicData = await publicRes.json();
+          if (publicData.success && publicData.data) {
+            createdLead = publicData.data;
+          }
+        } catch (pubErr) {
+          console.warn('Public submit lead fallback error:', pubErr);
+        }
       }
 
-      await addLead(createdLead || payload);
-      await fetchData(true);
+      try {
+        await addLead(createdLead || payload);
+        await fetchData(true);
+      } catch (_) {}
 
       showToast('"New Case: Lead Follow Up" saved to database successfully!', 'success');
 
@@ -479,8 +629,12 @@ export default function NewCaseLeadFollowUpForm({
         onSuccess(createdLead || payload);
       } else {
         setTimeout(() => {
-          router.push('/vendor-portal/leads');
-        }, 1000);
+          if (window.location.pathname.startsWith('/forms')) {
+            window.location.reload();
+          } else {
+            router.push('/vendor-portal/leads');
+          }
+        }, 1200);
       }
     } catch (err: any) {
       console.error('Error submitting lead follow up form:', err);
@@ -575,7 +729,8 @@ export default function NewCaseLeadFollowUpForm({
       victimDOB: row.victimDOB || row['Victim DOB'] || '',
       victimDOD: row.victimDOD || row['Victim DOD'] || '',
 
-      diagnosis: row.diagnosis || row['Diagnosis'] || 'Non-Hodgkin Lymphoma',
+      incidentType: row.incidentType || row['Incident Type'] || 'Oral Vaginal/anal – Rape',
+      diagnosis: row.diagnosis || row['Diagnosis'] || 'PTSD (Post-Traumatic Stress Disorder)',
       diagnosisYear: row.diagnosisYear || row['Diagnosis Year'] || '',
       diagnosingDoctorName: row.diagnosingDoctorName || row["Diagnosing Doctor's Name"] || '',
       treatingDoctorName: row.treatingDoctorName || row["Treating Doctor's Name"] || '',
@@ -585,6 +740,32 @@ export default function NewCaseLeadFollowUpForm({
       treatingFacilityAddress: row.treatingFacilityAddress || row['Treating Facility Address'] || '',
       diagnosingFacilityPhone: row.diagnosingFacilityPhone || row['Diagnosing Facility Phone Number'] || '',
       treatingFacilityPhone: row.treatingFacilityPhone || row['Treating Facility Phone Number'] || '',
+
+      robloxGamertag: row.robloxGamertag || row['Roblox Gamertag'] || '',
+      robloxAccountAccess: row.robloxAccountAccess || row['Roblox Account Access'] || 'Yes',
+      robloxEvidenceTypes: row.robloxEvidenceTypes || row['Roblox Evidence Types'] || '',
+      robloxGroomingDoctorName: row.robloxGroomingDoctorName || row['Roblox Grooming Doctor Name'] || '',
+
+      jdcFacility: row.jdcFacility || row['JDC Facility'] || 'MacLaren Hall',
+      jdcAbuserInfo: row.jdcAbuserInfo || row['JDC Abuser Info'] || '',
+      jdcAbuserRole: row.jdcAbuserRole || row['JDC Abuser Role'] || '',
+      jdcWitnessAvailable: row.jdcWitnessAvailable || row['JDC Witness Available'] || 'Yes',
+      jdcInmateOnInmate: row.jdcInmateOnInmate || row['JDC Inmate On Inmate'] || 'No',
+
+      rideshareProvider: row.rideshareProvider || row['Rideshare Provider'] || 'Uber',
+      rideshareAssaulted: row.rideshareAssaulted || row['Rideshare Assaulted'] || 'Yes',
+      rideshareProofOfRide: row.rideshareProofOfRide || row['Rideshare Proof Of Ride'] || 'Yes',
+      rideshareDriverName: row.rideshareDriverName || row['Rideshare Driver Name'] || '',
+      rideshareIncidentAddress: row.rideshareIncidentAddress || row['Rideshare Incident Address'] || '',
+      rideshareIncidentDate: row.rideshareIncidentDate || row['Rideshare Incident Date'] || '',
+      rideshareNarrative: row.rideshareNarrative || row['Rideshare Narrative'] || '',
+      rideshareReportedTo: row.rideshareReportedTo || row['Rideshare Reported To'] || 'Parents',
+      rideshareSymptomsDate: row.rideshareSymptomsDate || row['Rideshare Symptoms Date'] || '',
+      rideshareDiagnosisTestDate: row.rideshareDiagnosisTestDate || row['Rideshare Diagnosis Test Date'] || '',
+      rideshareTreatmentDate: row.rideshareTreatmentDate || row['Rideshare Treatment Date'] || '',
+      legalRepresentation: row.legalRepresentation || row['Legal Representation'] || 'No',
+      felonyConviction: row.felonyConviction || row['Felony Conviction'] || 'No',
+      hasMedicalRecords: row.hasMedicalRecords || row['Has Medical Records'] || 'Yes',
     });
 
     setShowCsvModal(false);
@@ -636,7 +817,8 @@ export default function NewCaseLeadFollowUpForm({
         victimDOB: row.victimDOB || '',
         victimDOD: row.victimDOD || '',
 
-        diagnosis: row.diagnosis || 'Non-Hodgkin Lymphoma',
+        incidentType: row.incidentType || row['Incident Type'] || 'Oral Vaginal/anal – Rape',
+        diagnosis: row.diagnosis || row['Diagnosis'] || 'PTSD (Post-Traumatic Stress Disorder)',
         diagnosisYear: row.diagnosisYear || '',
         diagnosingDoctorName: row.diagnosingDoctorName || '',
         treatingDoctorName: row.treatingDoctorName || '',
@@ -646,6 +828,32 @@ export default function NewCaseLeadFollowUpForm({
         treatingFacilityAddress: row.treatingFacilityAddress || '',
         diagnosingFacilityPhone: row.diagnosingFacilityPhone || '',
         treatingFacilityPhone: row.treatingFacilityPhone || '',
+
+        robloxGamertag: row.robloxGamertag || row['Roblox Gamertag'] || '',
+        robloxAccountAccess: row.robloxAccountAccess || row['Roblox Account Access'] || 'Yes',
+        robloxEvidenceTypes: row.robloxEvidenceTypes || row['Roblox Evidence Types'] || '',
+        robloxGroomingDoctorName: row.robloxGroomingDoctorName || row['Roblox Grooming Doctor Name'] || '',
+
+        jdcFacility: row.jdcFacility || row['JDC Facility'] || 'MacLaren Hall',
+        jdcAbuserInfo: row.jdcAbuserInfo || row['JDC Abuser Info'] || '',
+        jdcAbuserRole: row.jdcAbuserRole || row['JDC Abuser Role'] || '',
+        jdcWitnessAvailable: row.jdcWitnessAvailable || row['JDC Witness Available'] || 'Yes',
+        jdcInmateOnInmate: row.jdcInmateOnInmate || row['JDC Inmate On Inmate'] || 'No',
+
+        rideshareProvider: row.rideshareProvider || row['Rideshare Provider'] || 'Uber',
+        rideshareAssaulted: row.rideshareAssaulted || row['Rideshare Assaulted'] || 'Yes',
+        rideshareProofOfRide: row.rideshareProofOfRide || row['Rideshare Proof Of Ride'] || 'Yes',
+        rideshareDriverName: row.rideshareDriverName || row['Rideshare Driver Name'] || '',
+        rideshareIncidentAddress: row.rideshareIncidentAddress || row['Rideshare Incident Address'] || '',
+        rideshareIncidentDate: row.rideshareIncidentDate || row['Rideshare Incident Date'] || '',
+        rideshareNarrative: row.rideshareNarrative || row['Rideshare Narrative'] || '',
+        rideshareReportedTo: row.rideshareReportedTo || row['Rideshare Reported To'] || 'Parents',
+        rideshareSymptomsDate: row.rideshareSymptomsDate || row['Rideshare Symptoms Date'] || '',
+        rideshareDiagnosisTestDate: row.rideshareDiagnosisTestDate || row['Rideshare Diagnosis Test Date'] || '',
+        rideshareTreatmentDate: row.rideshareTreatmentDate || row['Rideshare Treatment Date'] || '',
+        legalRepresentation: row.legalRepresentation || row['Legal Representation'] || 'No',
+        felonyConviction: row.felonyConviction || row['Felony Conviction'] || 'No',
+        hasMedicalRecords: row.hasMedicalRecords || row['Has Medical Records'] || 'Yes',
       };
 
       try {
@@ -1191,8 +1399,16 @@ export default function NewCaseLeadFollowUpForm({
           </FormSectionCard>
 
           {/* SECTION 4: DIAGNOSIS INFORMATION */}
-          <FormSectionCard number={4} title="Diagnosis Information" badge="Medical Record" colorTheme="emerald">
+          <FormSectionCard number={4} title="Diagnosis & Incident Information" badge="Medical Record" colorTheme="emerald">
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <FormSelect
+                label="Which Incident Occurred"
+                name="incidentType"
+                value={formData.incidentType}
+                onChange={handleInputChange}
+                options={INCIDENT_TYPE_OPTIONS}
+                required
+              />
               <FormSelect
                 label="Diagnosis"
                 name="diagnosis"
@@ -1266,6 +1482,239 @@ export default function NewCaseLeadFollowUpForm({
                 onChange={handleInputChange}
                 placeholder="(555) 000-0000"
               />
+            </div>
+          </FormSectionCard>
+
+          {/* SECTION 5: CAMPAIGN SCREENING & QUALIFICATION CRITERIA */}
+          <FormSectionCard number={5} title="Campaign Qualification Criteria" badge="Screening Rules" colorTheme="indigo">
+            <div className="space-y-6">
+              {/* 1. ROBLOX CAMPAIGN SCREENING */}
+              {(formData.type === 'Roblox' || formData.type === 'Mass Tort - General') && (
+                <div className="rounded-xl border border-purple-200 bg-purple-50/40 p-4 space-y-4">
+                  <div className="flex items-center justify-between border-b border-purple-100 pb-2">
+                    <span className="text-xs font-bold text-purple-950 uppercase tracking-wider flex items-center gap-2">
+                      <Sparkles className="h-4 w-4 text-purple-600" /> Roblox Qualification Criteria
+                    </span>
+                    <span className="text-[10px] font-mono font-bold bg-purple-100 text-purple-700 px-2 py-0.5 rounded-md">
+                      Roblox Screening Active
+                    </span>
+                  </div>
+
+                  {ROBLOX_EXCLUDED_STATES.includes(formData.state) && (
+                    <div className="rounded-lg bg-rose-50 border border-rose-200 p-3 text-xs font-semibold text-rose-700 flex items-center gap-2">
+                      <AlertCircle className="h-4 w-4 text-rose-600 shrink-0" />
+                      <span>Warning: State {formData.state} is excluded from Roblox Campaign (No CA, FL, CO, LA leads accepted).</span>
+                    </div>
+                  )}
+
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <FormInput
+                      label="Victim's Roblox Gamertag (Username)"
+                      name="robloxGamertag"
+                      value={formData.robloxGamertag}
+                      onChange={handleInputChange}
+                      placeholder="e.g. RobloxUser123"
+                      required={formData.type === 'Roblox'}
+                    />
+                    <FormSelect
+                      label="Roblox Account Access / Data Preserved?"
+                      name="robloxAccountAccess"
+                      value={formData.robloxAccountAccess}
+                      onChange={handleInputChange}
+                      options={['Yes - Full Access', 'No - Lost Access', 'Data Preserved by Parent']}
+                    />
+                    <FormInput
+                      label="Evidence Available (Chats, Screenshots, Reports)"
+                      name="robloxEvidenceTypes"
+                      value={formData.robloxEvidenceTypes}
+                      onChange={handleInputChange}
+                      placeholder="e.g. Discord chat logs, FBI Report"
+                    />
+                    <FormInput
+                      label="Grooming Doctor / Therapist Name (if applicable)"
+                      name="robloxGroomingDoctorName"
+                      value={formData.robloxGroomingDoctorName}
+                      onChange={handleInputChange}
+                      placeholder="Dr. Name (PTSD / Therapy)"
+                    />
+                  </div>
+                </div>
+              )}
+
+              {/* 2. LA COUNTY JDC SEXUAL ABUSE SCREENING */}
+              {(formData.type === 'LA County JDC Sexual Abuse' || formData.type === 'Mass Tort - General') && (
+                <div className="rounded-xl border border-blue-200 bg-blue-50/40 p-4 space-y-4">
+                  <div className="flex items-center justify-between border-b border-blue-100 pb-2">
+                    <span className="text-xs font-bold text-blue-950 uppercase tracking-wider flex items-center gap-2">
+                      <Building2 className="h-4 w-4 text-blue-600" /> LA County JDC Screening Criteria
+                    </span>
+                    <span className="text-[10px] font-mono font-bold bg-blue-100 text-blue-700 px-2 py-0.5 rounded-md">
+                      21 LA Facilities Check
+                    </span>
+                  </div>
+
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <FormSelect
+                      label="LA County Facility (Qualifying Facility)"
+                      name="jdcFacility"
+                      value={formData.jdcFacility}
+                      onChange={handleInputChange}
+                      options={LA_JDC_FACILITIES}
+                      required={formData.type === 'LA County JDC Sexual Abuse'}
+                    />
+                    <FormSelect
+                      label="Witnesses / Family Members Available? (MANDATORY)"
+                      name="jdcWitnessAvailable"
+                      value={formData.jdcWitnessAvailable}
+                      onChange={handleInputChange}
+                      options={['Yes - Family/Witnesses Available', 'No Witnesses Available']}
+                    />
+                    <FormInput
+                      label="Abuser Name / Nickname / Physical Description"
+                      name="jdcAbuserInfo"
+                      value={formData.jdcAbuserInfo}
+                      onChange={handleInputChange}
+                      placeholder="Abuser identity details"
+                    />
+                    <FormInput
+                      label="Abuser Institutional Role / Position"
+                      name="jdcAbuserRole"
+                      value={formData.jdcAbuserRole}
+                      onChange={handleInputChange}
+                      placeholder="e.g. Guard, Staff Member, Counselor"
+                    />
+                    <FormSelect
+                      label="Was Abuser an Inmate/Detainee?"
+                      name="jdcInmateOnInmate"
+                      value={formData.jdcInmateOnInmate}
+                      onChange={handleInputChange}
+                      options={['No - Staff/Guard (Eligible)', 'Yes - Inmate-on-Inmate (Disqualified)']}
+                    />
+                  </div>
+                </div>
+              )}
+
+              {/* 3. RIDESHARE (UBER/LYFT) QUESTIONNAIRE */}
+              {(formData.type === 'Rideshare' || formData.type === 'Mass Tort - General') && (
+                <div className="rounded-xl border border-emerald-200 bg-emerald-50/40 p-4 space-y-4">
+                  <div className="flex items-center justify-between border-b border-emerald-100 pb-2">
+                    <span className="text-xs font-bold text-emerald-950 uppercase tracking-wider flex items-center gap-2">
+                      <Scale className="h-4 w-4 text-emerald-600" /> Rideshare (Uber / Lyft) Screening
+                    </span>
+                    <span className="text-[10px] font-mono font-bold bg-emerald-100 text-emerald-700 px-2 py-0.5 rounded-md">
+                      Uber / Lyft Case Questions
+                    </span>
+                  </div>
+
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <FormSelect
+                      label="Did incident happen in UBER or LYFT?"
+                      name="rideshareProvider"
+                      value={formData.rideshareProvider}
+                      onChange={handleInputChange}
+                      options={['Uber', 'Lyft', 'Both / Other Rideshare']}
+                    />
+                    <FormSelect
+                      label="Physically Assaulted (sexual in nature)?"
+                      name="rideshareAssaulted"
+                      value={formData.rideshareAssaulted}
+                      onChange={handleInputChange}
+                      options={['Yes', 'No']}
+                    />
+                    <FormSelect
+                      label="Do you have proof of ride?"
+                      name="rideshareProofOfRide"
+                      value={formData.rideshareProofOfRide}
+                      onChange={handleInputChange}
+                      options={['Yes', 'No']}
+                    />
+                    <FormInput
+                      label="Driver Name"
+                      name="rideshareDriverName"
+                      value={formData.rideshareDriverName}
+                      onChange={handleInputChange}
+                      placeholder="Rideshare driver name"
+                    />
+                    <FormInput
+                      label="Incident Address / Location"
+                      name="rideshareIncidentAddress"
+                      value={formData.rideshareIncidentAddress}
+                      onChange={handleInputChange}
+                      placeholder="Address or pickup/dropoff area"
+                    />
+                    <FormInput
+                      label="Date of Incident"
+                      type="date"
+                      name="rideshareIncidentDate"
+                      value={formData.rideshareIncidentDate}
+                      onChange={handleInputChange}
+                    />
+                    <FormSelect
+                      label="Did you report this incident to anyone?"
+                      name="rideshareReportedTo"
+                      value={formData.rideshareReportedTo}
+                      onChange={handleInputChange}
+                      options={['Parents', 'Sibling', 'Relatives', 'Friends', 'Police Report Filed', 'None']}
+                    />
+                    <FormInput
+                      label="Symptoms Started Date (Emotional / PTSD)"
+                      type="date"
+                      name="rideshareSymptomsDate"
+                      value={formData.rideshareSymptomsDate}
+                      onChange={handleInputChange}
+                    />
+                    <FormInput
+                      label="Diagnosis Confirmation Date"
+                      type="date"
+                      name="rideshareDiagnosisTestDate"
+                      value={formData.rideshareDiagnosisTestDate}
+                      onChange={handleInputChange}
+                    />
+                    <FormInput
+                      label="Treatment Date"
+                      type="date"
+                      name="rideshareTreatmentDate"
+                      value={formData.rideshareTreatmentDate}
+                      onChange={handleInputChange}
+                    />
+                    <FormSelect
+                      label="Legal Representation with any law firm?"
+                      name="legalRepresentation"
+                      value={formData.legalRepresentation}
+                      onChange={handleInputChange}
+                      options={['No', 'Yes - Currently Represented']}
+                    />
+                    <FormSelect
+                      label="Felony / Crime Conviction?"
+                      name="felonyConviction"
+                      value={formData.felonyConviction}
+                      onChange={handleInputChange}
+                      options={['No', 'Yes - Felony Conviction']}
+                    />
+                    <FormSelect
+                      label="Do you have Medical Records?"
+                      name="hasMedicalRecords"
+                      value={formData.hasMedicalRecords}
+                      onChange={handleInputChange}
+                      options={['Yes', 'No']}
+                    />
+                  </div>
+
+                  <div>
+                    <label className="text-xs font-semibold text-slate-700 block mb-1">
+                      Can you describe the whole Incident what happened?
+                    </label>
+                    <textarea
+                      name="rideshareNarrative"
+                      value={formData.rideshareNarrative}
+                      onChange={handleInputChange}
+                      rows={3}
+                      placeholder="Describe incident details..."
+                      className="w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-xs text-slate-900 placeholder:text-slate-400 focus:border-blue-600 focus:ring-2 focus:ring-blue-100 outline-none shadow-xs transition-all"
+                    />
+                  </div>
+                </div>
+              )}
             </div>
           </FormSectionCard>
         </div>

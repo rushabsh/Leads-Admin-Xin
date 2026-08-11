@@ -3,7 +3,7 @@
 import Link from 'next/link';
 import { useState, useEffect } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
-import { Plus, Check, Upload, FileText } from 'lucide-react';
+import { Plus, Check, Upload, FileText, Share2 } from 'lucide-react';
 import { useCRMStore } from '../../../../store/crmStore';
 import { useAuthStore } from '../../../../store/authStore';
 import api from '../../../../lib/api';
@@ -253,6 +253,17 @@ export default function VendorLeadsPage() {
           </p>
         </div>
         <div className="flex flex-wrap items-center gap-3">
+          <button
+            onClick={() => {
+              const formUrl = `${window.location.origin}/forms/${vendorId}`;
+              navigator.clipboard.writeText(formUrl);
+              showToast('Public Employee Lead Form Link copied to clipboard! Share this link with your employees.', 'success');
+            }}
+            className="inline-flex items-center gap-2 rounded-xl border border-indigo-200 bg-indigo-50 px-4 py-2.5 text-xs font-bold text-indigo-700 shadow-xs hover:bg-indigo-100 transition-colors active:scale-[0.98] cursor-pointer"
+          >
+            <Share2 className="h-4 w-4 text-indigo-600" />
+            Share Employee Form Link
+          </button>
           <button
             onClick={() => { setShowImportModal(true); setCsvStep('upload'); }}
             className="inline-flex items-center gap-2 rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-xs font-bold text-slate-700 shadow-xs hover:border-blue-600 hover:bg-blue-50 hover:text-blue-600 transition-colors active:scale-[0.98] cursor-pointer"

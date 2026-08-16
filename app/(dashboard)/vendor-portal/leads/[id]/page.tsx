@@ -148,7 +148,7 @@ export default function VendorLeadDetailPage({ params }: PageProps) {
           const parsed = JSON.parse(saved);
           setFeedItems(parsed);
           return;
-        } catch (_) {}
+        } catch (_) { }
       }
 
       // Default mock feed if none exists
@@ -355,7 +355,7 @@ export default function VendorLeadDetailPage({ params }: PageProps) {
   if (lead?.caseDetails && typeof lead.caseDetails === 'string' && lead.caseDetails.trim().startsWith('{')) {
     try {
       parsedDetails = JSON.parse(lead.caseDetails);
-    } catch (_) {}
+    } catch (_) { }
   }
 
   const parsedLeadInfo = parsedDetails?.leadInfo || {};
@@ -860,38 +860,35 @@ export default function VendorLeadDetailPage({ params }: PageProps) {
         {/* RIGHT COLUMN (1 SPAN) - 7. ACTIVITY & FEED PANEL (SIDEBAR) */}
         <div className="space-y-6">
           <div className="rounded-2xl border border-slate-200 bg-white shadow-sm overflow-hidden sticky top-6">
-            
+
             {/* Header Tabs: Post, Details, Related */}
             <div className="border-b border-slate-100 bg-slate-50/50 p-3">
               <div className="flex items-center justify-between gap-2">
                 <div className="flex items-center gap-1 rounded-xl bg-slate-100 p-1 border border-slate-200 w-full">
                   <button
                     onClick={() => setActiveRightTab('Post')}
-                    className={`flex-1 rounded-lg py-1.5 text-xs font-bold transition-all cursor-pointer ${
-                      activeRightTab === 'Post'
+                    className={`flex-1 rounded-lg py-1.5 text-xs font-bold transition-all cursor-pointer ${activeRightTab === 'Post'
                         ? 'bg-white text-slate-900 shadow-xs'
                         : 'text-slate-500 hover:text-slate-900'
-                    }`}
+                      }`}
                   >
                     Post (Feed)
                   </button>
                   <button
                     onClick={() => setActiveRightTab('Details')}
-                    className={`flex-1 rounded-lg py-1.5 text-xs font-bold transition-all cursor-pointer ${
-                      activeRightTab === 'Details'
+                    className={`flex-1 rounded-lg py-1.5 text-xs font-bold transition-all cursor-pointer ${activeRightTab === 'Details'
                         ? 'bg-white text-slate-900 shadow-xs'
                         : 'text-slate-500 hover:text-slate-900'
-                    }`}
+                      }`}
                   >
                     Details
                   </button>
                   <button
                     onClick={() => setActiveRightTab('Related')}
-                    className={`flex-1 rounded-lg py-1.5 text-xs font-bold transition-all cursor-pointer ${
-                      activeRightTab === 'Related'
+                    className={`flex-1 rounded-lg py-1.5 text-xs font-bold transition-all cursor-pointer ${activeRightTab === 'Related'
                         ? 'bg-white text-slate-900 shadow-xs'
                         : 'text-slate-500 hover:text-slate-900'
-                    }`}
+                      }`}
                   >
                     Related
                   </button>
@@ -1078,9 +1075,8 @@ export default function VendorLeadDetailPage({ params }: PageProps) {
                             <div className="pl-10 flex items-center justify-between pt-1 border-t border-slate-200">
                               <button
                                 onClick={() => handleToggleLike(item.id)}
-                                className={`inline-flex items-center gap-1 text-xs font-semibold ${
-                                  item.isLiked ? 'text-blue-600 font-bold' : 'text-slate-400 hover:text-slate-700'
-                                }`}
+                                className={`inline-flex items-center gap-1 text-xs font-semibold ${item.isLiked ? 'text-blue-600 font-bold' : 'text-slate-400 hover:text-slate-700'
+                                  }`}
                               >
                                 <ThumbsUp className="h-3 w-3" />
                                 {item.likes} {item.likes === 1 ? 'Like' : 'Likes'}

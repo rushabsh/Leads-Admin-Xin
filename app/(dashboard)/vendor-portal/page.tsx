@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useMemo } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
 import {
@@ -10,6 +10,7 @@ import {
 import dynamic from 'next/dynamic';
 import { useCRMStore } from '../../../store/crmStore';
 import { useAuthStore } from '../../../store/authStore';
+import VendorPortalLeadsTable from '../../../components/vendor-portal/leads/VendorPortalLeadsTable';
 
 // Dynamic import of charts to lazy load recharts library
 const VendorCharts = dynamic(() => import('../../../components/VendorCharts'), {
@@ -33,11 +34,20 @@ export default function VendorPortal() {
     fetchDashboard,
     fetchLeads,
     fetchCampaigns,
-    fetchInvoices
+    fetchInvoices,
+    deleteLead
   } = useCRMStore();
 
   const campaigns = rawCampaigns as any[];
   const invoices = rawInvoices as any[];
+
+  // Table state for Recent Leads Pushed section
+  const [searchTerm, setSearchTerm] = useState('');
+  const [statusFilter, setStatusFilter] = useState('');
+  const [sortField, setSortField] = useState<string>('createdAt');
+  const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('desc');
+  const [page, setPage] = useState(1);
+  const itemsPerPage = 8;
 
   // Load only what is needed for Vendor Portal
   useEffect(() => {
@@ -114,6 +124,72 @@ export default function VendorPortal() {
       Leads: dateMap[key]
     })).slice(-7); // last 7 points
   }, [vendorLeads]);
+
+  // Sorting request handler
+  const requestSort = (field: string) => {
+    let direction: 'asc' | 'desc' = 'asc';
+    if (sortField === field && sortDirection === 'asc') {
+      direction = 'desc';
+    }
+    setSortField(field);
+    setSortDirection(direction);
+  };
+
+  // Search & Status filters
+  const filteredLeads = useMemo(() => {
+    return vendorLeads.filter(lead => {
+      const matchSearch =
+        `${lead.firstName || ''} ${lead.lastName || ''}`.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        (lead.leadId && lead.leadId.toLowerCase().includes(searchTerm.toLowerCase())) ||
+        (lead.email && lead.email.toLowerCase().includes(searchTerm.toLowerCase())) ||
+        (lead.phone && lead.phone.includes(searchTerm));
+      const matchStatus = statusFilter === '' || lead.status === statusFilter;
+      return matchSearch && matchStatus;
+    });
+  }, [vendorLeads, searchTerm, statusFilter]);
+
+  // Sorted leads
+  const sortedLeads = useMemo(() => {
+    return [...filteredLeads].sort((a: any, b: any) => {
+      const valA = a[sortField];
+      const valB = b[sortField];
+
+      if (valA === undefined || valA === null) return 1;
+      if (valB === undefined || valB === null) return -1;
+
+      if (typeof valA === 'string') {
+        return sortDirection === 'asc' ? valA.localeCompare(valB) : valB.localeCompare(valA);
+      } else {
+        return sortDirection === 'asc' ? Number(valA) - Number(valB) : Number(valB) - Number(valA);
+      }
+    });
+  }, [filteredLeads, sortField, sortDirection]);
+
+  // Pagination
+  const totalPages = Math.ceil(sortedLeads.length / itemsPerPage) || 1;
+  const paginatedLeads = useMemo(() => {
+    return sortedLeads.slice((page - 1) * itemsPerPage, page * itemsPerPage);
+  }, [sortedLeads, page, itemsPerPage]);
+
+  const handleDeleteLead = async (leadId: string) => {
+    if (!confirm('Are you sure you want to delete this lead?')) return;
+    try {
+      await deleteLead(leadId);
+      await fetchLeads(true);
+    } catch (e) {
+      console.error('Failed to delete lead', e);
+    }
+  };
+
+  const handleDeleteMultipleLeads = async (leadIds: string[]) => {
+    if (!confirm(`Are you sure you want to delete ${leadIds.length} selected lead(s)?`)) return;
+    try {
+      await Promise.all(leadIds.map((id) => deleteLead(id)));
+      await fetchLeads(true);
+    } catch (e) {
+      console.error('Failed to delete selected leads', e);
+    }
+  };
 
   const isStatsLoading = isLoadingDashboard && !dashboardStats;
 
@@ -251,57 +327,37 @@ export default function VendorPortal() {
         </div>
       </div>
 
-      {/* Recent Leads Ingested */}
-      <div className="rounded-2xl border border-slate-200 bg-white shadow-sm overflow-hidden">
-        <div className="flex items-center justify-between border-b border-slate-100 p-5">
-          <h3 className="text-md font-bold text-slate-900">Recent Leads Pushed</h3>
-          <span className="text-xs text-slate-400">Showing last 5 submissions</span>
+      {/* Recent Leads Pushed */}
+      <div className="space-y-4">
+        <div className="flex items-center justify-between">
+          <h3 className="text-lg font-bold text-slate-900">Recent Leads Pushed</h3>
+          <Link
+            href="/vendor-portal/leads"
+            className="text-xs font-semibold text-blue-600 hover:underline flex items-center gap-1"
+          >
+            View all
+            <ChevronRight className="h-3 w-3" />
+          </Link>
         </div>
-        <div className="overflow-x-auto">
-          {vendorLeads.length === 0 ? (
-            <div className="p-8 text-center text-slate-400 text-sm">No leads pushed yet.</div>
-          ) : (
-            <table className="w-full border-collapse text-left text-sm">
-              <thead>
-                <tr className="border-b border-slate-200 bg-slate-50 text-slate-500">
-                  <th className="p-4 font-semibold uppercase tracking-wider text-xs">Lead ID</th>
-                  <th className="p-4 font-semibold uppercase tracking-wider text-xs">Contact Name</th>
-                  <th className="p-4 font-semibold uppercase tracking-wider text-xs">Email</th>
-                  <th className="p-4 font-semibold uppercase tracking-wider text-xs">State</th>
-                  <th className="p-4 font-semibold uppercase tracking-wider text-xs">Campaign</th>
-                  <th className="p-4 font-semibold uppercase tracking-wider text-xs">Status</th>
-                  <th className="p-4 font-semibold uppercase tracking-wider text-xs">Submitted</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-slate-100">
-                {vendorLeads.slice(0, 5).map((lead) => (
-                  <tr key={lead.id} className="hover:bg-slate-50/60 transition-colors">
-                    <td className="p-4 font-mono font-bold text-blue-600">{lead.leadId}</td>
-                    <td className="p-4 font-medium text-slate-900">
-                      {lead.firstName} {lead.lastName}
-                    </td>
-                    <td className="p-4 text-slate-600">{lead.email}</td>
-                    <td className="p-4 font-medium text-slate-800">{lead.state}</td>
-                    <td className="p-4 text-xs text-slate-500">{lead.campaignName || 'General campaign'}</td>
-                    <td className="p-4">
-                      <span className={`inline-flex items-center gap-1.5 rounded-full px-2.5 py-0.5 text-xs font-semibold ${['QUALIFIED', 'SIGNED_RETAINER'].includes(lead.status)
-                        ? 'bg-emerald-50 text-emerald-700 border border-emerald-200'
-                        : lead.status === 'REJECTED'
-                          ? 'bg-rose-50 text-rose-700 border border-rose-200'
-                          : 'bg-blue-50 text-blue-700 border border-blue-200'
-                        }`}>
-                        {lead.status}
-                      </span>
-                    </td>
-                    <td className="p-4 text-xs text-slate-400">
-                      {new Date(lead.createdAt).toLocaleDateString()}
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          )}
-        </div>
+
+        <VendorPortalLeadsTable
+          searchTerm={searchTerm}
+          setSearchTerm={setSearchTerm}
+          statusFilter={statusFilter}
+          setStatusFilter={setStatusFilter}
+          paginatedLeads={paginatedLeads}
+          sortedLeads={sortedLeads}
+          page={page}
+          setPage={setPage}
+          totalPages={totalPages}
+          itemsPerPage={itemsPerPage}
+          sortField={sortField}
+          sortDirection={sortDirection}
+          onRequestSort={requestSort}
+          isLoading={isLoading}
+          onDeleteLead={handleDeleteLead}
+          onDeleteMultipleLeads={handleDeleteMultipleLeads}
+        />
       </div>
     </div>
   );

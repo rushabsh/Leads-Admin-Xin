@@ -65,7 +65,6 @@ export const DIAGNOSIS_OPTIONS = [
   'PTSD (Post-Traumatic Stress Disorder)',
   'Anxiety',
   'Depression',
-  'Other',
   'Non-Hodgkin Lymphoma',
   'Renal Carcinoma / Kidney Cancer',
   'Leukemia / Blood Cancer',
@@ -621,7 +620,7 @@ export default function NewCaseLeadFollowUpForm({
       try {
         await addLead(createdLead || payload);
         await fetchData(true);
-      } catch (_) {}
+      } catch (_) { }
 
       showToast('"New Case: Lead Follow Up" saved to database successfully!', 'success');
 
@@ -1417,13 +1416,15 @@ export default function NewCaseLeadFollowUpForm({
                 options={DIAGNOSIS_OPTIONS}
                 required
               />
-              <FormInput
-                label="Diagnosis Year / Date"
-                type="date"
-                name="diagnosisYear"
-                value={formData.diagnosisYear}
-                onChange={handleInputChange}
-              />
+              <div className="sm:col-span-2">
+                <FormInput
+                  label="Diagnosis Year / Date"
+                  type="date"
+                  name="diagnosisYear"
+                  value={formData.diagnosisYear}
+                  onChange={handleInputChange}
+                />
+              </div>
               <FormInput
                 label="Diagnosing Doctor's Name"
                 name="diagnosingDoctorName"
@@ -1472,7 +1473,7 @@ export default function NewCaseLeadFollowUpForm({
                 name="diagnosingFacilityPhone"
                 value={formData.diagnosingFacilityPhone}
                 onChange={handleInputChange}
-                placeholder="(555) 000-0000"
+                placeholder="(123) 456-7890"
               />
               <FormInput
                 label="Treating Facility Phone Number"
@@ -1480,241 +1481,8 @@ export default function NewCaseLeadFollowUpForm({
                 name="treatingFacilityPhone"
                 value={formData.treatingFacilityPhone}
                 onChange={handleInputChange}
-                placeholder="(555) 000-0000"
+                placeholder="(123) 456-7890"
               />
-            </div>
-          </FormSectionCard>
-
-          {/* SECTION 5: CAMPAIGN SCREENING & QUALIFICATION CRITERIA */}
-          <FormSectionCard number={5} title="Campaign Qualification Criteria" badge="Screening Rules" colorTheme="indigo">
-            <div className="space-y-6">
-              {/* 1. ROBLOX CAMPAIGN SCREENING */}
-              {(formData.type === 'Roblox' || formData.type === 'Mass Tort - General') && (
-                <div className="rounded-xl border border-purple-200 bg-purple-50/40 p-4 space-y-4">
-                  <div className="flex items-center justify-between border-b border-purple-100 pb-2">
-                    <span className="text-xs font-bold text-purple-950 uppercase tracking-wider flex items-center gap-2">
-                      <Sparkles className="h-4 w-4 text-purple-600" /> Roblox Qualification Criteria
-                    </span>
-                    <span className="text-[10px] font-mono font-bold bg-purple-100 text-purple-700 px-2 py-0.5 rounded-md">
-                      Roblox Screening Active
-                    </span>
-                  </div>
-
-                  {ROBLOX_EXCLUDED_STATES.includes(formData.state) && (
-                    <div className="rounded-lg bg-rose-50 border border-rose-200 p-3 text-xs font-semibold text-rose-700 flex items-center gap-2">
-                      <AlertCircle className="h-4 w-4 text-rose-600 shrink-0" />
-                      <span>Warning: State {formData.state} is excluded from Roblox Campaign (No CA, FL, CO, LA leads accepted).</span>
-                    </div>
-                  )}
-
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    <FormInput
-                      label="Victim's Roblox Gamertag (Username)"
-                      name="robloxGamertag"
-                      value={formData.robloxGamertag}
-                      onChange={handleInputChange}
-                      placeholder="e.g. RobloxUser123"
-                      required={formData.type === 'Roblox'}
-                    />
-                    <FormSelect
-                      label="Roblox Account Access / Data Preserved?"
-                      name="robloxAccountAccess"
-                      value={formData.robloxAccountAccess}
-                      onChange={handleInputChange}
-                      options={['Yes - Full Access', 'No - Lost Access', 'Data Preserved by Parent']}
-                    />
-                    <FormInput
-                      label="Evidence Available (Chats, Screenshots, Reports)"
-                      name="robloxEvidenceTypes"
-                      value={formData.robloxEvidenceTypes}
-                      onChange={handleInputChange}
-                      placeholder="e.g. Discord chat logs, FBI Report"
-                    />
-                    <FormInput
-                      label="Grooming Doctor / Therapist Name (if applicable)"
-                      name="robloxGroomingDoctorName"
-                      value={formData.robloxGroomingDoctorName}
-                      onChange={handleInputChange}
-                      placeholder="Dr. Name (PTSD / Therapy)"
-                    />
-                  </div>
-                </div>
-              )}
-
-              {/* 2. LA COUNTY JDC SEXUAL ABUSE SCREENING */}
-              {(formData.type === 'LA County JDC Sexual Abuse' || formData.type === 'Mass Tort - General') && (
-                <div className="rounded-xl border border-blue-200 bg-blue-50/40 p-4 space-y-4">
-                  <div className="flex items-center justify-between border-b border-blue-100 pb-2">
-                    <span className="text-xs font-bold text-blue-950 uppercase tracking-wider flex items-center gap-2">
-                      <Building2 className="h-4 w-4 text-blue-600" /> LA County JDC Screening Criteria
-                    </span>
-                    <span className="text-[10px] font-mono font-bold bg-blue-100 text-blue-700 px-2 py-0.5 rounded-md">
-                      21 LA Facilities Check
-                    </span>
-                  </div>
-
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    <FormSelect
-                      label="LA County Facility (Qualifying Facility)"
-                      name="jdcFacility"
-                      value={formData.jdcFacility}
-                      onChange={handleInputChange}
-                      options={LA_JDC_FACILITIES}
-                      required={formData.type === 'LA County JDC Sexual Abuse'}
-                    />
-                    <FormSelect
-                      label="Witnesses / Family Members Available? (MANDATORY)"
-                      name="jdcWitnessAvailable"
-                      value={formData.jdcWitnessAvailable}
-                      onChange={handleInputChange}
-                      options={['Yes - Family/Witnesses Available', 'No Witnesses Available']}
-                    />
-                    <FormInput
-                      label="Abuser Name / Nickname / Physical Description"
-                      name="jdcAbuserInfo"
-                      value={formData.jdcAbuserInfo}
-                      onChange={handleInputChange}
-                      placeholder="Abuser identity details"
-                    />
-                    <FormInput
-                      label="Abuser Institutional Role / Position"
-                      name="jdcAbuserRole"
-                      value={formData.jdcAbuserRole}
-                      onChange={handleInputChange}
-                      placeholder="e.g. Guard, Staff Member, Counselor"
-                    />
-                    <FormSelect
-                      label="Was Abuser an Inmate/Detainee?"
-                      name="jdcInmateOnInmate"
-                      value={formData.jdcInmateOnInmate}
-                      onChange={handleInputChange}
-                      options={['No - Staff/Guard (Eligible)', 'Yes - Inmate-on-Inmate (Disqualified)']}
-                    />
-                  </div>
-                </div>
-              )}
-
-              {/* 3. RIDESHARE (UBER/LYFT) QUESTIONNAIRE */}
-              {(formData.type === 'Rideshare' || formData.type === 'Mass Tort - General') && (
-                <div className="rounded-xl border border-emerald-200 bg-emerald-50/40 p-4 space-y-4">
-                  <div className="flex items-center justify-between border-b border-emerald-100 pb-2">
-                    <span className="text-xs font-bold text-emerald-950 uppercase tracking-wider flex items-center gap-2">
-                      <Scale className="h-4 w-4 text-emerald-600" /> Rideshare (Uber / Lyft) Screening
-                    </span>
-                    <span className="text-[10px] font-mono font-bold bg-emerald-100 text-emerald-700 px-2 py-0.5 rounded-md">
-                      Uber / Lyft Case Questions
-                    </span>
-                  </div>
-
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    <FormSelect
-                      label="Did incident happen in UBER or LYFT?"
-                      name="rideshareProvider"
-                      value={formData.rideshareProvider}
-                      onChange={handleInputChange}
-                      options={['Uber', 'Lyft', 'Both / Other Rideshare']}
-                    />
-                    <FormSelect
-                      label="Physically Assaulted (sexual in nature)?"
-                      name="rideshareAssaulted"
-                      value={formData.rideshareAssaulted}
-                      onChange={handleInputChange}
-                      options={['Yes', 'No']}
-                    />
-                    <FormSelect
-                      label="Do you have proof of ride?"
-                      name="rideshareProofOfRide"
-                      value={formData.rideshareProofOfRide}
-                      onChange={handleInputChange}
-                      options={['Yes', 'No']}
-                    />
-                    <FormInput
-                      label="Driver Name"
-                      name="rideshareDriverName"
-                      value={formData.rideshareDriverName}
-                      onChange={handleInputChange}
-                      placeholder="Rideshare driver name"
-                    />
-                    <FormInput
-                      label="Incident Address / Location"
-                      name="rideshareIncidentAddress"
-                      value={formData.rideshareIncidentAddress}
-                      onChange={handleInputChange}
-                      placeholder="Address or pickup/dropoff area"
-                    />
-                    <FormInput
-                      label="Date of Incident"
-                      type="date"
-                      name="rideshareIncidentDate"
-                      value={formData.rideshareIncidentDate}
-                      onChange={handleInputChange}
-                    />
-                    <FormSelect
-                      label="Did you report this incident to anyone?"
-                      name="rideshareReportedTo"
-                      value={formData.rideshareReportedTo}
-                      onChange={handleInputChange}
-                      options={['Parents', 'Sibling', 'Relatives', 'Friends', 'Police Report Filed', 'None']}
-                    />
-                    <FormInput
-                      label="Symptoms Started Date (Emotional / PTSD)"
-                      type="date"
-                      name="rideshareSymptomsDate"
-                      value={formData.rideshareSymptomsDate}
-                      onChange={handleInputChange}
-                    />
-                    <FormInput
-                      label="Diagnosis Confirmation Date"
-                      type="date"
-                      name="rideshareDiagnosisTestDate"
-                      value={formData.rideshareDiagnosisTestDate}
-                      onChange={handleInputChange}
-                    />
-                    <FormInput
-                      label="Treatment Date"
-                      type="date"
-                      name="rideshareTreatmentDate"
-                      value={formData.rideshareTreatmentDate}
-                      onChange={handleInputChange}
-                    />
-                    <FormSelect
-                      label="Legal Representation with any law firm?"
-                      name="legalRepresentation"
-                      value={formData.legalRepresentation}
-                      onChange={handleInputChange}
-                      options={['No', 'Yes - Currently Represented']}
-                    />
-                    <FormSelect
-                      label="Felony / Crime Conviction?"
-                      name="felonyConviction"
-                      value={formData.felonyConviction}
-                      onChange={handleInputChange}
-                      options={['No', 'Yes - Felony Conviction']}
-                    />
-                    <FormSelect
-                      label="Do you have Medical Records?"
-                      name="hasMedicalRecords"
-                      value={formData.hasMedicalRecords}
-                      onChange={handleInputChange}
-                      options={['Yes', 'No']}
-                    />
-                  </div>
-
-                  <div>
-                    <label className="text-xs font-semibold text-slate-700 block mb-1">
-                      Can you describe the whole Incident what happened?
-                    </label>
-                    <textarea
-                      name="rideshareNarrative"
-                      value={formData.rideshareNarrative}
-                      onChange={handleInputChange}
-                      rows={3}
-                      placeholder="Describe incident details..."
-                      className="w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-xs text-slate-900 placeholder:text-slate-400 focus:border-blue-600 focus:ring-2 focus:ring-blue-100 outline-none shadow-xs transition-all"
-                    />
-                  </div>
-                </div>
-              )}
             </div>
           </FormSectionCard>
         </div>

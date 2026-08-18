@@ -242,55 +242,164 @@ export default function LeadProfileView({
               )}
 
               {/* 2. CASE QUALIFIER DETAILS */}
-              {activeProfileTab === 'case' && (
-                <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm space-y-4">
-                  <h3 className="text-sm font-bold uppercase tracking-wider text-slate-400 border-b pb-2 border-slate-100">
-                    Case Qualifier details
-                  </h3>
-                  <div className="grid gap-4 sm:grid-cols-2 text-xs">
-                    <div>
-                      <span className="text-slate-400 block">Mass Tort Category</span>
-                      <span className="font-semibold text-blue-600 block mt-0.5">
-                        {leadDetails.campaign?.massTort?.name || leadDetails.tortName || 'General Litigations'}
-                      </span>
+              {activeProfileTab === 'case' && (() => {
+                let parsedCase: any = null;
+                if (leadDetails?.caseDetails && typeof leadDetails.caseDetails === 'string' && leadDetails.caseDetails.trim().startsWith('{')) {
+                  try {
+                    parsedCase = JSON.parse(leadDetails.caseDetails);
+                  } catch (_) {}
+                }
+                const screening = parsedCase?.screening;
+
+                return (
+                  <div className="space-y-4">
+                    <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm space-y-4">
+                      <h3 className="text-sm font-bold uppercase tracking-wider text-slate-400 border-b pb-2 border-slate-100">
+                        Case Qualifier details
+                      </h3>
+                      <div className="grid gap-4 sm:grid-cols-2 text-xs">
+                        <div>
+                          <span className="text-slate-400 block">Mass Tort Category</span>
+                          <span className="font-semibold text-blue-600 block mt-0.5">
+                            {leadDetails.campaign?.massTort?.name || leadDetails.tortName || 'General Litigations'}
+                          </span>
+                        </div>
+                        <div>
+                          <span className="text-slate-400 block">Exposure Window / Date</span>
+                          <span className="font-semibold text-slate-900 block mt-0.5">{leadDetails.exposure || 'N/A'}</span>
+                        </div>
+                        <div>
+                          <span className="text-slate-400 block">Incident Date</span>
+                          <span className="font-semibold text-slate-900 block mt-0.5">{leadDetails.incidentDate || screening?.rideshareIncidentDate || 'N/A'}</span>
+                        </div>
+                        <div>
+                          <span className="text-slate-400 block">Medical Diagnosis</span>
+                          <span className="font-semibold text-slate-900 block mt-0.5">{leadDetails.diagnosis || 'N/A'}</span>
+                        </div>
+                        <div>
+                          <span className="text-slate-400 block">Associated Symptoms</span>
+                          <span className="font-semibold text-slate-900 block mt-0.5">{leadDetails.symptoms || 'N/A'}</span>
+                        </div>
+                        <div>
+                          <span className="text-slate-400 block">Treating Hospital / Clinic</span>
+                          <span className="font-semibold text-slate-900 block mt-0.5">{leadDetails.hospital || 'N/A'}</span>
+                        </div>
+                        <div>
+                          <span className="text-slate-400 block">Attorney Assigned</span>
+                          <span className="font-semibold text-slate-900 block mt-0.5">{leadDetails.attorney || 'N/A'}</span>
+                        </div>
+                        <div>
+                          <span className="text-slate-400 block">Case Ingestion Status</span>
+                          <span className="font-semibold text-slate-900 block mt-0.5">{leadDetails.status}</span>
+                        </div>
+                        {!screening && (
+                          <div className="sm:col-span-2">
+                            <span className="text-slate-400 block">Case Details Text</span>
+                            <span className="font-semibold text-slate-900 block mt-0.5 whitespace-pre-line leading-relaxed">
+                              {leadDetails.caseDetails || 'No details provided.'}
+                            </span>
+                          </div>
+                        )}
+                      </div>
                     </div>
-                    <div>
-                      <span className="text-slate-400 block">Exposure Window / Date</span>
-                      <span className="font-semibold text-slate-900 block mt-0.5">{leadDetails.exposure || 'N/A'}</span>
-                    </div>
-                    <div>
-                      <span className="text-slate-400 block">Incident Date</span>
-                      <span className="font-semibold text-slate-900 block mt-0.5">{leadDetails.incidentDate || 'N/A'}</span>
-                    </div>
-                    <div>
-                      <span className="text-slate-400 block">Medical Diagnosis</span>
-                      <span className="font-semibold text-slate-900 block mt-0.5">{leadDetails.diagnosis || 'N/A'}</span>
-                    </div>
-                    <div>
-                      <span className="text-slate-400 block">Associated Symptoms</span>
-                      <span className="font-semibold text-slate-900 block mt-0.5">{leadDetails.symptoms || 'N/A'}</span>
-                    </div>
-                    <div>
-                      <span className="text-slate-400 block">Treating Hospital / Clinic</span>
-                      <span className="font-semibold text-slate-900 block mt-0.5">{leadDetails.hospital || 'N/A'}</span>
-                    </div>
-                    <div>
-                      <span className="text-slate-400 block">Attorney Assigned</span>
-                      <span className="font-semibold text-slate-900 block mt-0.5">{leadDetails.attorney || 'N/A'}</span>
-                    </div>
-                    <div>
-                      <span className="text-slate-400 block">Case Ingestion Status</span>
-                      <span className="font-semibold text-slate-900 block mt-0.5">{leadDetails.status}</span>
-                    </div>
-                    <div className="sm:col-span-2">
-                      <span className="text-slate-400 block">Case Details Text</span>
-                      <span className="font-semibold text-slate-900 block mt-0.5 whitespace-pre-line leading-relaxed">
-                        {leadDetails.caseDetails || 'No details provided.'}
-                      </span>
-                    </div>
+
+                    {/* Rich Screening & Qualification Card */}
+                    {screening && (
+                      <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm space-y-4">
+                        <div className="flex items-center justify-between border-b pb-3 border-slate-100">
+                          <h3 className="text-xs font-bold uppercase tracking-wider text-slate-700 flex items-center gap-2">
+                            <ShieldCheck className="h-4 w-4 text-emerald-600" />
+                            Campaign Screening & Other Case Information
+                          </h3>
+                          <span className="text-[10px] font-bold uppercase tracking-wider text-blue-600 bg-blue-50 border border-blue-200 px-2.5 py-0.5 rounded-full">
+                            Structured Data
+                          </span>
+                        </div>
+
+                        {/* Symptoms Section */}
+                        <div className="rounded-xl bg-amber-50/60 p-4 border border-amber-100 space-y-2">
+                          <div className="flex items-center justify-between">
+                            <h4 className="text-xs font-bold text-amber-900">1. Emotional Changes / Symptoms Before Diagnosis</h4>
+                            <span className="text-[10px] font-semibold text-amber-800 bg-amber-100 px-2 py-0.5 rounded-md">
+                              Date: {screening.rideshareSymptomsDate || 'N/A'}
+                            </span>
+                          </div>
+                          <p className="text-xs text-slate-800 font-medium whitespace-pre-wrap">
+                            {screening.rideshareSymptomsDetails || 'No details provided.'}
+                          </p>
+                        </div>
+
+                        {/* Diagnosis Confirmation Section */}
+                        <div className="rounded-xl bg-indigo-50/60 p-4 border border-indigo-100 space-y-2">
+                          <div className="flex items-center justify-between">
+                            <h4 className="text-xs font-bold text-indigo-900">2. Confirmation of Diagnosis / Tests</h4>
+                            <span className="text-[10px] font-semibold text-indigo-800 bg-indigo-100 px-2 py-0.5 rounded-md">
+                              Date: {screening.rideshareDiagnosisTestDate || 'N/A'}
+                            </span>
+                          </div>
+                          <p className="text-xs text-slate-800 font-medium whitespace-pre-wrap">
+                            {screening.rideshareDiagnosisTestDetails || 'No details provided.'}
+                          </p>
+                        </div>
+
+                        {/* Treatment Section */}
+                        <div className="rounded-xl bg-emerald-50/60 p-4 border border-emerald-100 space-y-2">
+                          <div className="flex items-center justify-between">
+                            <h4 className="text-xs font-bold text-emerald-900">3. Treatment Received</h4>
+                            <span className="text-[10px] font-semibold text-emerald-800 bg-emerald-100 px-2 py-0.5 rounded-md">
+                              Date: {screening.rideshareTreatmentDate || 'N/A'}
+                            </span>
+                          </div>
+                          <p className="text-xs text-slate-800 font-medium whitespace-pre-wrap">
+                            {screening.rideshareTreatmentDetails || 'No details provided.'}
+                          </p>
+                        </div>
+
+                        {/* Key Attributes Grid */}
+                        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 pt-2 text-xs">
+                          <div className="rounded-lg bg-slate-50 p-2.5 border border-slate-100">
+                            <span className="text-slate-400 block text-[10px] font-semibold uppercase">Assaulted (Rideshare)</span>
+                            <span className="font-bold text-slate-900 block mt-0.5">{screening.rideshareAssaulted || 'N/A'}</span>
+                          </div>
+                          <div className="rounded-lg bg-slate-50 p-2.5 border border-slate-100">
+                            <span className="text-slate-400 block text-[10px] font-semibold uppercase">Provider</span>
+                            <span className="font-bold text-slate-900 block mt-0.5">{screening.rideshareProvider || 'N/A'}</span>
+                          </div>
+                          <div className="rounded-lg bg-slate-50 p-2.5 border border-slate-100">
+                            <span className="text-slate-400 block text-[10px] font-semibold uppercase">Proof of Ride</span>
+                            <span className="font-bold text-slate-900 block mt-0.5">{screening.rideshareProofOfRide || 'N/A'}</span>
+                          </div>
+                          <div className="rounded-lg bg-slate-50 p-2.5 border border-slate-100">
+                            <span className="text-slate-400 block text-[10px] font-semibold uppercase">Driver Name</span>
+                            <span className="font-bold text-slate-900 block mt-0.5">{screening.rideshareDriverName || 'N/A'}</span>
+                          </div>
+                          <div className="rounded-lg bg-slate-50 p-2.5 border border-slate-100 sm:col-span-2">
+                            <span className="text-slate-400 block text-[10px] font-semibold uppercase">Incident Address</span>
+                            <span className="font-bold text-slate-900 block mt-0.5">{screening.rideshareIncidentAddress || 'N/A'}</span>
+                          </div>
+                          <div className="rounded-lg bg-slate-50 p-2.5 border border-slate-100">
+                            <span className="text-slate-400 block text-[10px] font-semibold uppercase">Legal Representation</span>
+                            <span className="font-bold text-slate-900 block mt-0.5">{screening.legalRepresentation || 'N/A'}</span>
+                          </div>
+                          <div className="rounded-lg bg-slate-50 p-2.5 border border-slate-100">
+                            <span className="text-slate-400 block text-[10px] font-semibold uppercase">Medical Records</span>
+                            <span className="font-bold text-slate-900 block mt-0.5">{screening.hasMedicalRecords || 'N/A'}</span>
+                          </div>
+                        </div>
+
+                        {screening.rideshareNarrative && (
+                          <div className="pt-2">
+                            <span className="text-slate-400 block text-[10px] font-semibold uppercase mb-1">Full Incident Narrative</span>
+                            <p className="text-xs text-slate-700 bg-slate-50 p-3 rounded-xl border border-slate-200 leading-relaxed whitespace-pre-wrap">
+                              {screening.rideshareNarrative}
+                            </p>
+                          </div>
+                        )}
+                      </div>
+                    )}
                   </div>
-                </div>
-              )}
+                );
+              })()}
 
               {/* 3. MEDICAL & RETAINER DOCUMENTS */}
               {activeProfileTab === 'documents' && (

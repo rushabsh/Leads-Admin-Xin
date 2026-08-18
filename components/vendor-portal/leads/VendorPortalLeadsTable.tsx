@@ -222,6 +222,38 @@ export default function VendorPortalLeadsTable({
                       </div>
                     </div>
 
+                    {/* Section 5: Other Case Information */}
+                    {(() => {
+                      const screening = parsed?.screeningCriteria || {};
+                      return (
+                        <div className="rounded-xl border border-slate-200 bg-slate-50/50 p-4 space-y-3">
+                          <div className="flex items-center gap-2 border-b border-slate-200 pb-2">
+                            <Tag className="h-4 w-4 text-amber-600" />
+                            <h4 className="font-bold text-slate-900 text-sm">5. Other Case Information</h4>
+                          </div>
+                          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
+                            <div><strong className="text-slate-500 block">Assaulted in Rideshare:</strong> {screening.rideshareAssaulted || '—'}</div>
+                            <div><strong className="text-slate-500 block">Lyft or UBER:</strong> {screening.rideshareProvider || '—'}</div>
+                            <div><strong className="text-slate-500 block">Date of Incident:</strong> {screening.rideshareIncidentDate || '—'}</div>
+                            <div><strong className="text-slate-500 block">Proof of Ride:</strong> {screening.rideshareProofOfRide || '—'}</div>
+                            <div><strong className="text-slate-500 block">Driver Name:</strong> {screening.rideshareDriverName || '—'}</div>
+                            <div><strong className="text-slate-500 block">Incident Address:</strong> {screening.rideshareIncidentAddress || '—'}</div>
+                            <div><strong className="text-slate-500 block">Reported To:</strong> {screening.rideshareReportedTo || '—'}</div>
+                            <div><strong className="text-slate-500 block">Symptoms Details:</strong> {screening.rideshareSymptomsDetails || '—'}</div>
+                            <div><strong className="text-slate-500 block">Symptoms Date:</strong> {screening.rideshareSymptomsDate || '—'}</div>
+                            <div><strong className="text-slate-500 block">Test Details:</strong> {screening.rideshareDiagnosisTestDetails || '—'}</div>
+                            <div><strong className="text-slate-500 block">Test Date:</strong> {screening.rideshareDiagnosisTestDate || '—'}</div>
+                            <div><strong className="text-slate-500 block">Treatment Details:</strong> {screening.rideshareTreatmentDetails || '—'}</div>
+                            <div><strong className="text-slate-500 block">Treatment Date:</strong> {screening.rideshareTreatmentDate || '—'}</div>
+                            <div><strong className="text-slate-500 block">Legal Representation:</strong> {screening.legalRepresentation || '—'}</div>
+                            <div><strong className="text-slate-500 block">Felony Conviction:</strong> {screening.felonyConviction || '—'}</div>
+                            <div><strong className="text-slate-500 block">Medical Records:</strong> {screening.hasMedicalRecords || '—'}</div>
+                            <div className="sm:col-span-3"><strong className="text-slate-500 block">Incident Narrative:</strong> {screening.rideshareNarrative || '—'}</div>
+                          </div>
+                        </div>
+                      );
+                    })()}
+
                   </div>
                 );
               })()}

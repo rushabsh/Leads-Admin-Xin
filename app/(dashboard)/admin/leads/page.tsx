@@ -567,13 +567,12 @@ function LeadsPageContent() {
       <AddLeadModal
         showAddModal={showAddModal}
         setShowAddModal={setShowAddModal}
-        formData={formData}
-        setFormData={setFormData}
-        activeFormTab={activeFormTab}
-        setActiveFormTab={setActiveFormTab}
         campaigns={campaigns}
         vendors={vendors}
-        onCreateLead={handleCreateLead}
+        onSuccess={() => {
+          showToast('Lead created successfully!', 'success');
+          fetchData();
+        }}
       />
 
       <CsvImportModal

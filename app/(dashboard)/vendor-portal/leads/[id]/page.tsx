@@ -810,6 +810,85 @@ export default function VendorLeadDetailPage({ params }: PageProps) {
             </div>
           </div>
 
+          {/* 5.5 SCREENING & CAMPAIGN QUALIFICATION SECTION */}
+          {parsedDetails?.screening && (() => {
+            const sc = parsedDetails.screening;
+            return (
+              <div className="rounded-2xl border border-slate-200 bg-white shadow-sm overflow-hidden space-y-4 p-6">
+                <div className="flex items-center justify-between border-b pb-3 border-slate-100">
+                  <h3 className="font-bold text-slate-900 flex items-center gap-2">
+                    <ShieldCheck className="h-5 w-5 text-emerald-600" />
+                    Campaign Screening & Case Follow-up Details
+                  </h3>
+                  <span className="text-xs font-bold uppercase text-emerald-700 bg-emerald-50 border border-emerald-200 px-3 py-1 rounded-full">
+                    Verified Intake
+                  </span>
+                </div>
+
+                <div className="space-y-4">
+                  {/* Question 1: Symptoms */}
+                  <div className="rounded-xl bg-amber-50/70 p-4 border border-amber-200/80 space-y-2">
+                    <div className="flex items-center justify-between">
+                      <h4 className="text-xs font-bold text-amber-900">1. Emotional Changes / Symptoms Before Diagnosis</h4>
+                      <span className="text-[10px] font-bold text-amber-800 bg-amber-100 px-2.5 py-0.5 rounded-md border border-amber-200">
+                        Date: {sc.rideshareSymptomsDate || 'N/A'}
+                      </span>
+                    </div>
+                    <p className="text-xs text-slate-800 font-medium whitespace-pre-wrap">
+                      {sc.rideshareSymptomsDetails || 'No details provided.'}
+                    </p>
+                  </div>
+
+                  {/* Question 2: Test / Diagnosis Confirmation */}
+                  <div className="rounded-xl bg-indigo-50/70 p-4 border border-indigo-200/80 space-y-2">
+                    <div className="flex items-center justify-between">
+                      <h4 className="text-xs font-bold text-indigo-900">2. Confirmation of Diagnosis / Tests</h4>
+                      <span className="text-[10px] font-bold text-indigo-800 bg-indigo-100 px-2.5 py-0.5 rounded-md border border-indigo-200">
+                        Date: {sc.rideshareDiagnosisTestDate || 'N/A'}
+                      </span>
+                    </div>
+                    <p className="text-xs text-slate-800 font-medium whitespace-pre-wrap">
+                      {sc.rideshareDiagnosisTestDetails || 'No details provided.'}
+                    </p>
+                  </div>
+
+                  {/* Question 3: Treatment */}
+                  <div className="rounded-xl bg-emerald-50/70 p-4 border border-emerald-200/80 space-y-2">
+                    <div className="flex items-center justify-between">
+                      <h4 className="text-xs font-bold text-emerald-900">3. Treatment Received</h4>
+                      <span className="text-[10px] font-bold text-emerald-800 bg-emerald-100 px-2.5 py-0.5 rounded-md border border-emerald-200">
+                        Date: {sc.rideshareTreatmentDate || 'N/A'}
+                      </span>
+                    </div>
+                    <p className="text-xs text-slate-800 font-medium whitespace-pre-wrap">
+                      {sc.rideshareTreatmentDetails || 'No details provided.'}
+                    </p>
+                  </div>
+
+                  {/* Extra Grid */}
+                  <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 pt-2 text-xs">
+                    <div className="rounded-lg bg-slate-50 p-2.5 border border-slate-200">
+                      <span className="text-slate-500 block text-[10px] font-bold uppercase">Assaulted (Rideshare)</span>
+                      <span className="font-bold text-slate-900 block mt-0.5">{sc.rideshareAssaulted || 'N/A'}</span>
+                    </div>
+                    <div className="rounded-lg bg-slate-50 p-2.5 border border-slate-200">
+                      <span className="text-slate-500 block text-[10px] font-bold uppercase">Provider</span>
+                      <span className="font-bold text-slate-900 block mt-0.5">{sc.rideshareProvider || 'N/A'}</span>
+                    </div>
+                    <div className="rounded-lg bg-slate-50 p-2.5 border border-slate-200">
+                      <span className="text-slate-500 block text-[10px] font-bold uppercase">Proof of Ride</span>
+                      <span className="font-bold text-slate-900 block mt-0.5">{sc.rideshareProofOfRide || 'N/A'}</span>
+                    </div>
+                    <div className="rounded-lg bg-slate-50 p-2.5 border border-slate-200">
+                      <span className="text-slate-500 block text-[10px] font-bold uppercase">Driver Name</span>
+                      <span className="font-bold text-slate-900 block mt-0.5">{sc.rideshareDriverName || 'N/A'}</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            );
+          })()}
+
           {/* 6. SYSTEM INFORMATION SECTION */}
           <div className="rounded-2xl border border-slate-200 bg-white shadow-sm overflow-hidden">
             <div className="border-b border-slate-100 p-5 flex items-center justify-between">
@@ -868,8 +947,8 @@ export default function VendorLeadDetailPage({ params }: PageProps) {
                   <button
                     onClick={() => setActiveRightTab('Post')}
                     className={`flex-1 rounded-lg py-1.5 text-xs font-bold transition-all cursor-pointer ${activeRightTab === 'Post'
-                        ? 'bg-white text-slate-900 shadow-xs'
-                        : 'text-slate-500 hover:text-slate-900'
+                      ? 'bg-white text-slate-900 shadow-xs'
+                      : 'text-slate-500 hover:text-slate-900'
                       }`}
                   >
                     Post (Feed)
@@ -877,8 +956,8 @@ export default function VendorLeadDetailPage({ params }: PageProps) {
                   <button
                     onClick={() => setActiveRightTab('Details')}
                     className={`flex-1 rounded-lg py-1.5 text-xs font-bold transition-all cursor-pointer ${activeRightTab === 'Details'
-                        ? 'bg-white text-slate-900 shadow-xs'
-                        : 'text-slate-500 hover:text-slate-900'
+                      ? 'bg-white text-slate-900 shadow-xs'
+                      : 'text-slate-500 hover:text-slate-900'
                       }`}
                   >
                     Details
@@ -886,8 +965,8 @@ export default function VendorLeadDetailPage({ params }: PageProps) {
                   <button
                     onClick={() => setActiveRightTab('Related')}
                     className={`flex-1 rounded-lg py-1.5 text-xs font-bold transition-all cursor-pointer ${activeRightTab === 'Related'
-                        ? 'bg-white text-slate-900 shadow-xs'
-                        : 'text-slate-500 hover:text-slate-900'
+                      ? 'bg-white text-slate-900 shadow-xs'
+                      : 'text-slate-500 hover:text-slate-900'
                       }`}
                   >
                     Related

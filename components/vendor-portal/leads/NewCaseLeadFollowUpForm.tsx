@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useRef } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -50,6 +50,10 @@ export const TYPE_OPTIONS = [
 export const STATUS_OPTIONS = ['New', 'In Progress', 'Sent'];
 export const SUBSTATUS_OPTIONS = ['None', 'No TCPA', 'Redo TCPA', 'TCPA OK'];
 export const GENDER_OPTIONS = ['Male', 'Female', 'Other', 'Prefer Not to Say'];
+export const YES_NO_OPTIONS = ['Yes', 'No'];
+export const YES_NO_UPPER_OPTIONS = ['YES', 'NO'];
+export const RIDESHARE_PROVIDER_OPTIONS = ['Lyft', 'UBER'];
+export const REPORTED_TO_OPTIONS = ['Parents', 'Sibling', 'Relatives', 'Friends'];
 
 export const INCIDENT_TYPE_OPTIONS = [
   'Oral Vaginal/anal – Rape',
@@ -189,8 +193,11 @@ export interface LeadFollowUpFormData {
   rideshareIncidentDate: string;
   rideshareNarrative: string;
   rideshareReportedTo: string;
+  rideshareSymptomsDetails: string;
   rideshareSymptomsDate: string;
+  rideshareDiagnosisTestDetails: string;
   rideshareDiagnosisTestDate: string;
+  rideshareTreatmentDetails: string;
   rideshareTreatmentDate: string;
   legalRepresentation: string;
   felonyConviction: string;
@@ -265,8 +272,11 @@ export const DEFAULT_LEAD_FOLLOW_UP_FORM_DATA: LeadFollowUpFormData = {
   rideshareIncidentDate: '',
   rideshareNarrative: '',
   rideshareReportedTo: 'Parents',
+  rideshareSymptomsDetails: '',
   rideshareSymptomsDate: '',
+  rideshareDiagnosisTestDetails: '',
   rideshareDiagnosisTestDate: '',
+  rideshareTreatmentDetails: '',
   rideshareTreatmentDate: '',
   legalRepresentation: 'No',
   felonyConviction: 'No',
@@ -414,6 +424,15 @@ export default function NewCaseLeadFollowUpForm({
     ...DEFAULT_LEAD_FOLLOW_UP_FORM_DATA,
     ...initialValues
   });
+
+  useEffect(() => {
+    if (initialValues) {
+      setFormData((prev) => ({
+        ...prev,
+        ...initialValues
+      }));
+    }
+  }, [initialValues?.campaignName, vendorId]);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [toast, setToast] = useState<{ message: string; type: 'success' | 'error' } | null>(null);
 
@@ -550,8 +569,11 @@ export default function NewCaseLeadFollowUpForm({
         rideshareIncidentDate: data.rideshareIncidentDate,
         rideshareNarrative: data.rideshareNarrative,
         rideshareReportedTo: data.rideshareReportedTo,
+        rideshareSymptomsDetails: data.rideshareSymptomsDetails,
         rideshareSymptomsDate: data.rideshareSymptomsDate,
+        rideshareDiagnosisTestDetails: data.rideshareDiagnosisTestDetails,
         rideshareDiagnosisTestDate: data.rideshareDiagnosisTestDate,
+        rideshareTreatmentDetails: data.rideshareTreatmentDetails,
         rideshareTreatmentDate: data.rideshareTreatmentDate,
         legalRepresentation: data.legalRepresentation,
         felonyConviction: data.felonyConviction,
@@ -759,8 +781,11 @@ export default function NewCaseLeadFollowUpForm({
       rideshareIncidentDate: row.rideshareIncidentDate || row['Rideshare Incident Date'] || '',
       rideshareNarrative: row.rideshareNarrative || row['Rideshare Narrative'] || '',
       rideshareReportedTo: row.rideshareReportedTo || row['Rideshare Reported To'] || 'Parents',
+      rideshareSymptomsDetails: row.rideshareSymptomsDetails || row['Rideshare Symptoms Details'] || '',
       rideshareSymptomsDate: row.rideshareSymptomsDate || row['Rideshare Symptoms Date'] || '',
+      rideshareDiagnosisTestDetails: row.rideshareDiagnosisTestDetails || row['Rideshare Diagnosis Test Details'] || '',
       rideshareDiagnosisTestDate: row.rideshareDiagnosisTestDate || row['Rideshare Diagnosis Test Date'] || '',
+      rideshareTreatmentDetails: row.rideshareTreatmentDetails || row['Rideshare Treatment Details'] || '',
       rideshareTreatmentDate: row.rideshareTreatmentDate || row['Rideshare Treatment Date'] || '',
       legalRepresentation: row.legalRepresentation || row['Legal Representation'] || 'No',
       felonyConviction: row.felonyConviction || row['Felony Conviction'] || 'No',
@@ -847,8 +872,11 @@ export default function NewCaseLeadFollowUpForm({
         rideshareIncidentDate: row.rideshareIncidentDate || row['Rideshare Incident Date'] || '',
         rideshareNarrative: row.rideshareNarrative || row['Rideshare Narrative'] || '',
         rideshareReportedTo: row.rideshareReportedTo || row['Rideshare Reported To'] || 'Parents',
+        rideshareSymptomsDetails: row.rideshareSymptomsDetails || row['Rideshare Symptoms Details'] || '',
         rideshareSymptomsDate: row.rideshareSymptomsDate || row['Rideshare Symptoms Date'] || '',
+        rideshareDiagnosisTestDetails: row.rideshareDiagnosisTestDetails || row['Rideshare Diagnosis Test Details'] || '',
         rideshareDiagnosisTestDate: row.rideshareDiagnosisTestDate || row['Rideshare Diagnosis Test Date'] || '',
+        rideshareTreatmentDetails: row.rideshareTreatmentDetails || row['Rideshare Treatment Details'] || '',
         rideshareTreatmentDate: row.rideshareTreatmentDate || row['Rideshare Treatment Date'] || '',
         legalRepresentation: row.legalRepresentation || row['Legal Representation'] || 'No',
         felonyConviction: row.felonyConviction || row['Felony Conviction'] || 'No',
@@ -1482,6 +1510,197 @@ export default function NewCaseLeadFollowUpForm({
                 value={formData.treatingFacilityPhone}
                 onChange={handleInputChange}
                 placeholder="(123) 456-7890"
+              />
+            </div>
+          </FormSectionCard>
+
+          {/* SECTION 5: OTHER CASE INFORMATION */}
+          <FormSectionCard number={5} title="Other Case Information" badge="Case Extra" colorTheme="amber">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <FormSelect
+                label="Were you Physically Assaulted (sexual in nature) while in a Rideshare ?"
+                name="rideshareAssaulted"
+                value={formData.rideshareAssaulted}
+                onChange={handleInputChange}
+                options={YES_NO_OPTIONS}
+              />
+              <FormSelect
+                label="Did this incident happen in a LYFT or UBER?"
+                name="rideshareProvider"
+                value={formData.rideshareProvider}
+                onChange={handleInputChange}
+                options={RIDESHARE_PROVIDER_OPTIONS}
+              />
+              <FormInput
+                label="Date of Incident :-"
+                type="date"
+                name="rideshareIncidentDate"
+                value={formData.rideshareIncidentDate}
+                onChange={handleInputChange}
+              />
+              <FormSelect
+                label="Do you have the proof of ride?"
+                name="rideshareProofOfRide"
+                value={formData.rideshareProofOfRide}
+                onChange={handleInputChange}
+                options={YES_NO_OPTIONS}
+              />
+              <FormInput
+                label="Driver Name -"
+                name="rideshareDriverName"
+                value={formData.rideshareDriverName}
+                onChange={handleInputChange}
+                placeholder="Driver Name"
+              />
+              <FormInput
+                label="Address where this incident occurred?"
+                name="rideshareIncidentAddress"
+                value={formData.rideshareIncidentAddress}
+                onChange={handleInputChange}
+                placeholder="Incident Location / Address"
+              />
+              <div className="sm:col-span-2">
+                <label className="text-xs font-semibold text-slate-700 block mb-1">
+                  Can you describe the whole Incident what happened?
+                </label>
+                <textarea
+                  name="rideshareNarrative"
+                  value={formData.rideshareNarrative}
+                  onChange={handleInputChange}
+                  rows={3}
+                  placeholder="Describe what happened during the incident..."
+                  className="w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-xs text-slate-900 placeholder:text-slate-400 focus:border-blue-600 focus:ring-2 focus:ring-blue-100 outline-none shadow-xs transition-all"
+                />
+              </div>
+              <FormSelect
+                label="Did you reported this incident to anyone?"
+                name="rideshareReportedTo"
+                value={formData.rideshareReportedTo}
+                onChange={handleInputChange}
+                options={REPORTED_TO_OPTIONS}
+              />
+              {/* Question 1: Emotional Changes & Symptoms */}
+              <div className="sm:col-span-2 bg-slate-50/70 dark:bg-slate-900/50 rounded-xl p-4 border border-slate-200/80 dark:border-slate-800 space-y-3">
+                <div className="flex items-center justify-between">
+                  <label className="text-xs font-bold text-slate-900 dark:text-slate-100 flex items-center gap-2">
+                    <span className="flex h-5 w-5 items-center justify-center rounded-md bg-amber-100 dark:bg-amber-900/50 text-amber-800 dark:text-amber-300 text-[10px] font-bold">1</span>
+                    Emotional Changes / Symptoms Before Diagnosis
+                  </label>
+                  <span className="text-[10px] font-semibold text-amber-700 dark:text-amber-300 bg-amber-50 dark:bg-amber-950/50 px-2 py-0.5 rounded-md border border-amber-200 dark:border-amber-800">
+                    Symptom Details
+                  </span>
+                </div>
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                  <div className="sm:col-span-2">
+                    <textarea
+                      name="rideshareSymptomsDetails"
+                      value={formData.rideshareSymptomsDetails}
+                      onChange={handleInputChange}
+                      rows={2}
+                      placeholder="Describe emotional changes or symptoms before diagnosis..."
+                      className="w-full rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-950 px-3 py-2 text-xs text-slate-900 dark:text-slate-100 placeholder:text-slate-400 focus:border-amber-500 focus:ring-2 focus:ring-amber-100 outline-none shadow-xs transition-all"
+                    />
+                  </div>
+                  <div>
+                    <FormInput
+                      label="Symptoms Started Date:"
+                      type="date"
+                      name="rideshareSymptomsDate"
+                      value={formData.rideshareSymptomsDate}
+                      onChange={handleInputChange}
+                    />
+                  </div>
+                </div>
+              </div>
+
+              {/* Question 2: Diagnosis Confirmation & Test */}
+              <div className="sm:col-span-2 bg-slate-50/70 dark:bg-slate-900/50 rounded-xl p-4 border border-slate-200/80 dark:border-slate-800 space-y-3">
+                <div className="flex items-center justify-between">
+                  <label className="text-xs font-bold text-slate-900 dark:text-slate-100 flex items-center gap-2">
+                    <span className="flex h-5 w-5 items-center justify-center rounded-md bg-indigo-100 dark:bg-indigo-900/50 text-indigo-800 dark:text-indigo-300 text-[10px] font-bold">2</span>
+                    How did they Confirm your Diagnosis / Test before Diagnosis
+                  </label>
+                  <span className="text-[10px] font-semibold text-indigo-700 dark:text-indigo-300 bg-indigo-50 dark:bg-indigo-950/50 px-2 py-0.5 rounded-md border border-indigo-200 dark:border-indigo-800">
+                    Medical Verification
+                  </span>
+                </div>
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                  <div className="sm:col-span-2">
+                    <textarea
+                      name="rideshareDiagnosisTestDetails"
+                      value={formData.rideshareDiagnosisTestDetails}
+                      onChange={handleInputChange}
+                      rows={2}
+                      placeholder="Describe how diagnosis was confirmed or tests performed..."
+                      className="w-full rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-950 px-3 py-2 text-xs text-slate-900 dark:text-slate-100 placeholder:text-slate-400 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100 outline-none shadow-xs transition-all"
+                    />
+                  </div>
+                  <div>
+                    <FormInput
+                      label="Date of Test:"
+                      type="date"
+                      name="rideshareDiagnosisTestDate"
+                      value={formData.rideshareDiagnosisTestDate}
+                      onChange={handleInputChange}
+                    />
+                  </div>
+                </div>
+              </div>
+
+              {/* Question 3: Treatment */}
+              <div className="sm:col-span-2 bg-slate-50/70 dark:bg-slate-900/50 rounded-xl p-4 border border-slate-200/80 dark:border-slate-800 space-y-3">
+                <div className="flex items-center justify-between">
+                  <label className="text-xs font-bold text-slate-900 dark:text-slate-100 flex items-center gap-2">
+                    <span className="flex h-5 w-5 items-center justify-center rounded-md bg-emerald-100 dark:bg-emerald-900/50 text-emerald-800 dark:text-emerald-300 text-[10px] font-bold">3</span>
+                    Treatment Received
+                  </label>
+                  <span className="text-[10px] font-semibold text-emerald-700 dark:text-emerald-300 bg-emerald-50 dark:bg-emerald-950/50 px-2 py-0.5 rounded-md border border-emerald-200 dark:border-emerald-800">
+                    Treatment Details
+                  </span>
+                </div>
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                  <div className="sm:col-span-2">
+                    <textarea
+                      name="rideshareTreatmentDetails"
+                      value={formData.rideshareTreatmentDetails}
+                      onChange={handleInputChange}
+                      rows={2}
+                      placeholder="Describe treatment received..."
+                      className="w-full rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-950 px-3 py-2 text-xs text-slate-900 dark:text-slate-100 placeholder:text-slate-400 focus:border-emerald-500 focus:ring-2 focus:ring-emerald-100 outline-none shadow-xs transition-all"
+                    />
+                  </div>
+                  <div>
+                    <FormInput
+                      label="Treatment Date:"
+                      type="date"
+                      name="rideshareTreatmentDate"
+                      value={formData.rideshareTreatmentDate}
+                      onChange={handleInputChange}
+                    />
+                  </div>
+                </div>
+              </div>
+
+              <FormSelect
+                label="Did you have any legal representation with any law firm regarding this claim?"
+                name="legalRepresentation"
+                value={formData.legalRepresentation}
+                onChange={handleInputChange}
+                options={YES_NO_OPTIONS}
+              />
+              <FormSelect
+                label="Conviction Felony/Crime?"
+                name="felonyConviction"
+                value={formData.felonyConviction}
+                onChange={handleInputChange}
+                options={YES_NO_UPPER_OPTIONS}
+              />
+              <FormSelect
+                label="Do you have Medical Records?"
+                name="hasMedicalRecords"
+                value={formData.hasMedicalRecords}
+                onChange={handleInputChange}
+                options={YES_NO_OPTIONS}
               />
             </div>
           </FormSectionCard>

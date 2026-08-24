@@ -31,12 +31,7 @@ export async function POST(req: NextRequest) {
     }
 
     // Verify password
-    let isValidPassword = false;
-    if (user.passwordHash === 'mock_password_hash') {
-      isValidPassword = (password === 'Password123!');
-    } else {
-      isValidPassword = await bcrypt.compare(password, user.passwordHash);
-    }
+    const isValidPassword = await bcrypt.compare(password, user.passwordHash);
 
     if (!isValidPassword) {
       return NextResponse.json({ success: false, message: 'Invalid Login ID or Password.' }, { status: 401 });

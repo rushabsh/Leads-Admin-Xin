@@ -2,7 +2,7 @@
 
 import React, { useState } from 'react';
 import {
-  Search, Users, Mail, Phone, Eye, Trash2,
+  Search, Users, Mail, Phone, Eye, Trash2, Edit,
   ChevronLeft, ChevronRight
 } from 'lucide-react';
 
@@ -29,6 +29,7 @@ interface LeadsListTableProps {
   filteredLeadsCount: number;
   paginatedLeads: any[];
   onViewLeadProfile: (lead: any) => void;
+  onEditLead?: (lead: any) => void;
   onDeleteLead: (leadId: string) => void;
   onDeleteMultipleLeads?: (leadIds: string[]) => void;
 }
@@ -56,6 +57,7 @@ export default function LeadsListTable({
   filteredLeadsCount,
   paginatedLeads,
   onViewLeadProfile,
+  onEditLead,
   onDeleteLead,
   onDeleteMultipleLeads
 }: LeadsListTableProps) {
@@ -352,6 +354,15 @@ export default function LeadsListTable({
                         >
                           <Eye className="h-4 w-4" />
                         </button>
+                        {onEditLead && (
+                          <button
+                            onClick={() => onEditLead(lead)}
+                            title="Edit Lead Details"
+                            className="rounded-lg p-1.5 text-slate-400 hover:bg-slate-100 hover:text-blue-600 transition-colors"
+                          >
+                            <Edit className="h-4 w-4" />
+                          </button>
+                        )}
                         <button
                           onClick={() => onDeleteLead(lead.id)}
                           title="Delete"

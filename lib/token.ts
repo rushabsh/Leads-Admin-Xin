@@ -7,6 +7,8 @@ export interface TokenPayload {
   userId: string;
   role: string;
   vendorId?: string | null;
+  exp?: number;
+  iat?: number;
 }
 
 export const signAccessToken = (userId: string, role: string, vendorId?: string | null): string => {
@@ -24,3 +26,4 @@ export const verifyAccessToken = (token: string): TokenPayload => {
 export const verifyRefreshToken = (token: string): TokenPayload => {
   return jwt.verify(token, JWT_REFRESH_SECRET) as TokenPayload;
 };
+

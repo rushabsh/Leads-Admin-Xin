@@ -67,7 +67,7 @@ export async function GET(req: NextRequest, { params }: { params: Promise<{ id: 
 }
 
 /**
- * PUT - Update Lead Profile
+ * PUT - Update Lead Profile (Admin Only)
  */
 export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
@@ -80,6 +80,14 @@ export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: 
       return NextResponse.json({ success: false, message: 'Forbidden' }, { status: 403 });
     }
 
+    // Restrict editing lead details strictly to Admin or Super Admin roles
+    if (user.roleName !== 'Super Admin' && user.roleName !== 'Admin') {
+      return NextResponse.json(
+        { success: false, message: 'Forbidden: Only Admins can edit lead details' },
+        { status: 403 }
+      );
+    }
+
     const { id } = await params;
     const body = await req.json();
 
@@ -90,25 +98,72 @@ export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: 
       return NextResponse.json({ success: false, message: 'Lead not found' }, { status: 404 });
     }
 
-    // Role restrictions
-    if (user.roleName === 'Vendor' && existingLead.vendorId !== user.vendorId) {
-      return NextResponse.json({ success: false, message: 'Access denied' }, { status: 403 });
+    // Helper to sanitize ObjectId fields
+    const sanitizeObjectId = (val: any) => {
+      if (typeof val === 'string' && val.trim().length === 24) {
+        return val.trim();
+      }
+      return null;
+    };
+
+    const updateData: any = {};
+
+    // Standard Lead Fields
+    if (body.firstName !== undefined) updateData.firstName = body.firstName;
+    if (body.lastName !== undefined) updateData.lastName = body.lastName;
+    if (body.phone !== undefined) updateData.phone = body.phone;
+    if (body.email !== undefined) updateData.email = body.email;
+    if (body.state !== undefined) updateData.state = body.state;
+    if (body.status !== undefined) updateData.status = body.status;
+    if (body.priority !== undefined) updateData.priority = body.priority;
+    if (body.dob !== undefined) updateData.dob = body.dob;
+    if (body.gender !== undefined) updateData.gender = body.gender;
+    if (body.address !== undefined) updateData.address = body.address;
+    if (body.ssn !== undefined) updateData.ssn = body.ssn;
+
+    // Case Qualifier & Medical details
+    if (body.incidentDate !== undefined) updateData.incidentDate = body.incidentDate;
+    if (body.exposure !== undefined) updateData.exposure = body.exposure;
+    if (body.symptoms !== undefined) updateData.symptoms = body.symptoms;
+    if (body.diagnosis !== undefined) updateData.diagnosis = body.diagnosis;
+    if (body.hospital !== undefined) updateData.hospital = body.hospital;
+    if (body.attorney !== undefined) updateData.attorney = body.attorney;
+    if (body.caseDetails !== undefined) updateData.caseDetails = typeof body.caseDetails === 'object' ? JSON.stringify(body.caseDetails) : body.caseDetails;
+
+    // Foreign Keys / References
+    if (body.campaignId !== undefined) {
+      const cId = sanitizeObjectId(body.campaignId);
+      if (cId) updateData.campaignId = cId;
     }
-    if ((user.roleName === 'Law Firm' || user.roleName === 'Attorney') && existingLead.lawFirmId !== user.lawFirmId) {
-      return NextResponse.json({ success: false, message: 'Access denied' }, { status: 403 });
+    if (body.vendorId !== undefined) {
+      updateData.vendorId = sanitizeObjectId(body.vendorId);
+    }
+    if (body.lawFirmId !== undefined) {
+      updateData.lawFirmId = sanitizeObjectId(body.lawFirmId);
+    }
+    if (body.sourceId !== undefined) {
+      updateData.sourceId = sanitizeObjectId(body.sourceId);
+    }
+    if (body.tortTypeId !== undefined) {
+      updateData.tortTypeId = sanitizeObjectId(body.tortTypeId);
+    }
+    if (body.intakeAgentId !== undefined) {
+      updateData.intakeAgentId = sanitizeObjectId(body.intakeAgentId);
     }
 
     // Recalculate score if state or details changed
     if (body.state !== undefined || body.caseDetails !== undefined) {
-      body.leadScore = AIService.calculateLeadScore(
+      updateData.leadScore = AIService.calculateLeadScore(
         body.state !== undefined ? body.state : existingLead.state,
-        body.caseDetails !== undefined ? body.caseDetails : existingLead.caseDetails || ''
+        body.caseDetails !== undefined
+          ? (typeof body.caseDetails === 'object' ? JSON.stringify(body.caseDetails) : body.caseDetails)
+          : existingLead.caseDetails || ''
       );
     }
 
     const updatedLead = await prisma.lead.update({
       where: { id: existingLead.id },
-      data: body,
+      data: updateData,
     });
 
     // Create Audit Log
@@ -129,7 +184,7 @@ export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: 
         userId: user.id,
         leadId: existingLead.id,
         action: 'LEAD_UPDATED',
-        details: `Lead status updated from ${existingLead.status} to ${updatedLead.status}`,
+        details: `Admin updated lead details for ${updatedLead.firstName} ${updatedLead.lastName} (${updatedLead.leadId})`,
       },
     });
 

@@ -4,7 +4,7 @@ import React from 'react';
 import {
   ChevronLeft, Sparkles, Users, Scale, FileText, MessageSquare, Clock,
   CheckSquare, Upload, Eye, Download, Trash2, Send, CheckCircle,
-  Square, Calendar, ShieldCheck
+  Square, Calendar, ShieldCheck, Edit
 } from 'lucide-react';
 
 interface LeadProfileViewProps {
@@ -28,6 +28,7 @@ interface LeadProfileViewProps {
   fileInputRef: React.RefObject<HTMLInputElement | null>;
   onRefreshProfile: () => void;
   onUpdateStatus: (status: string) => void;
+  onEditLead?: (lead: any) => void;
   onAddNote: (e: React.FormEvent) => void;
   onFileUpload: (e: React.ChangeEvent<HTMLInputElement>) => void;
   onDeleteDocument: (docId: string) => void;
@@ -58,6 +59,7 @@ export default function LeadProfileView({
   fileInputRef,
   onRefreshProfile,
   onUpdateStatus,
+  onEditLead,
   onAddNote,
   onFileUpload,
   onDeleteDocument,
@@ -81,20 +83,31 @@ export default function LeadProfileView({
           <ChevronLeft className="h-4.5 w-4.5" /> Back to Leads
         </button>
 
-        {/* Quick Status Control */}
-        <div className="flex items-center gap-2 flex-wrap">
-          <span className="text-xs font-semibold text-slate-450 uppercase">Update Status:</span>
-          <select
-            value={leadDetails?.status || selectedLead.status}
-            onChange={(e) => onUpdateStatus(e.target.value)}
-            className="rounded-xl border border-slate-200 bg-white px-3 py-1.5 text-xs font-semibold outline-none dark:border-slate-850"
-          >
-            <option value="NEW">New</option>
-            <option value="CONTACTED">Contacted</option>
-            <option value="QUALIFIED">Qualified</option>
-            <option value="REJECTED">Rejected</option>
-            <option value="SIGNED_RETAINER">Retained</option>
-          </select>
+        {/* Quick Status & Edit Controls */}
+        <div className="flex items-center gap-3 flex-wrap">
+          {onEditLead && (leadDetails || selectedLead) && (
+            <button
+              onClick={() => onEditLead(leadDetails || selectedLead)}
+              className="inline-flex items-center gap-1.5 rounded-xl bg-blue-600 px-3.5 py-1.5 text-xs font-bold text-white shadow-xs hover:bg-blue-700 transition-colors"
+            >
+              <Edit className="h-3.5 w-3.5" /> Edit Lead Details
+            </button>
+          )}
+
+          <div className="flex items-center gap-2">
+            <span className="text-xs font-semibold text-slate-450 uppercase">Update Status:</span>
+            <select
+              value={leadDetails?.status || selectedLead.status}
+              onChange={(e) => onUpdateStatus(e.target.value)}
+              className="rounded-xl border border-slate-200 bg-white px-3 py-1.5 text-xs font-semibold outline-none dark:border-slate-850"
+            >
+              <option value="NEW">New</option>
+              <option value="CONTACTED">Contacted</option>
+              <option value="QUALIFIED">Qualified</option>
+              <option value="REJECTED">Rejected</option>
+              <option value="SIGNED_RETAINER">Retained</option>
+            </select>
+          </div>
         </div>
       </div>
 

@@ -92,40 +92,42 @@ export default function AddLeadModal({
         animate={{ opacity: 1, scale: 1, y: 0 }}
         exit={{ opacity: 0, scale: 0.96, y: 15 }}
         transition={{ duration: 0.2 }}
-        className="relative w-full max-w-5xl my-auto overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-2xl dark:border-slate-800 dark:bg-slate-900 flex flex-col max-h-[92vh]"
+        className="relative w-full max-w-5xl my-auto overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-2xl flex flex-col max-h-[92vh]"
       >
         {/* Modal Top Header */}
-        <div className="flex items-center justify-between border-b border-slate-100 bg-slate-50/80 px-6 py-4 dark:border-slate-800 dark:bg-slate-900/80 backdrop-blur-xs">
+        <div className="flex items-center justify-between border-b border-slate-100 bg-white px-6 py-4 backdrop-blur-md">
           <div className="flex items-center gap-3">
-            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-blue-600 text-white shadow-md shadow-blue-500/20">
+            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-blue-600 to-indigo-600 text-white shadow-md shadow-blue-500/20">
               <Sparkles className="h-5 w-5" />
             </div>
             <div>
-              <h2 className="text-lg font-bold text-slate-900 dark:text-white">Admin Lead Ingestion Form</h2>
-              <p className="text-xs text-slate-500 dark:text-slate-400">
+              <h2 className="text-lg font-bold text-slate-900 tracking-tight">Admin Lead Ingestion Form</h2>
+              <p className="text-xs font-medium text-slate-500">
                 Select target vendor and campaign allocation first, then fill in complete lead case details.
               </p>
             </div>
           </div>
           <button
             onClick={() => setShowAddModal(false)}
-            className="rounded-xl p-2 text-slate-400 hover:bg-slate-200/60 hover:text-slate-700 dark:hover:bg-slate-800 dark:hover:text-white transition-colors cursor-pointer"
+            className="rounded-xl p-2 text-slate-400 hover:bg-slate-100 hover:text-slate-700 transition-colors cursor-pointer"
           >
             <X className="h-5 w-5" />
           </button>
         </div>
 
         {/* Target Vendor & Campaign Selector Bar */}
-        <div className="p-5 border-b border-slate-100 bg-gradient-to-r from-blue-50/70 via-indigo-50/40 to-slate-50 dark:from-slate-850 dark:to-slate-900 dark:border-slate-800">
-          <div className="mb-3 flex items-center justify-between">
+        <div className="p-5 border-b border-slate-200/80 bg-gradient-to-r from-blue-50/80 via-indigo-50/50 to-slate-50">
+          <div className="mb-3.5 flex items-center justify-between">
             <div className="flex items-center gap-2">
-              <Filter className="h-4 w-4 text-blue-600" />
-              <span className="text-xs font-bold uppercase tracking-wider text-slate-800 dark:text-slate-200">
+              <div className="flex h-6 w-6 items-center justify-center rounded-lg bg-blue-600/10 text-blue-600">
+                <Filter className="h-3.5 w-3.5" />
+              </div>
+              <span className="text-xs font-bold uppercase tracking-wider text-slate-800">
                 Step 1: Select Target Vendor & Assigned Campaign
               </span>
             </div>
             {selectedVendor && (
-              <span className="inline-flex items-center gap-1.5 rounded-full bg-blue-100 px-3 py-1 text-[11px] font-semibold text-blue-700 dark:bg-blue-950 dark:text-blue-300">
+              <span className="inline-flex items-center gap-1.5 rounded-full bg-blue-100/80 border border-blue-200/80 px-3 py-1 text-[11px] font-bold text-blue-700 shadow-2xs">
                 <Building2 className="h-3 w-3" />
                 Active Vendor: {selectedVendor.name}
               </span>
@@ -135,14 +137,14 @@ export default function AddLeadModal({
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {/* Vendor Dropdown */}
             <div className="space-y-1.5">
-              <label className="flex items-center gap-1.5 text-xs font-semibold text-slate-700 dark:text-slate-300">
+              <label className="flex items-center gap-1.5 text-xs font-semibold text-slate-700">
                 <Building2 className="h-3.5 w-3.5 text-blue-600" />
                 Select Vendor Provider <span className="text-rose-500">*</span>
               </label>
               <select
                 value={selectedVendorId}
                 onChange={(e) => handleVendorChange(e.target.value)}
-                className="w-full rounded-xl border border-slate-250 bg-white px-3.5 py-2.5 text-xs font-semibold text-slate-900 shadow-xs focus:border-blue-600 focus:ring-2 focus:ring-blue-100 outline-none dark:border-slate-700 dark:bg-slate-800 dark:text-white"
+                className="w-full rounded-xl border border-slate-250 bg-white px-3.5 py-2.5 text-xs font-medium text-slate-900 shadow-xs focus:border-blue-600 focus:ring-2 focus:ring-blue-500/15 outline-none transition-all cursor-pointer"
               >
                 {vendors.length === 0 ? (
                   <option value="">No Vendors Found</option>
@@ -158,7 +160,7 @@ export default function AddLeadModal({
 
             {/* Campaign Dropdown (Filtered by selected Vendor) */}
             <div className="space-y-1.5">
-              <label className="flex items-center gap-1.5 text-xs font-semibold text-slate-700 dark:text-slate-300">
+              <label className="flex items-center gap-1.5 text-xs font-semibold text-slate-700">
                 <Megaphone className="h-3.5 w-3.5 text-indigo-600" />
                 Assigned Campaign <span className="text-rose-500">*</span>
               </label>
@@ -166,7 +168,7 @@ export default function AddLeadModal({
                 value={selectedCampaignId}
                 onChange={(e) => setSelectedCampaignId(e.target.value)}
                 disabled={assignedCampaigns.length === 0}
-                className="w-full rounded-xl border border-slate-250 bg-white px-3.5 py-2.5 text-xs font-semibold text-slate-900 shadow-xs focus:border-blue-600 focus:ring-2 focus:ring-blue-100 outline-none disabled:bg-slate-100 disabled:text-slate-400 dark:border-slate-700 dark:bg-slate-800 dark:text-white"
+                className="w-full rounded-xl border border-slate-250 bg-white px-3.5 py-2.5 text-xs font-medium text-slate-900 shadow-xs focus:border-blue-600 focus:ring-2 focus:ring-blue-500/15 outline-none disabled:bg-slate-100 disabled:text-slate-400 transition-all cursor-pointer"
               >
                 {assignedCampaigns.length === 0 ? (
                   <option value="">No Campaigns Assigned to this Vendor</option>
@@ -179,7 +181,7 @@ export default function AddLeadModal({
                 )}
               </select>
               {assignedCampaigns.length === 0 && (
-                <p className="text-[11px] font-medium text-amber-600 dark:text-amber-400 flex items-center gap-1 mt-1">
+                <p className="text-[11px] font-medium text-amber-600 flex items-center gap-1 mt-1">
                   <ShieldAlert className="h-3 w-3" />
                   No campaigns currently linked to {selectedVendor?.name || 'this vendor'}.
                 </p>
@@ -189,7 +191,7 @@ export default function AddLeadModal({
         </div>
 
         {/* Embedded Full Vendor Portal Lead Form */}
-        <div className="flex-1 overflow-y-auto p-6 bg-slate-50/50 dark:bg-slate-950/40">
+        <div className="flex-1 overflow-y-auto p-6 bg-white">
           <NewCaseLeadFollowUpForm
             isModal={true}
             title="Step 2: Enter Lead Prospect & Case Details"

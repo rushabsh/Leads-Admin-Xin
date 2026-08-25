@@ -10,11 +10,12 @@ import {
   ExternalLink, Activity, Scale, Briefcase, Zap, Layers, RefreshCw, ChevronRight, XCircle,
   MessageSquare, Send, MessageSquarePlus, UserCheck, MessageCircle, Search, ThumbsUp,
   Paperclip, Bold, Italic, List, ListOrdered, Code, ChevronDown, ChevronUp, Globe,
-  Stethoscope, Award, FileCode, CheckSquare, HeartPulse, Ribbon, HelpCircle, Eye
+  Stethoscope, Award, FileCode, CheckSquare, HeartPulse, Ribbon, HelpCircle, Eye, Edit
 } from 'lucide-react';
 import api from '../../../../../lib/api';
 import { useCRMStore } from '../../../../../store/crmStore';
 import { useAuthStore } from '../../../../../store/authStore';
+import EditLeadModal from '@/components/admin/leads/EditLeadModal';
 
 interface PageProps {
   params: Promise<{ id: string }>;
@@ -49,6 +50,7 @@ export default function VendorLeadDetailPage({ params }: PageProps) {
   const [lead, setLead] = useState<any>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [copiedField, setCopiedField] = useState<string | null>(null);
+  const [showEditModal, setShowEditModal] = useState(false);
 
   // Activity Feed & Sidebar Tabs
   const [activeRightTab, setActiveRightTab] = useState<'Post' | 'Details' | 'Related'>('Post');
@@ -448,6 +450,15 @@ export default function VendorLeadDetailPage({ params }: PageProps) {
 
           {/* Quick Action Buttons */}
           <div className="flex flex-wrap items-center gap-3 pt-2 md:pt-0">
+            {(user?.roleName === 'Admin' || user?.roleName === 'Super Admin') && (
+              <button
+                onClick={() => setShowEditModal(true)}
+                className="inline-flex items-center gap-2 rounded-xl bg-blue-600 px-4 py-2.5 text-xs font-bold text-white shadow-sm hover:bg-blue-700 transition-colors cursor-pointer"
+              >
+                <Edit className="h-4 w-4" />
+                Edit Lead Details
+              </button>
+            )}
             {lead.phone && (
               <a
                 href={`tel:${lead.phone}`}
@@ -468,7 +479,7 @@ export default function VendorLeadDetailPage({ params }: PageProps) {
             )}
             <button
               onClick={() => handleCopy(`Lead ID: ${lead.leadId}\nName: ${lead.firstName} ${lead.lastName}\nEmail: ${lead.email}\nPhone: ${lead.phone}`, 'Header Summary')}
-              className="inline-flex items-center gap-2 rounded-xl bg-blue-600 px-4 py-2.5 text-xs font-bold text-white shadow-sm hover:bg-blue-700 transition-colors"
+              className="inline-flex items-center gap-2 rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-xs font-bold text-slate-700 shadow-xs hover:bg-slate-50 transition-colors"
             >
               <Copy className="h-4 w-4" />
               Copy Identifiers
@@ -1254,6 +1265,18 @@ export default function VendorLeadDetailPage({ params }: PageProps) {
         </div>
 
       </div>
+
+      <EditLeadModal
+        showEditModal={showEditModal}
+        setShowEditModal={setShowEditModal}
+        lead={lead}
+        onSuccess={() => {
+          setToastMessage('Lead details updated successfully!');
+          setTimeout(() => setToastMessage(null), 3000);
+          fetchData();
+          window.location.reload();
+        }}
+      />
     </div>
   );
 }

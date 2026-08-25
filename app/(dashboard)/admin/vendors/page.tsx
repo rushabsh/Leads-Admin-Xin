@@ -6,7 +6,7 @@ import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
   Search, Filter, Plus, Edit2, Trash2, Check, X,
-  Contact, Mail, Phone, MapPin, Activity, ChevronLeft, ChevronRight, BarChart3, FolderKanban, Eye
+  Contact, Mail, Phone, MapPin, Activity, ChevronLeft, ChevronRight, BarChart3, FolderKanban, Eye, EyeOff
 } from 'lucide-react';
 import { useCRMStore } from '../../../../store/crmStore';
 import api from '../../../../lib/api';
@@ -37,6 +37,8 @@ export default function VendorsPage() {
   // Modals state
   const [showAddEditModal, setShowAddEditModal] = useState(false);
   const [editingVendor, setEditingVendor] = useState<VendorData | null>(null);
+  const [showPassword, setShowPassword] = useState(false);
+  const [modalError, setModalError] = useState('');
 
   // Form state
   const [formData, setFormData] = useState({
@@ -64,6 +66,8 @@ export default function VendorsPage() {
 
   const handleOpenAddModal = () => {
     setEditingVendor(null);
+    setShowPassword(false);
+    setModalError('');
     setFormData({
       name: '',
       email: '',
@@ -79,6 +83,8 @@ export default function VendorsPage() {
 
   const handleOpenEditModal = (vendor: VendorData) => {
     setEditingVendor(vendor);
+    setShowPassword(false);
+    setModalError('');
     const associatedUser = vendor.users?.[0];
     setFormData({
       name: vendor.name,
@@ -96,6 +102,7 @@ export default function VendorsPage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
+    setModalError('');
     try {
       if (editingVendor) {
         await api.put(`/vendors/${editingVendor.id}`, formData);
@@ -107,7 +114,9 @@ export default function VendorsPage() {
       setShowAddEditModal(false);
       fetchData();
     } catch (error: any) {
-      showToast(error.response?.data?.message || 'Error processing request', 'error');
+      const serverMessage = error.response?.data?.message || 'Error processing request';
+      setModalError(serverMessage);
+      showToast(serverMessage, 'error');
     } finally {
       setIsSubmitting(false);
     }
@@ -414,6 +423,14 @@ export default function VendorsPage() {
             </div>
 
             <form onSubmit={handleSubmit} className="p-5 space-y-4 max-h-[75vh] overflow-y-auto">
+              {modalError && (
+                <div className="rounded-xl border border-rose-500/20 bg-rose-500/10 p-3 text-xs text-rose-600 font-medium flex items-center justify-between">
+                  <span>{modalError}</span>
+                  <button type="button" onClick={() => setModalError('')} className="text-rose-500 hover:text-rose-700">
+                    <X className="h-3.5 w-3.5" />
+                  </button>
+                </div>
+              )}
               <div>
                 <label className="text-xs font-bold uppercase tracking-wider text-slate-500">Vendor/Company Name</label>
                 <input
@@ -499,14 +516,29 @@ export default function VendorsPage() {
                 </div>
                 <div>
                   <label className="text-xs font-bold uppercase tracking-wider text-slate-500">Password</label>
-                  <input
-                    type="password"
-                    required={!editingVendor}
-                    value={formData.password}
-                    onChange={(e) => setFormData({ ...formData, password: e.target.value })}
-                    placeholder={editingVendor ? "Leave blank to keep same" : "••••••••"}
-                    className="mt-1 block w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-xs text-slate-900 outline-none focus:border-blue-600 shadow-xs"
-                  />
+                  <div className="relative mt-1">
+                    <input
+                      type={showPassword ? "text" : "password"}
+                      required={!editingVendor}
+                      value={formData.password}
+                      onChange={(e) => setFormData({ ...formData, password: e.target.value })}
+                      placeholder={editingVendor ? "Leave blank to keep same" : "••••••••"}
+                      className="block w-full rounded-xl border border-slate-200 bg-white px-3 py-2 pr-10 text-xs text-slate-900 outline-none focus:border-blue-600 shadow-xs"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setShowPassword(!showPassword)}
+                      className="absolute inset-y-0 right-0 flex items-center pr-3 text-slate-400 hover:text-slate-600 transition-colors"
+                      title={showPassword ? "Hide password" : "Show password"}
+                      tabIndex={-1}
+                    >
+                      {showPassword ? (
+                        <EyeOff className="h-4 w-4" />
+                      ) : (
+                        <Eye className="h-4 w-4" />
+                      )}
+                    </button>
+                  </div>
                 </div>
               </div>
 

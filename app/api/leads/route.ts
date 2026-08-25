@@ -193,19 +193,10 @@ export async function POST(req: NextRequest) {
     const tortName = campaign?.massTort?.name || 'General Mass Tort';
     const aiSummary = await AIService.generateLeadSummary(firstName, lastName, tortName, state, caseDetails);
 
-    // Format custom ID safely
-    const count = await prisma.lead.count();
-    let leadId = `MC-${10000 + count + 1}`;
-    let existingLead = await prisma.lead.findUnique({ where: { leadId } }).catch(() => null);
-    let attempts = 0;
-    while (existingLead && attempts < 100) {
-      attempts++;
-      leadId = `MC-${10000 + count + 1 + attempts}`;
-      existingLead = await prisma.lead.findUnique({ where: { leadId } }).catch(() => null);
-    }
-    if (existingLead) {
-      leadId = `MC-${Date.now().toString().slice(-6)}`;
-    }
+    // Generate collision-resistant unique Lead ID (e.g. MC-849201)
+    const timestampSuffix = Date.now().toString().slice(-5);
+    const randomSuffix = Math.floor(100 + Math.random() * 900);
+    const leadId = `MC-${timestampSuffix}${randomSuffix}`;
 
     const resolvedVendorId = vendorId && typeof vendorId === 'string' && vendorId.length === 24 ? vendorId : (user.vendorId && typeof user.vendorId === 'string' && user.vendorId.length === 24 ? user.vendorId : undefined);
     const resolvedLawFirmId = lawFirmId && typeof lawFirmId === 'string' && lawFirmId.length === 24 ? lawFirmId : undefined;

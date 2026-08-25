@@ -70,17 +70,15 @@ export async function POST(req: NextRequest) {
       tier
     } = body;
 
-    // Resolve Vendor
-    let vendor = null;
+    // Resolve Vendor strictly via token/ID
     const targetVendorId = inputVendorId || vendorToken;
-    if (targetVendorId && typeof targetVendorId === 'string' && targetVendorId.length === 24) {
-      vendor = await prisma.vendor.findUnique({ where: { id: targetVendorId } }).catch(() => null);
-    }
-    if (!vendor) {
-      vendor = await prisma.vendor.findFirst({ where: { status: 'ACTIVE' } }).catch(() => null);
+    if (!targetVendorId || typeof targetVendorId !== 'string' || targetVendorId.length !== 24) {
+      return NextResponse.json({ success: false, message: 'Valid vendorToken or vendorId is required' }, { status: 400 });
     }
 
-    if (!vendor) {
+    const vendor = await prisma.vendor.findUnique({ where: { id: targetVendorId } }).catch(() => null);
+
+    if (!vendor || vendor.status !== 'ACTIVE') {
       return NextResponse.json({ success: false, message: 'Invalid or inactive vendor token' }, { status: 400 });
     }
 
@@ -209,19 +207,10 @@ export async function POST(req: NextRequest) {
       caseDetailsFormatted
     );
 
-    // Generate unique Lead ID (e.g. MC-10045)
-    const totalLeads = await prisma.lead.count();
-    let leadId = `MC-${10000 + totalLeads + 1}`;
-    let existingLead = await prisma.lead.findUnique({ where: { leadId } }).catch(() => null);
-    let attempts = 0;
-    while (existingLead && attempts < 100) {
-      attempts++;
-      leadId = `MC-${10000 + totalLeads + 1 + attempts}`;
-      existingLead = await prisma.lead.findUnique({ where: { leadId } }).catch(() => null);
-    }
-    if (existingLead) {
-      leadId = `MC-${Date.now().toString().slice(-6)}`;
-    }
+    // Generate collision-resistant unique Lead ID (e.g. MC-849201)
+    const timestampSuffix = Date.now().toString().slice(-5);
+    const randomSuffix = Math.floor(100 + Math.random() * 900);
+    const leadId = `MC-${timestampSuffix}${randomSuffix}`;
 
     const lead = await prisma.lead.create({
       data: {

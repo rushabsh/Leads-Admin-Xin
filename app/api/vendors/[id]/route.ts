@@ -47,43 +47,65 @@ export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: 
       password,
     } = body;
 
-    // Check duplicate Vendor email
-    if (email) {
-      const existingVendor = await prisma.vendor.findFirst({
-        where: {
-          email: email.toLowerCase().trim(),
-          NOT: { id }
-        }
-      });
-      if (existingVendor) {
-        return NextResponse.json({ success: false, message: 'Vendor email already exists' }, { status: 400 });
-      }
-    }
-
     // Find the associated User record
     const existingUser = await prisma.user.findFirst({
       where: { vendorId: id }
     });
 
-    // Check duplicate User email or username
-    if (username || email) {
-      const normalizedUsername = username?.toLowerCase().trim();
-      const normalizedEmail = email?.toLowerCase().trim();
-
-      const duplicateUser = await prisma.user.findFirst({
+    // 1. Check duplicate Vendor / User email
+    if (email) {
+      const normalizedEmail = email.toLowerCase().trim();
+      const existingVendorEmail = await prisma.vendor.findFirst({
         where: {
-          OR: [
-            normalizedEmail ? { email: normalizedEmail } : null,
-            normalizedUsername ? { username: normalizedUsername } : null,
-          ].filter(Boolean) as any,
-          NOT: existingUser ? { id: existingUser.id } : undefined,
+          email: normalizedEmail,
+          NOT: { id }
+        }
+      });
+      const existingUserEmail = await prisma.user.findFirst({
+        where: {
+          email: normalizedEmail,
+          NOT: existingUser ? { id: existingUser.id } : undefined
+        }
+      });
+      if (existingVendorEmail || existingUserEmail) {
+        return NextResponse.json({ success: false, message: 'Vendor email already exists' }, { status: 400 });
+      }
+    }
+
+    // 2. Check duplicate Vendor / User phone number
+    if (phone && phone.trim() !== '') {
+      const normalizedPhone = phone.trim();
+      const existingVendorPhone = await prisma.vendor.findFirst({
+        where: {
+          phone: normalizedPhone,
+          NOT: { id }
+        }
+      });
+      const existingUserPhone = await prisma.user.findFirst({
+        where: {
+          phone: normalizedPhone,
+          NOT: existingUser ? { id: existingUser.id } : undefined
+        }
+      });
+      if (existingVendorPhone || existingUserPhone) {
+        return NextResponse.json({ success: false, message: 'Mobile number already exists' }, { status: 400 });
+      }
+    }
+
+    // 3. Check duplicate Username / Login ID
+    if (username) {
+      const normalizedUsername = username.toLowerCase().trim();
+      const duplicateUsername = await prisma.user.findFirst({
+        where: {
+          username: normalizedUsername,
+          NOT: existingUser ? { id: existingUser.id } : undefined
         }
       });
 
-      if (duplicateUser) {
+      if (duplicateUsername) {
         return NextResponse.json({
           success: false,
-          message: 'A user with this email or Username/Login ID already exists'
+          message: 'Username / Login ID already exists'
         }, { status: 400 });
       }
     }

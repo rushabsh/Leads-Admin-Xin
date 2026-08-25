@@ -126,6 +126,14 @@ model Lead {
   activityLogs      ActivityLog[]
   comments          Comment[]
   case              Case?
+
+  @@index([vendorId, status])
+  @@index([lawFirmId, status])
+  @@index([campaignId, createdAt])
+  @@index([email])
+  @@index([phone])
+  @@index([status])
+  @@index([state])
 }
 
 model Vendor {

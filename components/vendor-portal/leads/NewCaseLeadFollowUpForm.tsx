@@ -292,13 +292,13 @@ interface FormInputProps extends React.InputHTMLAttributes<HTMLInputElement> {
 }
 
 const FormInput: React.FC<FormInputProps> = ({ label, required, className = '', ...props }) => (
-  <div>
-    <label className="text-xs font-semibold text-slate-700 block mb-1">
-      {label} {required && <span className="text-rose-500">*</span>}
+  <div className="space-y-1.5">
+    <label className="text-xs font-semibold text-slate-700 flex items-center justify-between">
+      <span>{label} {required && <span className="text-rose-500">*</span>}</span>
     </label>
     <input
       {...props}
-      className={`w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-xs text-slate-900 placeholder:text-slate-400 focus:border-blue-600 focus:ring-2 focus:ring-blue-100 outline-none shadow-xs transition-all ${className}`}
+      className={`w-full rounded-xl border border-slate-250 bg-white px-3.5 py-2.5 text-xs font-medium text-slate-900 placeholder:text-slate-400 focus:border-blue-600 focus:ring-2 focus:ring-blue-500/15 outline-none shadow-xs transition-all ${className}`}
     />
   </div>
 );
@@ -310,13 +310,13 @@ interface FormSelectProps extends React.SelectHTMLAttributes<HTMLSelectElement> 
 }
 
 const FormSelect: React.FC<FormSelectProps> = ({ label, options, required, className = '', ...props }) => (
-  <div>
-    <label className="text-xs font-semibold text-slate-700 block mb-1">
-      {label} {required && <span className="text-rose-500">*</span>}
+  <div className="space-y-1.5">
+    <label className="text-xs font-semibold text-slate-700 flex items-center justify-between">
+      <span>{label} {required && <span className="text-rose-500">*</span>}</span>
     </label>
     <select
       {...props}
-      className={`w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-xs text-slate-900 focus:border-blue-600 focus:ring-2 focus:ring-blue-100 outline-none shadow-xs transition-all ${className}`}
+      className={`w-full rounded-xl border border-slate-250 bg-white px-3.5 py-2.5 text-xs font-medium text-slate-900 focus:border-blue-600 focus:ring-2 focus:ring-blue-500/15 outline-none shadow-xs transition-all cursor-pointer ${className}`}
     >
       {options.map((opt) => (
         <option key={opt} value={opt}>
@@ -337,23 +337,23 @@ interface FormSectionCardProps {
 
 const FormSectionCard: React.FC<FormSectionCardProps> = ({ number, title, badge, colorTheme, children }) => {
   const themeClasses = {
-    blue: { bg: 'bg-blue-100', text: 'text-blue-700', badgeBg: 'bg-blue-50', badgeBorder: 'border-blue-200' },
-    indigo: { bg: 'bg-indigo-100', text: 'text-indigo-700', badgeBg: 'bg-indigo-50', badgeBorder: 'border-indigo-200' },
-    amber: { bg: 'bg-amber-100', text: 'text-amber-700', badgeBg: 'bg-amber-50', badgeBorder: 'border-amber-200' },
-    emerald: { bg: 'bg-emerald-100', text: 'text-emerald-700', badgeBg: 'bg-emerald-50', badgeBorder: 'border-emerald-200' },
+    blue: { bg: 'bg-blue-100 text-blue-700', badgeBg: 'bg-blue-50', badgeBorder: 'border-blue-200' },
+    indigo: { bg: 'bg-indigo-100 text-indigo-700', badgeBg: 'bg-indigo-50', badgeBorder: 'border-indigo-200' },
+    amber: { bg: 'bg-amber-100 text-amber-700', badgeBg: 'bg-amber-50', badgeBorder: 'border-amber-200' },
+    emerald: { bg: 'bg-emerald-100 text-emerald-700', badgeBg: 'bg-emerald-50', badgeBorder: 'border-emerald-200' },
   }[colorTheme];
 
   return (
-    <div className="rounded-2xl border border-slate-200 bg-white shadow-sm overflow-hidden flex flex-col justify-between">
+    <div className="rounded-2xl border border-slate-200 bg-white shadow-xs hover:shadow-md transition-all duration-200 overflow-hidden flex flex-col justify-between">
       <div>
-        <div className="border-b border-slate-100 bg-slate-50/60 p-4 px-5 flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <div className={`flex h-7 w-7 items-center justify-center rounded-lg ${themeClasses.bg} ${themeClasses.text} font-bold text-xs`}>
+        <div className="border-b border-slate-100 bg-slate-50/80 p-4 px-5 flex items-center justify-between">
+          <div className="flex items-center gap-2.5">
+            <div className={`flex h-7 w-7 items-center justify-center rounded-lg ${themeClasses.bg} font-bold text-xs shadow-xs`}>
               {number}
             </div>
-            <h2 className="text-sm font-bold text-slate-900">{title}</h2>
+            <h2 className="text-sm font-bold text-slate-900 tracking-tight">{title}</h2>
           </div>
-          <span className={`text-[10px] font-bold uppercase tracking-wider ${themeClasses.text} ${themeClasses.badgeBg} px-2 py-0.5 rounded-md border ${themeClasses.badgeBorder}`}>
+          <span className={`text-[10px] font-bold uppercase tracking-wider ${themeClasses.bg} ${themeClasses.badgeBg} px-2.5 py-0.5 rounded-full border ${themeClasses.badgeBorder}`}>
             {badge}
           </span>
         </div>
@@ -396,6 +396,8 @@ export interface NewCaseLeadFollowUpFormProps {
   onSuccess?: (leadData: any) => void;
   onCancel?: () => void;
   isModal?: boolean;
+  isEditMode?: boolean;
+  leadId?: string;
   title?: string;
   subtitle?: string;
   vendorId?: string;
@@ -409,6 +411,8 @@ export default function NewCaseLeadFollowUpForm({
   onSuccess,
   onCancel,
   isModal = false,
+  isEditMode = false,
+  leadId,
   title = "New Case: Lead Follow Up",
   subtitle = "Fill out the grouped sections below to record complete case follow-up data.",
   vendorId,
@@ -432,7 +436,7 @@ export default function NewCaseLeadFollowUpForm({
         ...initialValues
       }));
     }
-  }, [initialValues?.campaignName, vendorId]);
+  }, [initialValues, vendorId]);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [toast, setToast] = useState<{ message: string; type: 'success' | 'error' } | null>(null);
 
@@ -610,6 +614,20 @@ export default function NewCaseLeadFollowUpForm({
 
     try {
       const payload = buildLeadPayload(formData);
+
+      if (isEditMode && leadId) {
+        const updateRes = await api.put(`/leads/${leadId}`, payload);
+        if (updateRes.data?.success) {
+          showToast('Lead details updated successfully!', 'success');
+          await fetchData(true);
+          if (onSuccess) {
+            onSuccess(updateRes.data.lead || payload);
+          }
+          return;
+        } else {
+          throw new Error(updateRes.data?.message || 'Failed to update lead');
+        }
+      }
 
       let createdLead: any = null;
       try {
@@ -1133,7 +1151,7 @@ export default function NewCaseLeadFollowUpForm({
                 placeholder="e.g. Jane Doe"
               />
               <FormSelect
-                label="Type"
+                label="Tort"
                 name="type"
                 value={formData.type}
                 onChange={handleInputChange}
@@ -1515,201 +1533,205 @@ export default function NewCaseLeadFollowUpForm({
           </FormSectionCard>
 
           {/* SECTION 5: OTHER CASE INFORMATION */}
-          <FormSectionCard number={5} title="Other Case Information" badge="Case Extra" colorTheme="amber">
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              <FormSelect
-                label="Were you Physically Assaulted (sexual in nature) while in a Rideshare ?"
-                name="rideshareAssaulted"
-                value={formData.rideshareAssaulted}
-                onChange={handleInputChange}
-                options={YES_NO_OPTIONS}
-              />
-              <FormSelect
-                label="Did this incident happen in a LYFT or UBER?"
-                name="rideshareProvider"
-                value={formData.rideshareProvider}
-                onChange={handleInputChange}
-                options={RIDESHARE_PROVIDER_OPTIONS}
-              />
-              <FormInput
-                label="Date of Incident :-"
-                type="date"
-                name="rideshareIncidentDate"
-                value={formData.rideshareIncidentDate}
-                onChange={handleInputChange}
-              />
-              <FormSelect
-                label="Do you have the proof of ride?"
-                name="rideshareProofOfRide"
-                value={formData.rideshareProofOfRide}
-                onChange={handleInputChange}
-                options={YES_NO_OPTIONS}
-              />
-              <FormInput
-                label="Driver Name -"
-                name="rideshareDriverName"
-                value={formData.rideshareDriverName}
-                onChange={handleInputChange}
-                placeholder="Driver Name"
-              />
-              <FormInput
-                label="Address where this incident occurred?"
-                name="rideshareIncidentAddress"
-                value={formData.rideshareIncidentAddress}
-                onChange={handleInputChange}
-                placeholder="Incident Location / Address"
-              />
-              <div className="sm:col-span-2">
-                <label className="text-xs font-semibold text-slate-700 block mb-1">
-                  Can you describe the whole Incident what happened?
-                </label>
-                <textarea
-                  name="rideshareNarrative"
-                  value={formData.rideshareNarrative}
+          <div className="col-span-1 lg:col-span-2">
+            <FormSectionCard number={5} title="Other Case Information" badge="Case Extra" colorTheme="amber">
+              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+                <FormSelect
+                  label="Were you Physically Assaulted (sexual in nature) while in a Rideshare ?"
+                  name="rideshareAssaulted"
+                  value={formData.rideshareAssaulted}
                   onChange={handleInputChange}
-                  rows={3}
-                  placeholder="Describe what happened during the incident..."
-                  className="w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-xs text-slate-900 placeholder:text-slate-400 focus:border-blue-600 focus:ring-2 focus:ring-blue-100 outline-none shadow-xs transition-all"
+                  options={YES_NO_OPTIONS}
+                />
+                <FormSelect
+                  label="Did this incident happen in a LYFT or UBER?"
+                  name="rideshareProvider"
+                  value={formData.rideshareProvider}
+                  onChange={handleInputChange}
+                  options={RIDESHARE_PROVIDER_OPTIONS}
+                />
+                <FormInput
+                  label="Date of Incident :-"
+                  type="date"
+                  name="rideshareIncidentDate"
+                  value={formData.rideshareIncidentDate}
+                  onChange={handleInputChange}
+                />
+                <FormSelect
+                  label="Do you have the proof of ride?"
+                  name="rideshareProofOfRide"
+                  value={formData.rideshareProofOfRide}
+                  onChange={handleInputChange}
+                  options={YES_NO_OPTIONS}
+                />
+                <FormInput
+                  label="Driver Name -"
+                  name="rideshareDriverName"
+                  value={formData.rideshareDriverName}
+                  onChange={handleInputChange}
+                  placeholder="Driver Name"
+                />
+                <FormInput
+                  label="Address where this incident occurred?"
+                  name="rideshareIncidentAddress"
+                  value={formData.rideshareIncidentAddress}
+                  onChange={handleInputChange}
+                  placeholder="Incident Location / Address"
+                />
+                <div className="sm:col-span-2 md:col-span-3">
+                  <label className="text-xs font-semibold text-slate-700 block mb-1">
+                    Can you describe the whole Incident what happened?
+                  </label>
+                  <textarea
+                    name="rideshareNarrative"
+                    value={formData.rideshareNarrative}
+                    onChange={handleInputChange}
+                    rows={3}
+                    placeholder="Describe what happened during the incident..."
+                    className="w-full rounded-xl border border-slate-200 bg-white px-3.5 py-2.5 text-xs text-slate-900 placeholder:text-slate-400 focus:border-blue-600 focus:ring-2 focus:ring-blue-500/15 outline-none shadow-xs transition-all"
+                  />
+                </div>
+                <div className="sm:col-span-2 md:col-span-3">
+                  <FormSelect
+                    label="Did you reported this incident to anyone?"
+                    name="rideshareReportedTo"
+                    value={formData.rideshareReportedTo}
+                    onChange={handleInputChange}
+                    options={REPORTED_TO_OPTIONS}
+                  />
+                </div>
+                {/* Question 1: Emotional Changes & Symptoms */}
+                <div className="sm:col-span-2 md:col-span-3 bg-slate-50/80 rounded-xl p-4 border border-slate-200/80 space-y-3">
+                  <div className="flex items-center justify-between">
+                    <label className="text-xs font-bold text-slate-900 flex items-center gap-2">
+                      <span className="flex h-5 w-5 items-center justify-center rounded-md bg-amber-100 text-amber-800 text-[10px] font-bold">1</span>
+                      Emotional Changes / Symptoms Before Diagnosis
+                    </label>
+                    <span className="text-[10px] font-semibold text-amber-700 bg-amber-50 px-2 py-0.5 rounded-md border border-amber-200">
+                      Symptom Details
+                    </span>
+                  </div>
+                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                    <div className="sm:col-span-2">
+                      <textarea
+                        name="rideshareSymptomsDetails"
+                        value={formData.rideshareSymptomsDetails}
+                        onChange={handleInputChange}
+                        rows={2}
+                        placeholder="Describe emotional changes or symptoms before diagnosis..."
+                        className="w-full rounded-xl border border-slate-200 bg-white px-3.5 py-2.5 text-xs text-slate-900 placeholder:text-slate-400 focus:border-amber-500 focus:ring-2 focus:ring-amber-500/15 outline-none shadow-xs transition-all"
+                      />
+                    </div>
+                    <div>
+                      <FormInput
+                        label="Symptoms Started Date:"
+                        type="date"
+                        name="rideshareSymptomsDate"
+                        value={formData.rideshareSymptomsDate}
+                        onChange={handleInputChange}
+                      />
+                    </div>
+                  </div>
+                </div>
+
+                {/* Question 2: Diagnosis Confirmation & Test */}
+                <div className="sm:col-span-2 md:col-span-3 bg-slate-50/80 rounded-xl p-4 border border-slate-200/80 space-y-3">
+                  <div className="flex items-center justify-between">
+                    <label className="text-xs font-bold text-slate-900 flex items-center gap-2">
+                      <span className="flex h-5 w-5 items-center justify-center rounded-md bg-indigo-100 text-indigo-800 text-[10px] font-bold">2</span>
+                      How did they Confirm your Diagnosis / Test before Diagnosis
+                    </label>
+                    <span className="text-[10px] font-semibold text-indigo-700 bg-indigo-50 px-2 py-0.5 rounded-md border border-indigo-200">
+                      Medical Verification
+                    </span>
+                  </div>
+                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                    <div className="sm:col-span-2">
+                      <textarea
+                        name="rideshareDiagnosisTestDetails"
+                        value={formData.rideshareDiagnosisTestDetails}
+                        onChange={handleInputChange}
+                        rows={2}
+                        placeholder="Describe how diagnosis was confirmed or tests performed..."
+                        className="w-full rounded-xl border border-slate-200 bg-white px-3.5 py-2.5 text-xs text-slate-900 placeholder:text-slate-400 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/15 outline-none shadow-xs transition-all"
+                      />
+                    </div>
+                    <div>
+                      <FormInput
+                        label="Date of Test:"
+                        type="date"
+                        name="rideshareDiagnosisTestDate"
+                        value={formData.rideshareDiagnosisTestDate}
+                        onChange={handleInputChange}
+                      />
+                    </div>
+                  </div>
+                </div>
+
+                {/* Question 3: Treatment */}
+                <div className="sm:col-span-2 md:col-span-3 bg-slate-50/80 rounded-xl p-4 border border-slate-200/80 space-y-3">
+                  <div className="flex items-center justify-between">
+                    <label className="text-xs font-bold text-slate-900 flex items-center gap-2">
+                      <span className="flex h-5 w-5 items-center justify-center rounded-md bg-emerald-100 text-emerald-800 text-[10px] font-bold">3</span>
+                      Treatment Received
+                    </label>
+                    <span className="text-[10px] font-semibold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-md border border-emerald-200">
+                      Treatment Details
+                    </span>
+                  </div>
+                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                    <div className="sm:col-span-2">
+                      <textarea
+                        name="rideshareTreatmentDetails"
+                        value={formData.rideshareTreatmentDetails}
+                        onChange={handleInputChange}
+                        rows={2}
+                        placeholder="Describe treatment received..."
+                        className="w-full rounded-xl border border-slate-200 bg-white px-3.5 py-2.5 text-xs text-slate-900 placeholder:text-slate-400 focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/15 outline-none shadow-xs transition-all"
+                      />
+                    </div>
+                    <div>
+                      <FormInput
+                        label="Treatment Date:"
+                        type="date"
+                        name="rideshareTreatmentDate"
+                        value={formData.rideshareTreatmentDate}
+                        onChange={handleInputChange}
+                      />
+                    </div>
+                  </div>
+                </div>
+
+                <FormSelect
+                  label="Did you have any legal representation with any law firm regarding this claim?"
+                  name="legalRepresentation"
+                  value={formData.legalRepresentation}
+                  onChange={handleInputChange}
+                  options={YES_NO_OPTIONS}
+                />
+                <FormSelect
+                  label="Conviction Felony/Crime?"
+                  name="felonyConviction"
+                  value={formData.felonyConviction}
+                  onChange={handleInputChange}
+                  options={YES_NO_UPPER_OPTIONS}
+                />
+                <FormSelect
+                  label="Do you have Medical Records?"
+                  name="hasMedicalRecords"
+                  value={formData.hasMedicalRecords}
+                  onChange={handleInputChange}
+                  options={YES_NO_OPTIONS}
                 />
               </div>
-              <FormSelect
-                label="Did you reported this incident to anyone?"
-                name="rideshareReportedTo"
-                value={formData.rideshareReportedTo}
-                onChange={handleInputChange}
-                options={REPORTED_TO_OPTIONS}
-              />
-              {/* Question 1: Emotional Changes & Symptoms */}
-              <div className="sm:col-span-2 bg-slate-50/70 dark:bg-slate-900/50 rounded-xl p-4 border border-slate-200/80 dark:border-slate-800 space-y-3">
-                <div className="flex items-center justify-between">
-                  <label className="text-xs font-bold text-slate-900 dark:text-slate-100 flex items-center gap-2">
-                    <span className="flex h-5 w-5 items-center justify-center rounded-md bg-amber-100 dark:bg-amber-900/50 text-amber-800 dark:text-amber-300 text-[10px] font-bold">1</span>
-                    Emotional Changes / Symptoms Before Diagnosis
-                  </label>
-                  <span className="text-[10px] font-semibold text-amber-700 dark:text-amber-300 bg-amber-50 dark:bg-amber-950/50 px-2 py-0.5 rounded-md border border-amber-200 dark:border-amber-800">
-                    Symptom Details
-                  </span>
-                </div>
-                <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-                  <div className="sm:col-span-2">
-                    <textarea
-                      name="rideshareSymptomsDetails"
-                      value={formData.rideshareSymptomsDetails}
-                      onChange={handleInputChange}
-                      rows={2}
-                      placeholder="Describe emotional changes or symptoms before diagnosis..."
-                      className="w-full rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-950 px-3 py-2 text-xs text-slate-900 dark:text-slate-100 placeholder:text-slate-400 focus:border-amber-500 focus:ring-2 focus:ring-amber-100 outline-none shadow-xs transition-all"
-                    />
-                  </div>
-                  <div>
-                    <FormInput
-                      label="Symptoms Started Date:"
-                      type="date"
-                      name="rideshareSymptomsDate"
-                      value={formData.rideshareSymptomsDate}
-                      onChange={handleInputChange}
-                    />
-                  </div>
-                </div>
-              </div>
-
-              {/* Question 2: Diagnosis Confirmation & Test */}
-              <div className="sm:col-span-2 bg-slate-50/70 dark:bg-slate-900/50 rounded-xl p-4 border border-slate-200/80 dark:border-slate-800 space-y-3">
-                <div className="flex items-center justify-between">
-                  <label className="text-xs font-bold text-slate-900 dark:text-slate-100 flex items-center gap-2">
-                    <span className="flex h-5 w-5 items-center justify-center rounded-md bg-indigo-100 dark:bg-indigo-900/50 text-indigo-800 dark:text-indigo-300 text-[10px] font-bold">2</span>
-                    How did they Confirm your Diagnosis / Test before Diagnosis
-                  </label>
-                  <span className="text-[10px] font-semibold text-indigo-700 dark:text-indigo-300 bg-indigo-50 dark:bg-indigo-950/50 px-2 py-0.5 rounded-md border border-indigo-200 dark:border-indigo-800">
-                    Medical Verification
-                  </span>
-                </div>
-                <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-                  <div className="sm:col-span-2">
-                    <textarea
-                      name="rideshareDiagnosisTestDetails"
-                      value={formData.rideshareDiagnosisTestDetails}
-                      onChange={handleInputChange}
-                      rows={2}
-                      placeholder="Describe how diagnosis was confirmed or tests performed..."
-                      className="w-full rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-950 px-3 py-2 text-xs text-slate-900 dark:text-slate-100 placeholder:text-slate-400 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100 outline-none shadow-xs transition-all"
-                    />
-                  </div>
-                  <div>
-                    <FormInput
-                      label="Date of Test:"
-                      type="date"
-                      name="rideshareDiagnosisTestDate"
-                      value={formData.rideshareDiagnosisTestDate}
-                      onChange={handleInputChange}
-                    />
-                  </div>
-                </div>
-              </div>
-
-              {/* Question 3: Treatment */}
-              <div className="sm:col-span-2 bg-slate-50/70 dark:bg-slate-900/50 rounded-xl p-4 border border-slate-200/80 dark:border-slate-800 space-y-3">
-                <div className="flex items-center justify-between">
-                  <label className="text-xs font-bold text-slate-900 dark:text-slate-100 flex items-center gap-2">
-                    <span className="flex h-5 w-5 items-center justify-center rounded-md bg-emerald-100 dark:bg-emerald-900/50 text-emerald-800 dark:text-emerald-300 text-[10px] font-bold">3</span>
-                    Treatment Received
-                  </label>
-                  <span className="text-[10px] font-semibold text-emerald-700 dark:text-emerald-300 bg-emerald-50 dark:bg-emerald-950/50 px-2 py-0.5 rounded-md border border-emerald-200 dark:border-emerald-800">
-                    Treatment Details
-                  </span>
-                </div>
-                <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-                  <div className="sm:col-span-2">
-                    <textarea
-                      name="rideshareTreatmentDetails"
-                      value={formData.rideshareTreatmentDetails}
-                      onChange={handleInputChange}
-                      rows={2}
-                      placeholder="Describe treatment received..."
-                      className="w-full rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-950 px-3 py-2 text-xs text-slate-900 dark:text-slate-100 placeholder:text-slate-400 focus:border-emerald-500 focus:ring-2 focus:ring-emerald-100 outline-none shadow-xs transition-all"
-                    />
-                  </div>
-                  <div>
-                    <FormInput
-                      label="Treatment Date:"
-                      type="date"
-                      name="rideshareTreatmentDate"
-                      value={formData.rideshareTreatmentDate}
-                      onChange={handleInputChange}
-                    />
-                  </div>
-                </div>
-              </div>
-
-              <FormSelect
-                label="Did you have any legal representation with any law firm regarding this claim?"
-                name="legalRepresentation"
-                value={formData.legalRepresentation}
-                onChange={handleInputChange}
-                options={YES_NO_OPTIONS}
-              />
-              <FormSelect
-                label="Conviction Felony/Crime?"
-                name="felonyConviction"
-                value={formData.felonyConviction}
-                onChange={handleInputChange}
-                options={YES_NO_UPPER_OPTIONS}
-              />
-              <FormSelect
-                label="Do you have Medical Records?"
-                name="hasMedicalRecords"
-                value={formData.hasMedicalRecords}
-                onChange={handleInputChange}
-                options={YES_NO_OPTIONS}
-              />
-            </div>
-          </FormSectionCard>
+            </FormSectionCard>
+          </div>
         </div>
 
         {/* BOTTOM ACTION BAR */}
-        <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm flex flex-col sm:flex-row items-center justify-between gap-4">
-          <div className="flex items-center gap-2 text-xs text-slate-500">
-            <Sparkles className="h-4 w-4 text-blue-600" />
+        <div className="rounded-2xl border border-slate-200/90 bg-white p-5 shadow-xs flex flex-col sm:flex-row items-center justify-between gap-4 dark:border-slate-800 dark:bg-slate-900">
+          <div className="flex items-center gap-2 text-xs font-medium text-slate-500 dark:text-slate-400">
+            <Sparkles className="h-4 w-4 text-blue-600 dark:text-blue-400 shrink-0" />
             <span>Ensure all required contact & case information fields are verified before saving to the database.</span>
           </div>
 
@@ -1718,14 +1740,14 @@ export default function NewCaseLeadFollowUpForm({
               <button
                 type="button"
                 onClick={onCancel}
-                className="flex-1 sm:flex-none text-center rounded-xl border border-slate-200 bg-white px-5 py-2.5 text-xs font-semibold text-slate-700 hover:bg-slate-50 transition-colors"
+                className="flex-1 sm:flex-none text-center rounded-xl border border-slate-200 bg-white px-5 py-2.5 text-xs font-semibold text-slate-700 hover:bg-slate-50 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200 dark:hover:bg-slate-750 transition-colors"
               >
                 Cancel
               </button>
             ) : (
               <Link
                 href="/vendor-portal/leads"
-                className="flex-1 sm:flex-none text-center rounded-xl border border-slate-200 bg-white px-5 py-2.5 text-xs font-semibold text-slate-700 hover:bg-slate-50 transition-colors"
+                className="flex-1 sm:flex-none text-center rounded-xl border border-slate-200 bg-white px-5 py-2.5 text-xs font-semibold text-slate-700 hover:bg-slate-50 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200 dark:hover:bg-slate-750 transition-colors"
               >
                 Cancel
               </Link>
@@ -1733,7 +1755,7 @@ export default function NewCaseLeadFollowUpForm({
             <button
               type="submit"
               disabled={isSubmitting}
-              className="flex-1 sm:flex-none inline-flex items-center justify-center gap-2 rounded-xl bg-blue-600 px-6 py-2.5 text-xs font-bold text-white shadow-md shadow-blue-600/25 hover:bg-blue-700 transition-all active:scale-[0.98] disabled:opacity-50 cursor-pointer"
+              className="flex-1 sm:flex-none inline-flex items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 px-6 py-2.5 text-xs font-bold text-white shadow-md shadow-blue-500/20 hover:from-blue-700 hover:to-indigo-700 transition-all active:scale-[0.98] disabled:opacity-50 cursor-pointer"
             >
               {isSubmitting ? (
                 <>

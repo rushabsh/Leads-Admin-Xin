@@ -73,29 +73,41 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ success: false, message: 'Password is required' }, { status: 400 });
     }
 
-    // Check duplicate Vendor email
-    const existingVendor = await prisma.vendor.findUnique({
-      where: { email: finalEmail.toLowerCase().trim() }
+    // 1. Check duplicate Vendor / User email
+    const normalizedEmail = finalEmail.toLowerCase().trim();
+    const existingVendorEmail = await prisma.vendor.findFirst({
+      where: { email: normalizedEmail }
     });
-    if (existingVendor) {
+    const existingUserEmail = await prisma.user.findFirst({
+      where: { email: normalizedEmail }
+    });
+    if (existingVendorEmail || existingUserEmail) {
       return NextResponse.json({ success: false, message: 'Vendor email already exists' }, { status: 400 });
     }
 
-    // Check duplicate User email or username
-    const normalizedUsername = username.toLowerCase().trim();
-    const normalizedEmail = finalEmail.toLowerCase().trim();
-    const existingUser = await prisma.user.findFirst({
-      where: {
-        OR: [
-          { email: normalizedEmail },
-          { username: normalizedUsername }
-        ]
+    // 2. Check duplicate Vendor / User mobile number
+    if (finalPhone && finalPhone.trim() !== '') {
+      const normalizedPhone = finalPhone.trim();
+      const existingVendorPhone = await prisma.vendor.findFirst({
+        where: { phone: normalizedPhone }
+      });
+      const existingUserPhone = await prisma.user.findFirst({
+        where: { phone: normalizedPhone }
+      });
+      if (existingVendorPhone || existingUserPhone) {
+        return NextResponse.json({ success: false, message: 'Mobile number already exists' }, { status: 400 });
       }
+    }
+
+    // 3. Check duplicate Username / Login ID
+    const normalizedUsername = username.toLowerCase().trim();
+    const existingUserUsername = await prisma.user.findFirst({
+      where: { username: normalizedUsername }
     });
-    if (existingUser) {
+    if (existingUserUsername) {
       return NextResponse.json({
         success: false,
-        message: 'A user with this email or Username/Login ID already exists'
+        message: 'Username / Login ID already exists'
       }, { status: 400 });
     }
 

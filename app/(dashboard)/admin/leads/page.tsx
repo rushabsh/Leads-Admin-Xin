@@ -12,6 +12,7 @@ import api from '../../../../lib/api';
 import LeadsListTable from '../../../../components/admin/leads/LeadsListTable';
 import LeadProfileView from '../../../../components/admin/leads/LeadProfileView';
 import AddLeadModal from '../../../../components/admin/leads/AddLeadModal';
+import EditLeadModal from '../../../../components/admin/leads/EditLeadModal';
 import CsvImportModal from '../../../../components/admin/leads/CsvImportModal';
 import OcrPreviewModal from '../../../../components/admin/leads/OcrPreviewModal';
 import useCsvImport from './useCsvImport';
@@ -55,6 +56,13 @@ function LeadsPageContent() {
 
   // Modals state
   const [showAddModal, setShowAddModal] = useState(false);
+  const [showEditModal, setShowEditModal] = useState(false);
+  const [editingLead, setEditingLead] = useState<any | null>(null);
+
+  const handleOpenEditModal = (leadObj: any) => {
+    setEditingLead(leadObj);
+    setShowEditModal(true);
+  };
 
   // New Lead Form state
   const [formData, setFormData] = useState({
@@ -528,6 +536,7 @@ function LeadsPageContent() {
             filteredLeadsCount={filteredLeads.length}
             paginatedLeads={paginatedLeads}
             onViewLeadProfile={handleViewLeadProfile}
+            onEditLead={handleOpenEditModal}
             onDeleteLead={handleDeleteLead}
             onDeleteMultipleLeads={handleDeleteMultipleLeads}
           />
@@ -554,6 +563,7 @@ function LeadsPageContent() {
           fileInputRef={fileInputRef}
           onRefreshProfile={handleRefreshProfile}
           onUpdateStatus={handleUpdateStatus}
+          onEditLead={handleOpenEditModal}
           onAddNote={handleAddNote}
           onFileUpload={handleFileUpload}
           onDeleteDocument={handleDeleteDocument}
@@ -572,6 +582,21 @@ function LeadsPageContent() {
         onSuccess={() => {
           showToast('Lead created successfully!', 'success');
           fetchData();
+        }}
+      />
+
+      <EditLeadModal
+        showEditModal={showEditModal}
+        setShowEditModal={setShowEditModal}
+        lead={editingLead}
+        campaigns={campaigns}
+        vendors={vendors}
+        showToast={showToast}
+        onSuccess={() => {
+          fetchData();
+          if (selectedLead) {
+            handleRefreshProfile();
+          }
         }}
       />
 

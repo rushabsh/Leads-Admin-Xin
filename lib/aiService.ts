@@ -17,22 +17,37 @@ Subject expressed clear intent to participate in mass tort action. Key points me
   }
 
   static async checkDuplicateLead(firstName: string, lastName: string, email: string, phone: string): Promise<boolean> {
-    const normalizedEmail = email.toLowerCase().trim();
-    const normalizedPhone = phone.replace(/\D/g, '');
+    const normalizedEmail = email ? email.toLowerCase().trim() : '';
+    const normalizedPhone = phone ? phone.replace(/\D/g, '') : '';
+    const isPlaceholderEmail = !normalizedEmail || normalizedEmail.includes('example.com') || normalizedEmail.includes('public.lead');
+    const isPlaceholderPhone = !normalizedPhone || normalizedPhone === '5550000000' || normalizedPhone.length < 7;
 
-    const orConditions: any[] = [
-      { email: { equals: normalizedEmail, mode: 'insensitive' } },
-      {
-        AND: [
-          { firstName: { equals: firstName, mode: 'insensitive' } },
-          { lastName: { equals: lastName, mode: 'insensitive' } }
-        ]
-      }
-    ];
+    const orConditions: any[] = [];
 
-    if (normalizedPhone) {
+    if (!isPlaceholderEmail) {
+      orConditions.push({ email: { equals: normalizedEmail, mode: 'insensitive' } });
+    }
+
+    if (!isPlaceholderPhone) {
       orConditions.push({ phone: { contains: normalizedPhone } });
     }
+
+    // Require matching name AND at least one matching contact detail to prevent false positives on common names
+    if (firstName && lastName && (!isPlaceholderEmail || !isPlaceholderPhone)) {
+      const contactConditions: any[] = [];
+      if (!isPlaceholderEmail) contactConditions.push({ email: { equals: normalizedEmail, mode: 'insensitive' } });
+      if (!isPlaceholderPhone) contactConditions.push({ phone: { contains: normalizedPhone } });
+
+      orConditions.push({
+        AND: [
+          { firstName: { equals: firstName.trim(), mode: 'insensitive' } },
+          { lastName: { equals: lastName.trim(), mode: 'insensitive' } },
+          { OR: contactConditions }
+        ]
+      });
+    }
+
+    if (orConditions.length === 0) return false;
 
     const existingLead = await prisma.lead.findFirst({
       where: {

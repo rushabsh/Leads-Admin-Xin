@@ -5,7 +5,7 @@ import { useRouter, usePathname } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
   ChevronLeft, ChevronRight, Bell, Search, Plus, LogOut, Settings, Sun, Moon,
-  LayoutDashboard, UserCheck, FolderKanban, Building2, Contact,
+  LayoutDashboard, UserCheck, FolderKanban, Building2, Contact, FileEdit, HelpCircle,
   BarChart3, ShieldCheck,
 } from 'lucide-react';
 import { useAuthStore } from '../../store/authStore';
@@ -99,6 +99,8 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
       campaigns: { name: 'Campaigns', icon: FolderKanban, path: '/admin/campaigns' },
       lawfirms: { name: 'Law Firms', icon: Building2, path: '/admin/lawfirms' },
       vendors: { name: 'Vendors', icon: Contact, path: '/admin/vendors' },
+      formEdit: { name: 'Form Edit', icon: FileEdit, path: '/admin/form-edit' },
+      addQuestions: { name: 'Add Questions', icon: HelpCircle, path: '/admin/add-questions' },
       reports: { name: 'Reports', icon: BarChart3, path: '/admin/reports' },
       settings: { name: 'Settings', icon: Settings, path: '/admin/settings' },
     };
@@ -119,6 +121,8 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
       allItems.campaigns,
       allItems.lawfirms,
       allItems.vendors,
+      allItems.formEdit,
+      allItems.addQuestions,
       allItems.reports,
       allItems.settings,
     ];

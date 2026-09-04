@@ -1,0 +1,309 @@
+{
+  "version": 1,
+  "updatedAt": "2026-08-25T15:21:48.288Z",
+  "updatedBy": "System Default",
+  "fields": [
+    {
+      "id": "1",
+      "name": "contactName",
+      "label": "Contact Name",
+      "type": "text",
+      "section": "leadInfo",
+      "required": false,
+      "active": true,
+      "placeholder": "e.g. Jane Doe"
+    },
+    {
+      "id": "2",
+      "name": "type",
+      "label": "Tort Category",
+      "type": "select",
+      "section": "leadInfo",
+      "required": true,
+      "active": true,
+      "options": [
+        "Depo-Provera",
+        "PFAS",
+        "Rideshare",
+        "Roblox",
+        "LA County JDC Sexual Abuse",
+        "Roundup",
+        "Storm",
+        "Talcum",
+        "Wildfire",
+        "Camp Lejeune",
+        "NEC Baby Formula",
+        "Hair Straightener",
+        "Personal Injury",
+        "Other"
+      ]
+    },
+    {
+      "id": "3",
+      "name": "status",
+      "label": "Initial Status",
+      "type": "select",
+      "section": "leadInfo",
+      "required": true,
+      "active": true,
+      "options": [
+        "New",
+        "In Progress",
+        "Sent"
+      ]
+    },
+    {
+      "id": "4",
+      "name": "leadName",
+      "label": "Lead Full Name",
+      "type": "text",
+      "section": "leadInfo",
+      "required": false,
+      "active": true,
+      "placeholder": "e.g. Jane Doe"
+    },
+    {
+      "id": "5",
+      "name": "substatus",
+      "label": "TCPA Substatus",
+      "type": "select",
+      "section": "leadInfo",
+      "required": false,
+      "active": true,
+      "options": [
+        "None",
+        "No TCPA",
+        "Redo TCPA",
+        "TCPA OK"
+      ]
+    },
+    {
+      "id": "6",
+      "name": "tier",
+      "label": "Intake Tier Allocation",
+      "type": "select",
+      "section": "leadInfo",
+      "required": false,
+      "active": true,
+      "options": [
+        "Tier 1",
+        "Tier 2",
+        "Tier 3"
+      ]
+    },
+    {
+      "id": "7",
+      "name": "firstName",
+      "label": "First Name",
+      "type": "text",
+      "section": "contactInfo",
+      "required": true,
+      "active": true,
+      "placeholder": "First Name"
+    },
+    {
+      "id": "8",
+      "name": "lastName",
+      "label": "Last Name",
+      "type": "text",
+      "section": "contactInfo",
+      "required": true,
+      "active": true,
+      "placeholder": "Last Name"
+    },
+    {
+      "id": "9",
+      "name": "gender",
+      "label": "Gender",
+      "type": "select",
+      "section": "contactInfo",
+      "required": false,
+      "active": true,
+      "options": [
+        "Male",
+        "Female",
+        "Other",
+        "Prefer Not to Say"
+      ]
+    },
+    {
+      "id": "10",
+      "name": "dateOfBirth",
+      "label": "Date of Birth",
+      "type": "date",
+      "section": "contactInfo",
+      "required": false,
+      "active": true
+    },
+    {
+      "id": "11",
+      "name": "phoneNumber",
+      "label": "Phone Number",
+      "type": "text",
+      "section": "contactInfo",
+      "required": true,
+      "active": true,
+      "placeholder": "(555) 000-0000"
+    },
+    {
+      "id": "12",
+      "name": "email",
+      "label": "Email Address",
+      "type": "text",
+      "section": "contactInfo",
+      "required": true,
+      "active": true,
+      "placeholder": "claimant@example.com"
+    },
+    {
+      "id": "13",
+      "name": "state",
+      "label": "State Jurisdiction",
+      "type": "text",
+      "section": "contactInfo",
+      "required": true,
+      "active": true,
+      "placeholder": "e.g. CA"
+    },
+    {
+      "id": "14",
+      "name": "addressStreet",
+      "label": "Address Street & City",
+      "type": "text",
+      "section": "contactInfo",
+      "required": false,
+      "active": true,
+      "placeholder": "123 Main St, Suite 4"
+    },
+    {
+      "id": "15",
+      "name": "powerOfAttorney",
+      "label": "Power of Attorney Active?",
+      "type": "select",
+      "section": "poa",
+      "required": false,
+      "active": true,
+      "options": [
+        "No",
+        "Yes"
+      ]
+    },
+    {
+      "id": "16",
+      "name": "victimName",
+      "label": "Victim / Primary Claimant Name",
+      "type": "text",
+      "section": "poa",
+      "required": false,
+      "active": true,
+      "placeholder": "Victim Name if different"
+    },
+    {
+      "id": "17",
+      "name": "incidentType",
+      "label": "Incident Classification",
+      "type": "select",
+      "section": "diagnosis",
+      "required": false,
+      "active": true,
+      "options": [
+        "Oral Vaginal/anal – Rape",
+        "Vaginal/anal – Penetration",
+        "Digital penetration",
+        "Grooming / Sexual Exploitation",
+        "Physical Abuse",
+        "Other"
+      ]
+    },
+    {
+      "id": "18",
+      "name": "diagnosis",
+      "label": "Medical Diagnosis",
+      "type": "select",
+      "section": "diagnosis",
+      "required": true,
+      "active": true,
+      "options": [
+        "PTSD (Post-Traumatic Stress Disorder)",
+        "Sexual Dysfunction",
+        "Anxiety",
+        "Depression",
+        "Non-Hodgkin Lymphoma",
+        "Renal Carcinoma / Kidney Cancer",
+        "Leukemia / Blood Cancer",
+        "Ovarian Cancer",
+        "Parkinson's Disease",
+        "Other Medical Condition"
+      ]
+    },
+    {
+      "id": "19",
+      "name": "diagnosingHospitalName",
+      "label": "Diagnosing Hospital / Clinic",
+      "type": "text",
+      "section": "diagnosis",
+      "required": false,
+      "active": true,
+      "placeholder": "St. Jude Medical Center"
+    },
+    {
+      "id": "20",
+      "name": "treatingDoctorName",
+      "label": "Treating Doctor Name",
+      "type": "text",
+      "section": "diagnosis",
+      "required": false,
+      "active": true,
+      "placeholder": "Dr. Smith"
+    },
+    {
+      "id": "21",
+      "name": "rideshareProvider",
+      "label": "Rideshare Provider",
+      "type": "select",
+      "section": "screening",
+      "required": false,
+      "active": true,
+      "options": [
+        "Uber",
+        "Lyft"
+      ]
+    },
+    {
+      "id": "22",
+      "name": "rideshareAssaulted",
+      "label": "Assaulted in Rideshare?",
+      "type": "select",
+      "section": "screening",
+      "required": false,
+      "active": true,
+      "options": [
+        "Yes",
+        "No"
+      ]
+    },
+    {
+      "id": "23",
+      "name": "rideshareNarrative",
+      "label": "Full Incident Narrative",
+      "type": "textarea",
+      "section": "screening",
+      "required": false,
+      "active": true,
+      "placeholder": "Detailed narrative description of exposure or incident..."
+    },
+    {
+      "id": "24",
+      "name": "hasMedicalRecords",
+      "label": "Medical Records Available?",
+      "type": "select",
+      "section": "screening",
+      "required": false,
+      "active": true,
+      "options": [
+        "Yes",
+        "No"
+      ]
+    }
+  ]
+}

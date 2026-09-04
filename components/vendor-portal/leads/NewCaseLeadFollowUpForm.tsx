@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -11,6 +11,7 @@ import {
 } from 'lucide-react';
 import { useCRMStore } from '@/store/crmStore';
 import { useAuthStore } from '@/store/authStore';
+import { getQuestionsForTort, fetchCentralQuestionsFromApi } from '@/store/tortQuestionsStore';
 import api from '@/lib/api';
 
 // ==========================================
@@ -25,6 +26,7 @@ export const US_STATES = [
 ];
 
 export const TYPE_OPTIONS = [
+  'Depo-Provera',
   'PFAS',
   'Rideshare',
   'Roblox',
@@ -404,6 +406,7 @@ export interface NewCaseLeadFollowUpFormProps {
   vendorName?: string;
   showCsvOption?: boolean;
   className?: string;
+  customSchema?: any[];
 }
 
 export default function NewCaseLeadFollowUpForm({
@@ -418,16 +421,40 @@ export default function NewCaseLeadFollowUpForm({
   vendorId,
   vendorName,
   showCsvOption = true,
-  className = ""
+  className = "",
+  customSchema
 }: NewCaseLeadFollowUpFormProps) {
   const router = useRouter();
   const { user } = useAuthStore();
   const { addLead, fetchData, campaigns } = useCRMStore();
 
+  const [activeSchema, setActiveSchema] = useState<any[]>(customSchema || []);
+
+  useEffect(() => {
+    if (customSchema && customSchema.length > 0) {
+      setActiveSchema(customSchema);
+      return;
+    }
+    // Load schema from localStorage if available
+    const saved = typeof window !== 'undefined' ? localStorage.getItem('lead_form_custom_schema') : null;
+    if (saved) {
+      try {
+        const parsed = JSON.parse(saved);
+        if (Array.isArray(parsed) && parsed.length > 0) {
+          setActiveSchema(parsed);
+        }
+      } catch (_) { }
+    }
+  }, [customSchema]);
+
   const [formData, setFormData] = useState<LeadFollowUpFormData>({
     ...DEFAULT_LEAD_FOLLOW_UP_FORM_DATA,
     ...initialValues
   });
+
+  useEffect(() => {
+    fetchCentralQuestionsFromApi();
+  }, []);
 
   useEffect(() => {
     if (initialValues) {
@@ -454,6 +481,19 @@ export default function NewCaseLeadFollowUpForm({
     setToast({ message, type });
     setTimeout(() => setToast(null), 4000);
   };
+
+  const getFieldMeta = useCallback((name: string, defaultLabel: string, defaultRequired: boolean = false) => {
+    if (!activeSchema || activeSchema.length === 0) {
+      return { label: defaultLabel, required: defaultRequired, active: true };
+    }
+    const found = activeSchema.find((f: any) => f.name === name);
+    if (!found) return { label: defaultLabel, required: defaultRequired, active: true };
+    return {
+      label: found.label || defaultLabel,
+      required: found.required !== undefined ? found.required : defaultRequired,
+      active: found.active !== false,
+    };
+  }, [activeSchema]);
 
   const handleInputChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>
@@ -553,6 +593,7 @@ export default function NewCaseLeadFollowUpForm({
         treatingFacilityPhone: data.treatingFacilityPhone,
       },
       screeningCriteria: {
+        ...data,
         // Roblox
         robloxGamertag: data.robloxGamertag,
         robloxAccountAccess: data.robloxAccountAccess,
@@ -1534,173 +1575,69 @@ export default function NewCaseLeadFollowUpForm({
 
           {/* SECTION 5: OTHER CASE INFORMATION */}
           <div className="col-span-1 lg:col-span-2">
-            <FormSectionCard number={5} title="Other Case Information" badge="Case Extra" colorTheme="amber">
+            <FormSectionCard
+              number={5}
+              title={`Other Case Information (${formData.type || 'Tort Qualifiers'})`}
+              badge={`${formData.type || 'Tort'} Specific`}
+              colorTheme="amber"
+            >
               <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
-                <FormSelect
-                  label="Were you Physically Assaulted (sexual in nature) while in a Rideshare ?"
-                  name="rideshareAssaulted"
-                  value={formData.rideshareAssaulted}
-                  onChange={handleInputChange}
-                  options={YES_NO_OPTIONS}
-                />
-                <FormSelect
-                  label="Did this incident happen in a LYFT or UBER?"
-                  name="rideshareProvider"
-                  value={formData.rideshareProvider}
-                  onChange={handleInputChange}
-                  options={RIDESHARE_PROVIDER_OPTIONS}
-                />
-                <FormInput
-                  label="Date of Incident :-"
-                  type="date"
-                  name="rideshareIncidentDate"
-                  value={formData.rideshareIncidentDate}
-                  onChange={handleInputChange}
-                />
-                <FormSelect
-                  label="Do you have the proof of ride?"
-                  name="rideshareProofOfRide"
-                  value={formData.rideshareProofOfRide}
-                  onChange={handleInputChange}
-                  options={YES_NO_OPTIONS}
-                />
-                <FormInput
-                  label="Driver Name -"
-                  name="rideshareDriverName"
-                  value={formData.rideshareDriverName}
-                  onChange={handleInputChange}
-                  placeholder="Driver Name"
-                />
-                <FormInput
-                  label="Address where this incident occurred?"
-                  name="rideshareIncidentAddress"
-                  value={formData.rideshareIncidentAddress}
-                  onChange={handleInputChange}
-                  placeholder="Incident Location / Address"
-                />
-                <div className="sm:col-span-2 md:col-span-3">
-                  <label className="text-xs font-semibold text-slate-700 block mb-1">
-                    Can you describe the whole Incident what happened?
-                  </label>
-                  <textarea
-                    name="rideshareNarrative"
-                    value={formData.rideshareNarrative}
-                    onChange={handleInputChange}
-                    rows={3}
-                    placeholder="Describe what happened during the incident..."
-                    className="w-full rounded-xl border border-slate-200 bg-white px-3.5 py-2.5 text-xs text-slate-900 placeholder:text-slate-400 focus:border-blue-600 focus:ring-2 focus:ring-blue-500/15 outline-none shadow-xs transition-all"
-                  />
-                </div>
-                <div className="sm:col-span-2 md:col-span-3">
-                  <FormSelect
-                    label="Did you reported this incident to anyone?"
-                    name="rideshareReportedTo"
-                    value={formData.rideshareReportedTo}
-                    onChange={handleInputChange}
-                    options={REPORTED_TO_OPTIONS}
-                  />
-                </div>
-                {/* Question 1: Emotional Changes & Symptoms */}
-                <div className="sm:col-span-2 md:col-span-3 bg-slate-50/80 rounded-xl p-4 border border-slate-200/80 space-y-3">
-                  <div className="flex items-center justify-between">
-                    <label className="text-xs font-bold text-slate-900 flex items-center gap-2">
-                      <span className="flex h-5 w-5 items-center justify-center rounded-md bg-amber-100 text-amber-800 text-[10px] font-bold">1</span>
-                      Emotional Changes / Symptoms Before Diagnosis
-                    </label>
-                    <span className="text-[10px] font-semibold text-amber-700 bg-amber-50 px-2 py-0.5 rounded-md border border-amber-200">
-                      Symptom Details
-                    </span>
-                  </div>
-                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-                    <div className="sm:col-span-2">
-                      <textarea
-                        name="rideshareSymptomsDetails"
-                        value={formData.rideshareSymptomsDetails}
-                        onChange={handleInputChange}
-                        rows={2}
-                        placeholder="Describe emotional changes or symptoms before diagnosis..."
-                        className="w-full rounded-xl border border-slate-200 bg-white px-3.5 py-2.5 text-xs text-slate-900 placeholder:text-slate-400 focus:border-amber-500 focus:ring-2 focus:ring-amber-500/15 outline-none shadow-xs transition-all"
-                      />
-                    </div>
-                    <div>
-                      <FormInput
-                        label="Symptoms Started Date:"
-                        type="date"
-                        name="rideshareSymptomsDate"
-                        value={formData.rideshareSymptomsDate}
-                        onChange={handleInputChange}
-                      />
-                    </div>
-                  </div>
-                </div>
+                {(() => {
+                  const dynamicQuestions = getQuestionsForTort(formData.type);
+                  return dynamicQuestions.map((q) => {
+                    const fieldValue = (formData as any)[q.name] !== undefined ? (formData as any)[q.name] : '';
 
-                {/* Question 2: Diagnosis Confirmation & Test */}
-                <div className="sm:col-span-2 md:col-span-3 bg-slate-50/80 rounded-xl p-4 border border-slate-200/80 space-y-3">
-                  <div className="flex items-center justify-between">
-                    <label className="text-xs font-bold text-slate-900 flex items-center gap-2">
-                      <span className="flex h-5 w-5 items-center justify-center rounded-md bg-indigo-100 text-indigo-800 text-[10px] font-bold">2</span>
-                      How did they Confirm your Diagnosis / Test before Diagnosis
-                    </label>
-                    <span className="text-[10px] font-semibold text-indigo-700 bg-indigo-50 px-2 py-0.5 rounded-md border border-indigo-200">
-                      Medical Verification
-                    </span>
-                  </div>
-                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-                    <div className="sm:col-span-2">
-                      <textarea
-                        name="rideshareDiagnosisTestDetails"
-                        value={formData.rideshareDiagnosisTestDetails}
-                        onChange={handleInputChange}
-                        rows={2}
-                        placeholder="Describe how diagnosis was confirmed or tests performed..."
-                        className="w-full rounded-xl border border-slate-200 bg-white px-3.5 py-2.5 text-xs text-slate-900 placeholder:text-slate-400 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/15 outline-none shadow-xs transition-all"
-                      />
-                    </div>
-                    <div>
-                      <FormInput
-                        label="Date of Test:"
-                        type="date"
-                        name="rideshareDiagnosisTestDate"
-                        value={formData.rideshareDiagnosisTestDate}
-                        onChange={handleInputChange}
-                      />
-                    </div>
-                  </div>
-                </div>
+                    if (q.type === 'select') {
+                      return (
+                        <FormSelect
+                          key={q.id || q.name}
+                          label={q.label}
+                          name={q.name}
+                          value={fieldValue}
+                          onChange={handleInputChange}
+                          options={q.options || YES_NO_OPTIONS}
+                          required={q.required}
+                        />
+                      );
+                    }
 
-                {/* Question 3: Treatment */}
-                <div className="sm:col-span-2 md:col-span-3 bg-slate-50/80 rounded-xl p-4 border border-slate-200/80 space-y-3">
-                  <div className="flex items-center justify-between">
-                    <label className="text-xs font-bold text-slate-900 flex items-center gap-2">
-                      <span className="flex h-5 w-5 items-center justify-center rounded-md bg-emerald-100 text-emerald-800 text-[10px] font-bold">3</span>
-                      Treatment Received
-                    </label>
-                    <span className="text-[10px] font-semibold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-md border border-emerald-200">
-                      Treatment Details
-                    </span>
-                  </div>
-                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-                    <div className="sm:col-span-2">
-                      <textarea
-                        name="rideshareTreatmentDetails"
-                        value={formData.rideshareTreatmentDetails}
-                        onChange={handleInputChange}
-                        rows={2}
-                        placeholder="Describe treatment received..."
-                        className="w-full rounded-xl border border-slate-200 bg-white px-3.5 py-2.5 text-xs text-slate-900 placeholder:text-slate-400 focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/15 outline-none shadow-xs transition-all"
-                      />
-                    </div>
-                    <div>
+                    if (q.type === 'textarea') {
+                      return (
+                        <div key={q.id || q.name} className="sm:col-span-2 md:col-span-3 space-y-1.5">
+                          <label className="text-xs font-semibold text-slate-700 flex items-center justify-between">
+                            <span>{q.label} {q.required && <span className="text-rose-500">*</span>}</span>
+                            {q.categoryBadge && (
+                              <span className="text-[10px] font-semibold text-amber-700 bg-amber-50 px-2 py-0.5 rounded-md border border-amber-200">
+                                {q.categoryBadge}
+                              </span>
+                            )}
+                          </label>
+                          <textarea
+                            name={q.name}
+                            value={fieldValue}
+                            onChange={handleInputChange}
+                            rows={3}
+                            placeholder={q.placeholder || 'Describe details...'}
+                            className="w-full rounded-xl border border-slate-250 bg-white px-3.5 py-2.5 text-xs text-slate-900 placeholder:text-slate-400 focus:border-blue-600 focus:ring-2 focus:ring-blue-500/15 outline-none shadow-xs transition-all"
+                          />
+                        </div>
+                      );
+                    }
+
+                    return (
                       <FormInput
-                        label="Treatment Date:"
-                        type="date"
-                        name="rideshareTreatmentDate"
-                        value={formData.rideshareTreatmentDate}
+                        key={q.id || q.name}
+                        label={q.label}
+                        type={q.type === 'date' ? 'date' : 'text'}
+                        name={q.name}
+                        value={fieldValue}
                         onChange={handleInputChange}
+                        placeholder={q.placeholder}
+                        required={q.required}
                       />
-                    </div>
-                  </div>
-                </div>
+                    );
+                  });
+                })()}
 
                 <FormSelect
                   label="Did you have any legal representation with any law firm regarding this claim?"

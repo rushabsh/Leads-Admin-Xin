@@ -13,9 +13,7 @@ import LeadsListTable from '../../../../components/admin/leads/LeadsListTable';
 import LeadProfileView from '../../../../components/admin/leads/LeadProfileView';
 import AddLeadModal from '../../../../components/admin/leads/AddLeadModal';
 import EditLeadModal from '../../../../components/admin/leads/EditLeadModal';
-import CsvImportModal from '../../../../components/admin/leads/CsvImportModal';
 import OcrPreviewModal from '../../../../components/admin/leads/OcrPreviewModal';
-import useCsvImport from './useCsvImport';
 
 const escapeCSV = (val: any): string => {
   if (val === null || val === undefined) return '';
@@ -110,20 +108,7 @@ function LeadsPageContent() {
     setTimeout(() => setToast(null), 3000);
   };
 
-  // CSV Importer Hook
-  const {
-    showImportModal,
-    setShowImportModal,
-    csvStep,
-    setCsvStep,
-    parsedCsvData,
-    validationErrors,
-    importSummary,
-    handleCSVFileChange,
-    handleValidateCsv,
-    handleCSVImportConfirm,
-    handleDownloadTemplate
-  } = useCsvImport(showToast);
+
 
   // Synchronize URL filters
   useEffect(() => {
@@ -186,9 +171,9 @@ function LeadsPageContent() {
   const handleUpdateStatus = async (nextStatus: string) => {
     if (!selectedLead) return;
     try {
-      await api.put(`/leads/${selectedLead.id}`, { status: nextStatus });
+      await useCRMStore.getState().updateLeadStatus(selectedLead.id, nextStatus);
       showToast(`Status updated to ${nextStatus}`, 'success');
-      fetchData();
+      await fetchData(true);
       handleRefreshProfile();
     } catch (e) {
       showToast('Failed to update status', 'error');
@@ -198,10 +183,13 @@ function LeadsPageContent() {
   const handleCreateLead = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      await api.post('/leads', formData);
+      const res = await api.post('/leads', formData);
+      if (res.data?.lead) {
+        await useCRMStore.getState().addLead(res.data.lead);
+      }
       showToast('Lead created successfully!', 'success');
       setShowAddModal(false);
-      fetchData();
+      await fetchData(true);
       setFormData({
         firstName: '',
         lastName: '',
@@ -234,9 +222,9 @@ function LeadsPageContent() {
   const handleDeleteLead = async (leadId: string) => {
     if (!confirm('Are you sure you want to delete this lead?')) return;
     try {
-      await api.delete(`/leads/${leadId}`);
+      await useCRMStore.getState().deleteLead(leadId);
       showToast('Lead deleted successfully', 'success');
-      fetchData();
+      await fetchData(true);
       if (selectedLead?.id === leadId) {
         setSelectedLead(null);
         setLeadDetails(null);
@@ -249,12 +237,9 @@ function LeadsPageContent() {
   const handleDeleteMultipleLeads = async (leadIds: string[]) => {
     if (!confirm(`Are you sure you want to delete ${leadIds.length} selected lead(s)?`)) return;
     try {
-      await Promise.all(leadIds.map((id) => api.delete(`/leads/${id}`).catch((err) => err)));
-      leadIds.forEach((id) => {
-        useCRMStore.getState().deleteLead(id);
-      });
+      await Promise.all(leadIds.map((id) => useCRMStore.getState().deleteLead(id).catch((err) => err)));
       showToast(`${leadIds.length} lead(s) deleted successfully`, 'success');
-      fetchData();
+      await fetchData(true);
       if (selectedLead && leadIds.includes(selectedLead.id)) {
         setSelectedLead(null);
         setLeadDetails(null);
@@ -493,12 +478,6 @@ function LeadsPageContent() {
             </div>
             <div className="flex items-center gap-2 flex-wrap">
               <button
-                onClick={() => setShowImportModal(true)}
-                className="inline-flex items-center gap-1.5 rounded-xl border border-slate-200 bg-white px-3 py-2 text-xs font-semibold text-slate-700 hover:bg-slate-50 transition-colors shadow-xs"
-              >
-                <Upload className="h-3.5 w-3.5" /> CSV Import
-              </button>
-              <button
                 onClick={() => handleExportCSV('filtered')}
                 className="inline-flex items-center gap-1.5 rounded-xl border border-slate-200 bg-white px-3 py-2 text-xs font-semibold text-slate-700 hover:bg-slate-50 transition-colors shadow-xs"
               >
@@ -600,19 +579,7 @@ function LeadsPageContent() {
         }}
       />
 
-      <CsvImportModal
-        showImportModal={showImportModal}
-        setShowImportModal={setShowImportModal}
-        csvStep={csvStep}
-        setCsvStep={setCsvStep}
-        parsedCsvData={parsedCsvData}
-        validationErrors={validationErrors}
-        importSummary={importSummary}
-        onCSVFileChange={handleCSVFileChange}
-        onValidateCsv={handleValidateCsv}
-        onCSVImportConfirm={handleCSVImportConfirm}
-        onDownloadTemplate={handleDownloadTemplate}
-      />
+
 
       <OcrPreviewModal
         previewDoc={previewDoc}

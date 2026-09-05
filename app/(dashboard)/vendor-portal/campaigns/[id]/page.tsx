@@ -11,8 +11,6 @@ import {
 import api from '../../../../../lib/api';
 import { useCRMStore } from '../../../../../store/crmStore';
 import { useAuthStore } from '../../../../../store/authStore';
-import CsvImportModal from '../../../../../components/admin/leads/CsvImportModal';
-import useCsvImport from '../../../admin/leads/useCsvImport';
 
 interface PageProps {
   params: Promise<{ id: string }>;
@@ -43,19 +41,7 @@ export default function VendorCampaignDetailPage({ params }: PageProps) {
 
   const vendorId = user?.vendorId || 'ven-1';
 
-  const {
-    showImportModal,
-    setShowImportModal,
-    csvStep,
-    setCsvStep,
-    parsedCsvData,
-    validationErrors,
-    importSummary,
-    handleCSVFileChange,
-    handleValidateCsv,
-    handleCSVImportConfirm,
-    handleDownloadTemplate,
-  } = useCsvImport(showToast, vendorId, user?.name);
+
 
   useEffect(() => {
     let isMounted = true;
@@ -318,13 +304,7 @@ export default function VendorCampaignDetailPage({ params }: PageProps) {
               </select>
             </div>
 
-            <button
-              onClick={() => { setShowImportModal(true); setCsvStep('upload'); }}
-              className="inline-flex items-center gap-1.5 rounded-xl border border-slate-200 bg-white px-3 py-2 text-xs font-bold text-slate-700 shadow-xs hover:border-blue-600 hover:bg-blue-50 hover:text-blue-600 transition-colors cursor-pointer"
-            >
-              <Upload className="h-3.5 w-3.5" />
-              Import CSV Leads
-            </button>
+
           </div>
         </div>
 
@@ -487,19 +467,7 @@ export default function VendorCampaignDetailPage({ params }: PageProps) {
         )}
       </div>
 
-      <CsvImportModal
-        showImportModal={showImportModal}
-        setShowImportModal={setShowImportModal}
-        csvStep={csvStep}
-        setCsvStep={setCsvStep}
-        parsedCsvData={parsedCsvData}
-        validationErrors={validationErrors}
-        importSummary={importSummary}
-        onCSVFileChange={handleCSVFileChange}
-        onValidateCsv={handleValidateCsv}
-        onCSVImportConfirm={handleCSVImportConfirm}
-        onDownloadTemplate={handleDownloadTemplate}
-      />
+
     </div>
   );
 }

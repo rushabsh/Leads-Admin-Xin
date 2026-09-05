@@ -201,7 +201,7 @@ export default function AddLeadModal({
             initialValues={{
               campaignName: selectedCampaign?.name || ''
             }}
-            showCsvOption={true}
+            showCsvOption={false}
             onCancel={() => setShowAddModal(false)}
             onSuccess={() => {
               setShowAddModal(false);

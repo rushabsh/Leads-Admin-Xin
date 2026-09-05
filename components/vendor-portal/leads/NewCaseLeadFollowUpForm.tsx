@@ -420,7 +420,7 @@ export default function NewCaseLeadFollowUpForm({
   subtitle = "Fill out the grouped sections below to record complete case follow-up data.",
   vendorId,
   vendorName,
-  showCsvOption = true,
+  showCsvOption = false,
   className = "",
   customSchema
 }: NewCaseLeadFollowUpFormProps) {

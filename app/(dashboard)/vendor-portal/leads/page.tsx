@@ -11,8 +11,6 @@ import api from '../../../../lib/api';
 // Extracted modular components
 import VendorPortalLeadsTable from '../../../../components/vendor-portal/leads/VendorPortalLeadsTable';
 import SubmitLeadModal from '../../../../components/vendor-portal/leads/SubmitLeadModal';
-import CsvImportModal from '../../../../components/admin/leads/CsvImportModal';
-import useCsvImport from '../../admin/leads/useCsvImport';
 
 interface LeadData {
   id: string;
@@ -94,20 +92,7 @@ export default function VendorLeadsPage() {
     setTimeout(() => setToast(null), 3000);
   };
 
-  // CSV Import State Hook
-  const {
-    showImportModal,
-    setShowImportModal,
-    csvStep,
-    setCsvStep,
-    parsedCsvData,
-    validationErrors,
-    importSummary,
-    handleCSVFileChange,
-    handleValidateCsv,
-    handleCSVImportConfirm,
-    handleDownloadTemplate,
-  } = useCsvImport(showToast, vendorId, user?.name);
+
 
   const handleCampaignChange = (campId: string) => {
     const camp = campaigns.find(c => c.id === campId);
@@ -149,7 +134,7 @@ export default function VendorLeadsPage() {
       await addLead(formData);
       showToast('Lead submitted successfully!', 'success');
       setShowSubmitModal(false);
-      fetchData();
+      await fetchData(true);
     } catch (error: any) {
       showToast(error.response?.data?.message || 'Failed to submit lead', 'error');
     } finally {
@@ -264,13 +249,7 @@ export default function VendorLeadsPage() {
             <Share2 className="h-4 w-4 text-indigo-600" />
             Share Employee Form Link
           </button>
-          <button
-            onClick={() => { setShowImportModal(true); setCsvStep('upload'); }}
-            className="inline-flex items-center gap-2 rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-xs font-bold text-slate-700 shadow-xs hover:border-blue-600 hover:bg-blue-50 hover:text-blue-600 transition-colors active:scale-[0.98] cursor-pointer"
-          >
-            <Upload className="h-4 w-4" />
-            Import CSV Leads
-          </button>
+
           <Link
             href="/vendor-portal/leads/follow-up"
             className="inline-flex items-center gap-2 rounded-xl bg-blue-600 px-4 py-2.5 text-xs font-bold text-white shadow-sm hover:bg-blue-700 transition-colors active:scale-[0.98] cursor-pointer"
@@ -298,19 +277,7 @@ export default function VendorLeadsPage() {
         isLoading={isLoading}
       />
 
-      <CsvImportModal
-        showImportModal={showImportModal}
-        setShowImportModal={setShowImportModal}
-        csvStep={csvStep}
-        setCsvStep={setCsvStep}
-        parsedCsvData={parsedCsvData}
-        validationErrors={validationErrors}
-        importSummary={importSummary}
-        onCSVFileChange={handleCSVFileChange}
-        onValidateCsv={handleValidateCsv}
-        onCSVImportConfirm={handleCSVImportConfirm}
-        onDownloadTemplate={handleDownloadTemplate}
-      />
+
     </div>
   );
 }

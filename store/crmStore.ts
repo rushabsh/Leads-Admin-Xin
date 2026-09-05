@@ -393,7 +393,7 @@ export const useCRMStore = create<CRMState>((set, get) => ({
     return promise;
   },
 
-  fetchData: async (force) => {
+  fetchData: async (force = true) => {
     set({ isLoading: true });
     initializeLocalStorage();
     await Promise.all([
@@ -411,6 +411,18 @@ export const useCRMStore = create<CRMState>((set, get) => ({
   },
 
   addLead: async (leadData) => {
+    // If leadData already has a valid server database ID (e.g., from a direct API post response), update state without duplicate API call
+    if (leadData && (leadData as any).id && typeof (leadData as any).id === 'string' && !(leadData as any).id.startsWith('ld-')) {
+      const currentLeads = get().leads;
+      const exists = currentLeads.some(l => l.id === (leadData as any).id);
+      const updatedList = exists
+        ? currentLeads.map(l => l.id === (leadData as any).id ? (leadData as MockLead) : l)
+        : [(leadData as MockLead), ...currentLeads];
+      set({ leads: updatedList, lastFetched: { ...get().lastFetched, leads: 0 } });
+      saveToStorage('mc_leads', updatedList);
+      return;
+    }
+
     const currentLeads = get().leads;
     const count = currentLeads.length;
     const optimisticLead: MockLead = {
@@ -424,15 +436,17 @@ export const useCRMStore = create<CRMState>((set, get) => ({
     };
 
     const optimisticList = [optimisticLead, ...currentLeads];
-    set({ leads: optimisticList });
+    set({ leads: optimisticList, lastFetched: { ...get().lastFetched, leads: 0 } });
     saveToStorage('mc_leads', optimisticList);
 
     try {
       const res = await api.post('/leads', leadData);
       const actualLead = res.data.lead;
-      const updated = get().leads.map(l => l.id === optimisticLead.id ? actualLead : l);
-      set({ leads: updated });
-      saveToStorage('mc_leads', updated);
+      if (actualLead) {
+        const updated = get().leads.map(l => l.id === optimisticLead.id ? actualLead : l);
+        set({ leads: updated });
+        saveToStorage('mc_leads', updated);
+      }
     } catch (e) {
       console.warn('API error during lead creation, staying with local/optimistic lead.', e);
       const currentLogs = get().logs;
@@ -451,12 +465,12 @@ export const useCRMStore = create<CRMState>((set, get) => ({
 
   updateLeadStatus: async (leadId, status) => {
     const originalLeads = get().leads;
-    const updated = originalLeads.map(l => l.id === leadId ? { ...l, status } : l);
-    set({ leads: updated });
+    const updated = originalLeads.map(l => (l.id === leadId || l.leadId === leadId) ? { ...l, status } : l);
+    set({ leads: updated, lastFetched: { ...get().lastFetched, leads: 0 } });
     saveToStorage('mc_leads', updated);
 
     if (status === 'SIGNED_RETAINER') {
-      const lead = originalLeads.find(l => l.id === leadId);
+      const lead = originalLeads.find(l => l.id === leadId || l.leadId === leadId);
       if (lead) {
         get().addCase({
           leadId,
@@ -475,9 +489,11 @@ export const useCRMStore = create<CRMState>((set, get) => ({
     try {
       const res = await api.put(`/leads/${leadId}`, { status });
       const actualLead = res.data.lead;
-      const synced = get().leads.map(l => l.id === leadId ? { ...l, ...actualLead } : l);
-      set({ leads: synced });
-      saveToStorage('mc_leads', synced);
+      if (actualLead) {
+        const synced = get().leads.map(l => (l.id === leadId || l.leadId === leadId) ? { ...l, ...actualLead } : l);
+        set({ leads: synced });
+        saveToStorage('mc_leads', synced);
+      }
     } catch (e) {
       console.warn('API error updating lead status, keeping local state.', e);
     }
@@ -485,16 +501,18 @@ export const useCRMStore = create<CRMState>((set, get) => ({
 
   updateLead: async (leadId, updates) => {
     const originalLeads = get().leads;
-    const updated = originalLeads.map(l => l.id === leadId ? { ...l, ...updates } : l);
-    set({ leads: updated });
+    const updated = originalLeads.map(l => (l.id === leadId || l.leadId === leadId) ? { ...l, ...updates } : l);
+    set({ leads: updated, lastFetched: { ...get().lastFetched, leads: 0 } });
     saveToStorage('mc_leads', updated);
 
     try {
       const res = await api.put(`/leads/${leadId}`, updates);
       const actualLead = res.data.lead;
-      const synced = get().leads.map(l => l.id === leadId ? { ...l, ...actualLead } : l);
-      set({ leads: synced });
-      saveToStorage('mc_leads', synced);
+      if (actualLead) {
+        const synced = get().leads.map(l => (l.id === leadId || l.leadId === leadId) ? { ...l, ...actualLead } : l);
+        set({ leads: synced });
+        saveToStorage('mc_leads', synced);
+      }
     } catch (e) {
       console.warn('API error updating lead, keeping local state.', e);
     }
@@ -503,7 +521,7 @@ export const useCRMStore = create<CRMState>((set, get) => ({
   deleteLead: async (leadId) => {
     const originalLeads = get().leads;
     const updated = originalLeads.filter(l => l.id !== leadId && l.leadId !== leadId);
-    set({ leads: updated });
+    set({ leads: updated, lastFetched: { ...get().lastFetched, leads: 0 } });
     saveToStorage('mc_leads', updated);
 
     try {

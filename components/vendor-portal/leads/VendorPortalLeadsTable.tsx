@@ -33,7 +33,7 @@ function parseLeadDetails(lead: any) {
   if (typeof lead.caseDetails === 'string' && lead.caseDetails.trim().startsWith('{')) {
     try {
       return JSON.parse(lead.caseDetails);
-    } catch (_) {}
+    } catch (_) { }
   }
   return null;
 }
@@ -324,7 +324,7 @@ export default function VendorPortalLeadsTable({
         </div>
       ) : (
         <div className="overflow-x-auto">
-          <table className="w-full border-collapse text-left text-sm">
+          <table className="w-full border-collapse text-left text-[12px]">
             <thead>
               <tr className="border-b border-slate-200 bg-slate-50 text-slate-500">
                 <th className="p-4 w-10">
@@ -346,7 +346,7 @@ export default function VendorPortalLeadsTable({
                   onClick={() => onRequestSort('firstName')}
                   className="cursor-pointer p-4 font-semibold uppercase tracking-wider text-xs hover:text-blue-600 transition-all select-none"
                 >
-                  Full Name / Contact <ArrowUpDown className="inline h-3.5 w-3.5 ml-1" />
+                  Full Name <ArrowUpDown className="inline h-3.5 w-3.5 ml-1" />
                 </th>
                 <th className="p-4 font-semibold uppercase tracking-wider text-xs">Campaign Name</th>
                 <th className="p-4 font-semibold uppercase tracking-wider text-xs">Type</th>

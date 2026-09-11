@@ -299,8 +299,9 @@ const FormInput: React.FC<FormInputProps> = ({ label, required, className = '', 
       <span>{label} {required && <span className="text-rose-500">*</span>}</span>
     </label>
     <input
+      required={required}
       {...props}
-      className={`w-full rounded-xl border border-slate-250 bg-white px-3.5 py-2.5 text-xs font-medium text-slate-900 placeholder:text-slate-400 focus:border-blue-600 focus:ring-2 focus:ring-blue-500/15 outline-none shadow-xs transition-all ${className}`}
+      className={`w-full rounded-xl border border-slate-200 bg-white px-3.5 py-2.5 text-xs font-medium text-slate-900 placeholder:text-slate-400 focus:border-blue-600 focus:ring-2 focus:ring-blue-500/15 outline-none shadow-xs transition-all ${className}`}
     />
   </div>
 );
@@ -317,8 +318,9 @@ const FormSelect: React.FC<FormSelectProps> = ({ label, options, required, class
       <span>{label} {required && <span className="text-rose-500">*</span>}</span>
     </label>
     <select
+      required={required}
       {...props}
-      className={`w-full rounded-xl border border-slate-250 bg-white px-3.5 py-2.5 text-xs font-medium text-slate-900 focus:border-blue-600 focus:ring-2 focus:ring-blue-500/15 outline-none shadow-xs transition-all cursor-pointer ${className}`}
+      className={`w-full rounded-xl border border-slate-200 bg-white px-3.5 py-2.5 text-xs font-medium text-slate-900 focus:border-blue-600 focus:ring-2 focus:ring-blue-500/15 outline-none shadow-xs transition-all cursor-pointer ${className}`}
     >
       {options.map((opt) => (
         <option key={opt} value={opt}>
@@ -426,7 +428,18 @@ export default function NewCaseLeadFollowUpForm({
 }: NewCaseLeadFollowUpFormProps) {
   const router = useRouter();
   const { user } = useAuthStore();
-  const { addLead, fetchData, campaigns } = useCRMStore();
+  const { addLead, fetchData, fetchCampaigns, fetchVendors, campaigns, vendors } = useCRMStore();
+
+  const activeVendorId = vendorId || user?.vendorId || 'ven-1';
+  const matchedVendor = (vendors || []).find(
+    (v: any) => v.id === activeVendorId || (vendorName && v.name?.toLowerCase() === vendorName.toLowerCase())
+  );
+  const activeVendorName = vendorName || matchedVendor?.name || user?.name || 'Premier Leads LLC';
+
+  const [formData, setFormData] = useState<LeadFollowUpFormData>({
+    ...DEFAULT_LEAD_FOLLOW_UP_FORM_DATA,
+    ...initialValues
+  });
 
   const [activeSchema, setActiveSchema] = useState<any[]>(customSchema || []);
 
@@ -435,22 +448,57 @@ export default function NewCaseLeadFollowUpForm({
       setActiveSchema(customSchema);
       return;
     }
-    // Load schema from localStorage if available
-    const saved = typeof window !== 'undefined' ? localStorage.getItem('lead_form_custom_schema') : null;
-    if (saved) {
-      try {
-        const parsed = JSON.parse(saved);
-        if (Array.isArray(parsed) && parsed.length > 0) {
-          setActiveSchema(parsed);
-        }
-      } catch (_) { }
-    }
-  }, [customSchema]);
 
-  const [formData, setFormData] = useState<LeadFollowUpFormData>({
-    ...DEFAULT_LEAD_FOLLOW_UP_FORM_DATA,
-    ...initialValues
-  });
+    let isMounted = true;
+    const fetchSchema = async () => {
+      try {
+        const matchedCamp = (campaigns || []).find(
+          (c: any) => c.name === formData.campaignName || c.id === formData.campaignName
+        );
+        const campId = matchedCamp?.id;
+        const q = new URLSearchParams();
+        if (activeVendorId && activeVendorId !== 'all') q.set('vendorId', activeVendorId);
+        if (campId) q.set('campaignId', campId);
+
+        const res = await fetch(`/api/settings/form-schema?${q.toString()}`);
+        if (res.ok) {
+          const data = await res.json();
+          if (data.success && data.schema?.fields && isMounted) {
+            setActiveSchema(data.schema.fields);
+            return;
+          }
+        }
+      } catch (err) {
+        console.warn('Could not fetch remote form schema, checking localStorage fallback:', err);
+      }
+
+      const saved = typeof window !== 'undefined' ? localStorage.getItem('lead_form_custom_schema') : null;
+      if (saved && isMounted) {
+        try {
+          const parsed = JSON.parse(saved);
+          if (Array.isArray(parsed) && parsed.length > 0) {
+            setActiveSchema(parsed);
+          }
+        } catch (_) { }
+      }
+    };
+
+    fetchSchema();
+
+    const handleSchemaEvent = () => {
+      fetchSchema();
+    };
+    if (typeof window !== 'undefined') {
+      window.addEventListener('lead_form_schema_updated', handleSchemaEvent);
+    }
+
+    return () => {
+      isMounted = false;
+      if (typeof window !== 'undefined') {
+        window.removeEventListener('lead_form_schema_updated', handleSchemaEvent);
+      }
+    };
+  }, [customSchema, activeVendorId, formData.campaignName, campaigns]);
 
   useEffect(() => {
     fetchCentralQuestionsFromApi();
@@ -474,8 +522,59 @@ export default function NewCaseLeadFollowUpForm({
   const [isImportingCsv, setIsImportingCsv] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  const activeVendorId = vendorId || user?.vendorId || 'ven-1';
-  const activeVendorName = vendorName || user?.name || 'Premier Leads LLC';
+  useEffect(() => {
+    if (!campaigns || campaigns.length === 0) {
+      fetchCampaigns();
+    }
+    if (!vendors || vendors.length === 0) {
+      fetchVendors();
+    }
+  }, [campaigns, vendors, fetchCampaigns, fetchVendors]);
+
+  // Filter campaigns available for this vendor
+  const availableVendorCampaigns = React.useMemo(() => {
+    if (!campaigns || campaigns.length === 0) return [];
+
+    const filtered = campaigns.filter((c: any) => {
+      // 1. Direct vendorId match
+      if (activeVendorId && (c.vendorId === activeVendorId || c.vendor?.id === activeVendorId)) {
+        return true;
+      }
+      // 2. Multi-vendor array match if present
+      if (activeVendorId && Array.isArray(c.vendors) && c.vendors.includes(activeVendorId)) {
+        return true;
+      }
+      // 3. Match by vendor name
+      const campVendorName = c.vendorName || c.vendor?.name;
+      if (campVendorName) {
+        if (activeVendorName && campVendorName.toLowerCase() === activeVendorName.toLowerCase()) {
+          return true;
+        }
+        if (matchedVendor?.name && campVendorName.toLowerCase() === matchedVendor.name.toLowerCase()) {
+          return true;
+        }
+      }
+      return false;
+    });
+
+    if (filtered.length > 0) return filtered;
+
+    // Fallback: If no vendor-specific matches found, provide all campaigns
+    return campaigns;
+  }, [campaigns, activeVendorId, activeVendorName, matchedVendor]);
+
+  // If formData.campaignName is empty and availableVendorCampaigns is populated, set default
+  useEffect(() => {
+    if (!formData.campaignName && availableVendorCampaigns.length > 0 && !initialValues?.campaignName) {
+      setFormData((prev) => {
+        if (prev.campaignName) return prev;
+        return {
+          ...prev,
+          campaignName: availableVendorCampaigns[0].name
+        };
+      });
+    }
+  }, [availableVendorCampaigns, initialValues?.campaignName, formData.campaignName]);
 
   const showToast = (message: string, type: 'success' | 'error') => {
     setToast({ message, type });
@@ -494,6 +593,10 @@ export default function NewCaseLeadFollowUpForm({
       active: found.active !== false,
     };
   }, [activeSchema]);
+
+  const isFieldActive = (name: string) => getFieldMeta(name, '', false).active;
+  const getMeta = (name: string, defaultLabel: string, defaultRequired: boolean = false) =>
+    getFieldMeta(name, defaultLabel, defaultRequired);
 
   const handleInputChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>
@@ -654,6 +757,18 @@ export default function NewCaseLeadFollowUpForm({
     setIsSubmitting(true);
 
     try {
+      // Validate schema-defined required active fields
+      for (const field of activeSchema) {
+        if (field.active !== false && field.required) {
+          const val = (formData as any)[field.name];
+          if (val === undefined || val === null || val === '' || (field.type === 'checkbox' && !val)) {
+            showToast(`Field "${field.label || field.name}" is required.`, 'error');
+            setIsSubmitting(false);
+            return;
+          }
+        }
+      }
+
       const payload = buildLeadPayload(formData);
 
       if (isEditMode && leadId) {
@@ -1184,392 +1299,527 @@ export default function NewCaseLeadFollowUpForm({
           {/* SECTION 1: LEAD INFORMATION */}
           <FormSectionCard number={1} title="Lead Information" badge="Case Core" colorTheme="blue">
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              <FormInput
-                label="Contact Name"
-                name="contactName"
-                value={formData.contactName}
-                onChange={handleInputChange}
-                placeholder="e.g. Jane Doe"
-              />
-              <FormSelect
-                label="Tort"
-                name="type"
-                value={formData.type}
-                onChange={handleInputChange}
-                options={TYPE_OPTIONS}
-                required
-              />
-              <FormSelect
-                label="Status"
-                name="status"
-                value={formData.status}
-                onChange={handleInputChange}
-                options={STATUS_OPTIONS}
-                required
-              />
-              <FormInput
-                label="Lead Name"
-                name="leadName"
-                value={formData.leadName}
-                onChange={handleInputChange}
-                placeholder="e.g. Johnathan Smith Lead"
-              />
+              {isFieldActive('contactName') && (
+                <FormInput
+                  label={getMeta('contactName', 'Contact Name').label}
+                  name="contactName"
+                  value={formData.contactName}
+                  onChange={handleInputChange}
+                  placeholder="e.g. Jane Doe"
+                  required={getMeta('contactName', 'Contact Name').required}
+                />
+              )}
+              {isFieldActive('type') && (
+                <FormSelect
+                  label={getMeta('type', 'Tort', true).label}
+                  name="type"
+                  value={formData.type}
+                  onChange={handleInputChange}
+                  options={TYPE_OPTIONS}
+                  required={getMeta('type', 'Tort', true).required}
+                />
+              )}
+              {isFieldActive('status') && (
+                <FormSelect
+                  label={getMeta('status', 'Status', true).label}
+                  name="status"
+                  value={formData.status}
+                  onChange={handleInputChange}
+                  options={STATUS_OPTIONS}
+                  required={getMeta('status', 'Status', true).required}
+                />
+              )}
+              {isFieldActive('leadName') && (
+                <FormInput
+                  label={getMeta('leadName', 'Lead Name').label}
+                  name="leadName"
+                  value={formData.leadName}
+                  onChange={handleInputChange}
+                  placeholder="e.g. Johnathan Smith Lead"
+                  required={getMeta('leadName', 'Lead Name').required}
+                />
+              )}
+              {isFieldActive('campaignName') && (
+                <div className="space-y-1.5">
+                  <label className="text-xs font-semibold text-slate-700 flex items-center justify-between">
+                    <span>
+                      {getMeta('campaignName', 'Campaign Name', true).label}{' '}
+                      {getMeta('campaignName', 'Campaign Name', true).required && (
+                        <span className="text-rose-500">*</span>
+                      )}
+                    </span>
+                  </label>
+                  <select
+                    name="campaignName"
+                    value={formData.campaignName}
+                    onChange={handleInputChange}
+                    required={getMeta('campaignName', 'Campaign Name', true).required}
+                    className="w-full rounded-xl border border-slate-200 bg-white px-3.5 py-2.5 text-xs font-medium text-slate-900 focus:border-blue-600 focus:ring-2 focus:ring-blue-500/15 outline-none shadow-xs transition-all cursor-pointer"
+                  >
+                    <option value="" disabled>
+                      {availableVendorCampaigns.length === 0 ? 'No campaigns available for this vendor' : 'Select Campaign'}
+                    </option>
+                    {availableVendorCampaigns.map((c: any) => (
+                      <option key={c.id || c.name} value={c.name}>
+                        {c.name}
+                      </option>
+                    ))}
+                    {formData.campaignName && !availableVendorCampaigns.some((c: any) => c.name === formData.campaignName) && (
+                      <option value={formData.campaignName}>
+                        {formData.campaignName}
+                      </option>
+                    )}
+                  </select>
+                </div>
+              )}
+              {isFieldActive('substatus') && (
+                <FormSelect
+                  label={getMeta('substatus', 'Substatus').label}
+                  name="substatus"
+                  value={formData.substatus}
+                  onChange={handleInputChange}
+                  options={SUBSTATUS_OPTIONS}
+                  required={getMeta('substatus', 'Substatus').required}
+                />
+              )}
+              {isFieldActive('billable') && (
+                <div className="flex items-center pt-5">
+                  <label className="inline-flex items-center gap-2.5 cursor-pointer">
+                    <input
+                      type="checkbox"
+                      name="billable"
+                      checked={formData.billable}
+                      onChange={handleInputChange}
+                      required={getMeta('billable', 'Billable Lead').required}
+                      className="h-4 w-4 rounded border-slate-300 text-blue-600 focus:ring-blue-500 cursor-pointer"
+                    />
+                    <span className="text-xs font-bold text-slate-800">
+                      {getMeta('billable', 'Billable Lead').label}
+                      {getMeta('billable', 'Billable Lead').required && <span className="text-rose-500"> *</span>}
+                    </span>
+                  </label>
+                </div>
+              )}
+              {isFieldActive('dateSent') && (
+                <FormInput
+                  label={getMeta('dateSent', 'Date Sent').label}
+                  type="date"
+                  name="dateSent"
+                  value={formData.dateSent}
+                  onChange={handleInputChange}
+                  required={getMeta('dateSent', 'Date Sent').required}
+                />
+              )}
+              {isFieldActive('dateSubscribed') && (
+                <FormInput
+                  label={getMeta('dateSubscribed', 'Date Subscribed').label}
+                  type="date"
+                  name="dateSubscribed"
+                  value={formData.dateSubscribed}
+                  onChange={handleInputChange}
+                  required={getMeta('dateSubscribed', 'Date Subscribed').required}
+                />
+              )}
+              {isFieldActive('tier') && (
+                <FormInput
+                  label={getMeta('tier', 'Tier').label}
+                  name="tier"
+                  value={formData.tier}
+                  onChange={handleInputChange}
+                  placeholder="e.g. Tier 1 / Premium"
+                  required={getMeta('tier', 'Tier').required}
+                />
+              )}
+              {isFieldActive('callDuration') && (
+                <FormInput
+                  label={getMeta('callDuration', 'Call Duration').label}
+                  name="callDuration"
+                  value={formData.callDuration}
+                  onChange={handleInputChange}
+                  placeholder="e.g. 05:45 or 345s"
+                  required={getMeta('callDuration', 'Call Duration').required}
+                />
+              )}
+              {isFieldActive('reasonForRejection') && (
+                <FormInput
+                  label={getMeta('reasonForRejection', 'Reason for Rejection').label}
+                  name="reasonForRejection"
+                  value={formData.reasonForRejection}
+                  onChange={handleInputChange}
+                  placeholder="e.g. Out of SOL"
+                  required={getMeta('reasonForRejection', 'Reason for Rejection').required}
+                />
+              )}
+              {isFieldActive('reasonForDQ') && (
+                <FormInput
+                  label={getMeta('reasonForDQ', 'Reason for DQ').label}
+                  name="reasonForDQ"
+                  value={formData.reasonForDQ}
+                  onChange={handleInputChange}
+                  placeholder="Disqualification rationale"
+                  required={getMeta('reasonForDQ', 'Reason for DQ').required}
+                />
+              )}
+              {isFieldActive('reasonForDoesntMeetCriteria') && (
+                <FormInput
+                  label={getMeta('reasonForDoesntMeetCriteria', "Reason for Doesn't Meet Criteria").label}
+                  name="reasonForDoesntMeetCriteria"
+                  value={formData.reasonForDoesntMeetCriteria}
+                  onChange={handleInputChange}
+                  placeholder="Criteria failure details"
+                  required={getMeta('reasonForDoesntMeetCriteria', "Reason for Doesn't Meet Criteria").required}
+                />
+              )}
+              {isFieldActive('reasonForSpam') && (
+                <FormInput
+                  label={getMeta('reasonForSpam', 'Reason for Spam').label}
+                  name="reasonForSpam"
+                  value={formData.reasonForSpam}
+                  onChange={handleInputChange}
+                  placeholder="Spam classification reason"
+                  required={getMeta('reasonForSpam', 'Reason for Spam').required}
+                />
+              )}
+            </div>
+            {isFieldActive('trustedForm') && (
               <div>
                 <label className="text-xs font-semibold text-slate-700 block mb-1">
-                  Campaign Name <span className="text-rose-500">*</span>
+                  {getMeta('trustedForm', 'Trusted Form Certificate / Payload').label}
+                  {getMeta('trustedForm', 'Trusted Form Certificate / Payload').required && (
+                    <span className="text-rose-500"> *</span>
+                  )}
                 </label>
-                <input
-                  type="text"
-                  name="campaignName"
-                  list="campaign-name-options"
-                  value={formData.campaignName}
+                <textarea
+                  name="trustedForm"
+                  value={formData.trustedForm}
                   onChange={handleInputChange}
-                  placeholder="e.g. PFAS Media Campaign"
-                  required
-                  className="w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-xs text-slate-900 placeholder:text-slate-400 focus:border-blue-600 focus:ring-2 focus:ring-blue-100 outline-none shadow-xs transition-all"
+                  rows={3}
+                  required={getMeta('trustedForm', 'Trusted Form Certificate / Payload').required}
+                  placeholder="https://cert.trustedform.com/..."
+                  className="w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-xs text-slate-900 placeholder:text-slate-400 focus:border-blue-600 focus:ring-2 focus:ring-blue-100 outline-none shadow-xs transition-all font-mono"
                 />
-                <datalist id="campaign-name-options">
-                  {(campaigns || []).map((c: any) => (
-                    <option key={c.id || c.name} value={c.name} />
-                  ))}
-                  <option value="PFAS Media Campaign" />
-                  <option value="Camp Lejeune National Inbound" />
-                  <option value="Roundup Agricultural Claims" />
-                  <option value="Talcum Ovarian Claims" />
-                  <option value="General Mass Tort" />
-                </datalist>
               </div>
-              <FormSelect
-                label="Substatus"
-                name="substatus"
-                value={formData.substatus}
-                onChange={handleInputChange}
-                options={SUBSTATUS_OPTIONS}
-              />
-              <div className="flex items-center pt-5">
-                <label className="inline-flex items-center gap-2.5 cursor-pointer">
-                  <input
-                    type="checkbox"
-                    name="billable"
-                    checked={formData.billable}
-                    onChange={handleInputChange}
-                    className="h-4 w-4 rounded border-slate-300 text-blue-600 focus:ring-blue-500 cursor-pointer"
-                  />
-                  <span className="text-xs font-bold text-slate-800">Billable Lead</span>
-                </label>
-              </div>
-              <FormInput
-                label="Date Sent"
-                type="date"
-                name="dateSent"
-                value={formData.dateSent}
-                onChange={handleInputChange}
-              />
-              <FormInput
-                label="Date Subscribed"
-                type="date"
-                name="dateSubscribed"
-                value={formData.dateSubscribed}
-                onChange={handleInputChange}
-              />
-              <FormInput
-                label="Tier"
-                name="tier"
-                value={formData.tier}
-                onChange={handleInputChange}
-                placeholder="e.g. Tier 1 / Premium"
-              />
-              <FormInput
-                label="Call Duration"
-                name="callDuration"
-                value={formData.callDuration}
-                onChange={handleInputChange}
-                placeholder="e.g. 05:45 or 345s"
-              />
-              <FormInput
-                label="Reason for Rejection"
-                name="reasonForRejection"
-                value={formData.reasonForRejection}
-                onChange={handleInputChange}
-                placeholder="e.g. Out of SOL"
-              />
-              <FormInput
-                label="Reason for DQ"
-                name="reasonForDQ"
-                value={formData.reasonForDQ}
-                onChange={handleInputChange}
-                placeholder="Disqualification rationale"
-              />
-              <FormInput
-                label="Reason for Doesn't Meet Criteria"
-                name="reasonForDoesntMeetCriteria"
-                value={formData.reasonForDoesntMeetCriteria}
-                onChange={handleInputChange}
-                placeholder="Criteria failure details"
-              />
-              <FormInput
-                label="Reason for Spam"
-                name="reasonForSpam"
-                value={formData.reasonForSpam}
-                onChange={handleInputChange}
-                placeholder="Spam classification reason"
-              />
-            </div>
-            <div>
-              <label className="text-xs font-semibold text-slate-700 block mb-1">
-                Trusted Form Certificate / Payload
-              </label>
-              <textarea
-                name="trustedForm"
-                value={formData.trustedForm}
-                onChange={handleInputChange}
-                rows={3}
-                placeholder="https://cert.trustedform.com/..."
-                className="w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-xs text-slate-900 placeholder:text-slate-400 focus:border-blue-600 focus:ring-2 focus:ring-blue-100 outline-none shadow-xs transition-all font-mono"
-              />
-            </div>
+            )}
           </FormSectionCard>
 
           {/* SECTION 2: CONTACT INFORMATION */}
           <FormSectionCard number={2} title="Contact Information" badge="Personal Details" colorTheme="indigo">
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              <FormInput
-                label="First Name"
-                name="firstName"
-                value={formData.firstName}
-                onChange={handleInputChange}
-                placeholder="First Name"
-                required
-              />
-              <FormInput
-                label="Middle Name"
-                name="middleName"
-                value={formData.middleName}
-                onChange={handleInputChange}
-                placeholder="Middle Name"
-              />
-              <FormInput
-                label="Last Name"
-                name="lastName"
-                value={formData.lastName}
-                onChange={handleInputChange}
-                placeholder="Last Name"
-                required
-              />
-              <FormSelect
-                label="Gender"
-                name="gender"
-                value={formData.gender}
-                onChange={handleInputChange}
-                options={GENDER_OPTIONS}
-              />
-              <FormInput
-                label="Date of Birth"
-                type="date"
-                name="dateOfBirth"
-                value={formData.dateOfBirth}
-                onChange={handleInputChange}
-              />
-              <FormInput
-                label="Phone Number"
-                type="tel"
-                name="phoneNumber"
-                value={formData.phoneNumber}
-                onChange={handleInputChange}
-                placeholder="(555) 000-0000"
-                required
-              />
-              <FormInput
-                label="Email Address"
-                type="email"
-                name="email"
-                value={formData.email}
-                onChange={handleInputChange}
-                placeholder="email@example.com"
-                required
-              />
-              <FormInput
-                label="Area Code"
-                name="areaCode"
-                value={formData.areaCode}
-                onChange={handleInputChange}
-                placeholder="e.g. 415"
-              />
-              <div className="sm:col-span-2">
+              {isFieldActive('firstName') && (
                 <FormInput
-                  label="Address Street"
-                  name="addressStreet"
-                  value={formData.addressStreet}
+                  label={getMeta('firstName', 'First Name', true).label}
+                  name="firstName"
+                  value={formData.firstName}
                   onChange={handleInputChange}
-                  placeholder="Street Address, Apt / Suite"
+                  placeholder="First Name"
+                  required={getMeta('firstName', 'First Name', true).required}
                 />
-              </div>
-              <FormInput
-                label="City"
-                name="city"
-                value={formData.city}
-                onChange={handleInputChange}
-                placeholder="City"
-              />
-              <FormSelect
-                label="State (50 US States)"
-                name="state"
-                value={formData.state}
-                onChange={handleInputChange}
-                options={US_STATES}
-                required
-                className="font-mono font-semibold"
-              />
+              )}
+              {isFieldActive('middleName') && (
+                <FormInput
+                  label={getMeta('middleName', 'Middle Name').label}
+                  name="middleName"
+                  value={formData.middleName}
+                  onChange={handleInputChange}
+                  placeholder="Middle Name"
+                  required={getMeta('middleName', 'Middle Name').required}
+                />
+              )}
+              {isFieldActive('lastName') && (
+                <FormInput
+                  label={getMeta('lastName', 'Last Name', true).label}
+                  name="lastName"
+                  value={formData.lastName}
+                  onChange={handleInputChange}
+                  placeholder="Last Name"
+                  required={getMeta('lastName', 'Last Name', true).required}
+                />
+              )}
+              {isFieldActive('gender') && (
+                <FormSelect
+                  label={getMeta('gender', 'Gender').label}
+                  name="gender"
+                  value={formData.gender}
+                  onChange={handleInputChange}
+                  options={GENDER_OPTIONS}
+                  required={getMeta('gender', 'Gender').required}
+                />
+              )}
+              {isFieldActive('dateOfBirth') && (
+                <FormInput
+                  label={getMeta('dateOfBirth', 'Date of Birth').label}
+                  type="date"
+                  name="dateOfBirth"
+                  value={formData.dateOfBirth}
+                  onChange={handleInputChange}
+                  required={getMeta('dateOfBirth', 'Date of Birth').required}
+                />
+              )}
+              {isFieldActive('phoneNumber') && (
+                <FormInput
+                  label={getMeta('phoneNumber', 'Phone Number', true).label}
+                  type="tel"
+                  name="phoneNumber"
+                  value={formData.phoneNumber}
+                  onChange={handleInputChange}
+                  placeholder="(555) 000-0000"
+                  required={getMeta('phoneNumber', 'Phone Number', true).required}
+                />
+              )}
+              {isFieldActive('email') && (
+                <FormInput
+                  label={getMeta('email', 'Email Address', true).label}
+                  type="email"
+                  name="email"
+                  value={formData.email}
+                  onChange={handleInputChange}
+                  placeholder="email@example.com"
+                  required={getMeta('email', 'Email Address', true).required}
+                />
+              )}
+              {isFieldActive('areaCode') && (
+                <FormInput
+                  label={getMeta('areaCode', 'Area Code').label}
+                  name="areaCode"
+                  value={formData.areaCode}
+                  onChange={handleInputChange}
+                  placeholder="e.g. 415"
+                  required={getMeta('areaCode', 'Area Code').required}
+                />
+              )}
+              {isFieldActive('addressStreet') && (
+                <div className="sm:col-span-2">
+                  <FormInput
+                    label={getMeta('addressStreet', 'Address Street').label}
+                    name="addressStreet"
+                    value={formData.addressStreet}
+                    onChange={handleInputChange}
+                    placeholder="Street Address, Apt / Suite"
+                    required={getMeta('addressStreet', 'Address Street').required}
+                  />
+                </div>
+              )}
+              {isFieldActive('city') && (
+                <FormInput
+                  label={getMeta('city', 'City').label}
+                  name="city"
+                  value={formData.city}
+                  onChange={handleInputChange}
+                  placeholder="City"
+                  required={getMeta('city', 'City').required}
+                />
+              )}
+              {isFieldActive('state') && (
+                <FormSelect
+                  label={getMeta('state', 'State (50 US States)', true).label}
+                  name="state"
+                  value={formData.state}
+                  onChange={handleInputChange}
+                  options={US_STATES}
+                  required={getMeta('state', 'State (50 US States)', true).required}
+                  className="font-mono font-semibold"
+                />
+              )}
             </div>
           </FormSectionCard>
 
           {/* SECTION 3: POA */}
           <FormSectionCard number={3} title="POA (Power of Attorney)" badge="Legal Rep" colorTheme="amber">
-            <div className="rounded-xl border border-amber-200 bg-amber-50/50 p-3.5 mb-2">
-              <label className="inline-flex items-center gap-2.5 cursor-pointer">
-                <input
-                  type="checkbox"
-                  name="powerOfAttorney"
-                  checked={formData.powerOfAttorney}
-                  onChange={handleInputChange}
-                  className="h-4 w-4 rounded border-amber-300 text-amber-600 focus:ring-amber-500 cursor-pointer"
-                />
-                <span className="text-xs font-bold text-amber-950">
-                  Power of Attorney (Representative Claim)
-                </span>
-              </label>
-              <p className="text-[11px] text-amber-800 mt-1 pl-6">
-                Check if claimant is acting as legal representative/next of kin for the victim.
-              </p>
-            </div>
+            {isFieldActive('powerOfAttorney') && (
+              <div className="rounded-xl border border-amber-200 bg-amber-50/50 p-3.5 mb-2">
+                <label className="inline-flex items-center gap-2.5 cursor-pointer">
+                  <input
+                    type="checkbox"
+                    name="powerOfAttorney"
+                    checked={formData.powerOfAttorney}
+                    onChange={handleInputChange}
+                    required={getMeta('powerOfAttorney', 'Power of Attorney').required}
+                    className="h-4 w-4 rounded border-amber-300 text-amber-600 focus:ring-amber-500 cursor-pointer"
+                  />
+                  <span className="text-xs font-bold text-amber-950">
+                    {getMeta('powerOfAttorney', 'Power of Attorney (Representative Claim)').label}
+                    {getMeta('powerOfAttorney', 'Power of Attorney').required && <span className="text-rose-500"> *</span>}
+                  </span>
+                </label>
+                <p className="text-[11px] text-amber-800 mt-1 pl-6">
+                  Check if claimant is acting as legal representative/next of kin for the victim.
+                </p>
+              </div>
+            )}
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              <FormInput
-                label="Victim Name"
-                name="victimName"
-                value={formData.victimName}
-                onChange={handleInputChange}
-                placeholder="Victim First Name"
-              />
-              <FormInput
-                label="Victim Full Name"
-                name="victimFullName"
-                value={formData.victimFullName}
-                onChange={handleInputChange}
-                placeholder="Victim Full Name"
-              />
-              <FormInput
-                label="Victim Last Name"
-                name="victimLastName"
-                value={formData.victimLastName}
-                onChange={handleInputChange}
-                placeholder="Victim Last Name"
-              />
-              <FormInput
-                label="Victim DOB"
-                type="date"
-                name="victimDOB"
-                value={formData.victimDOB}
-                onChange={handleInputChange}
-              />
-              <div className="sm:col-span-2">
+              {isFieldActive('victimName') && (
                 <FormInput
-                  label="Victim DOD (Date of Death if deceased)"
-                  type="date"
-                  name="victimDOD"
-                  value={formData.victimDOD}
+                  label={getMeta('victimName', 'Victim Name').label}
+                  name="victimName"
+                  value={formData.victimName}
                   onChange={handleInputChange}
+                  placeholder="Victim First Name"
+                  required={getMeta('victimName', 'Victim Name').required}
                 />
-              </div>
+              )}
+              {isFieldActive('victimFullName') && (
+                <FormInput
+                  label={getMeta('victimFullName', 'Victim Full Name').label}
+                  name="victimFullName"
+                  value={formData.victimFullName}
+                  onChange={handleInputChange}
+                  placeholder="Victim Full Name"
+                  required={getMeta('victimFullName', 'Victim Full Name').required}
+                />
+              )}
+              {isFieldActive('victimLastName') && (
+                <FormInput
+                  label={getMeta('victimLastName', 'Victim Last Name').label}
+                  name="victimLastName"
+                  value={formData.victimLastName}
+                  onChange={handleInputChange}
+                  placeholder="Victim Last Name"
+                  required={getMeta('victimLastName', 'Victim Last Name').required}
+                />
+              )}
+              {isFieldActive('victimDOB') && (
+                <FormInput
+                  label={getMeta('victimDOB', 'Victim DOB').label}
+                  type="date"
+                  name="victimDOB"
+                  value={formData.victimDOB}
+                  onChange={handleInputChange}
+                  required={getMeta('victimDOB', 'Victim DOB').required}
+                />
+              )}
+              {isFieldActive('victimDOD') && (
+                <div className="sm:col-span-2">
+                  <FormInput
+                    label={getMeta('victimDOD', 'Victim DOD (Date of Death if deceased)').label}
+                    type="date"
+                    name="victimDOD"
+                    value={formData.victimDOD}
+                    onChange={handleInputChange}
+                    required={getMeta('victimDOD', 'Victim DOD').required}
+                  />
+                </div>
+              )}
             </div>
           </FormSectionCard>
 
           {/* SECTION 4: DIAGNOSIS INFORMATION */}
           <FormSectionCard number={4} title="Diagnosis & Incident Information" badge="Medical Record" colorTheme="emerald">
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              <FormSelect
-                label="Which Incident Occurred"
-                name="incidentType"
-                value={formData.incidentType}
-                onChange={handleInputChange}
-                options={INCIDENT_TYPE_OPTIONS}
-                required
-              />
-              <FormSelect
-                label="Diagnosis"
-                name="diagnosis"
-                value={formData.diagnosis}
-                onChange={handleInputChange}
-                options={DIAGNOSIS_OPTIONS}
-                required
-              />
-              <div className="sm:col-span-2">
-                <FormInput
-                  label="Diagnosis Year / Date"
-                  type="date"
-                  name="diagnosisYear"
-                  value={formData.diagnosisYear}
+              {isFieldActive('incidentType') && (
+                <FormSelect
+                  label={getMeta('incidentType', 'Which Incident Occurred').label}
+                  name="incidentType"
+                  value={formData.incidentType}
                   onChange={handleInputChange}
+                  options={INCIDENT_TYPE_OPTIONS}
+                  required={getMeta('incidentType', 'Which Incident Occurred').required}
                 />
-              </div>
-              <FormInput
-                label="Diagnosing Doctor's Name"
-                name="diagnosingDoctorName"
-                value={formData.diagnosingDoctorName}
-                onChange={handleInputChange}
-                placeholder="Dr. Full Name"
-              />
-              <FormInput
-                label="Treating Doctor's Name"
-                name="treatingDoctorName"
-                value={formData.treatingDoctorName}
-                onChange={handleInputChange}
-                placeholder="Dr. Full Name"
-              />
-              <FormInput
-                label="Diagnosing Hospital's Name"
-                name="diagnosingHospitalName"
-                value={formData.diagnosingHospitalName}
-                onChange={handleInputChange}
-                placeholder="Hospital / Medical Center"
-              />
-              <FormInput
-                label="Treating Facility Name"
-                name="treatingFacilityName"
-                value={formData.treatingFacilityName}
-                onChange={handleInputChange}
-                placeholder="Treating Clinic / Facility"
-              />
-              <FormInput
-                label="Diagnosing Hospital Address"
-                name="diagnosingHospitalAddress"
-                value={formData.diagnosingHospitalAddress}
-                onChange={handleInputChange}
-                placeholder="Hospital Full Address"
-              />
-              <FormInput
-                label="Treating Facility Address"
-                name="treatingFacilityAddress"
-                value={formData.treatingFacilityAddress}
-                onChange={handleInputChange}
-                placeholder="Facility Full Address"
-              />
-              <FormInput
-                label="Diagnosing Facility Phone Number"
-                type="tel"
-                name="diagnosingFacilityPhone"
-                value={formData.diagnosingFacilityPhone}
-                onChange={handleInputChange}
-                placeholder="(123) 456-7890"
-              />
-              <FormInput
-                label="Treating Facility Phone Number"
-                type="tel"
-                name="treatingFacilityPhone"
-                value={formData.treatingFacilityPhone}
-                onChange={handleInputChange}
-                placeholder="(123) 456-7890"
-              />
+              )}
+              {isFieldActive('diagnosis') && (
+                <FormSelect
+                  label={getMeta('diagnosis', 'Diagnosis', true).label}
+                  name="diagnosis"
+                  value={formData.diagnosis}
+                  onChange={handleInputChange}
+                  options={DIAGNOSIS_OPTIONS}
+                  required={getMeta('diagnosis', 'Diagnosis', true).required}
+                />
+              )}
+              {isFieldActive('diagnosisYear') && (
+                <div className="sm:col-span-2">
+                  <FormInput
+                    label={getMeta('diagnosisYear', 'Diagnosis Year / Date').label}
+                    type="date"
+                    name="diagnosisYear"
+                    value={formData.diagnosisYear}
+                    onChange={handleInputChange}
+                    required={getMeta('diagnosisYear', 'Diagnosis Year / Date').required}
+                  />
+                </div>
+              )}
+              {isFieldActive('diagnosingDoctorName') && (
+                <FormInput
+                  label={getMeta('diagnosingDoctorName', "Diagnosing Doctor's Name").label}
+                  name="diagnosingDoctorName"
+                  value={formData.diagnosingDoctorName}
+                  onChange={handleInputChange}
+                  placeholder="Dr. Full Name"
+                  required={getMeta('diagnosingDoctorName', "Diagnosing Doctor's Name").required}
+                />
+              )}
+              {isFieldActive('treatingDoctorName') && (
+                <FormInput
+                  label={getMeta('treatingDoctorName', "Treating Doctor's Name").label}
+                  name="treatingDoctorName"
+                  value={formData.treatingDoctorName}
+                  onChange={handleInputChange}
+                  placeholder="Dr. Full Name"
+                  required={getMeta('treatingDoctorName', "Treating Doctor's Name").required}
+                />
+              )}
+              {isFieldActive('diagnosingHospitalName') && (
+                <FormInput
+                  label={getMeta('diagnosingHospitalName', "Diagnosing Hospital's Name").label}
+                  name="diagnosingHospitalName"
+                  value={formData.diagnosingHospitalName}
+                  onChange={handleInputChange}
+                  placeholder="Hospital / Medical Center"
+                  required={getMeta('diagnosingHospitalName', "Diagnosing Hospital's Name").required}
+                />
+              )}
+              {isFieldActive('treatingFacilityName') && (
+                <FormInput
+                  label={getMeta('treatingFacilityName', 'Treating Facility Name').label}
+                  name="treatingFacilityName"
+                  value={formData.treatingFacilityName}
+                  onChange={handleInputChange}
+                  placeholder="Treating Clinic / Facility"
+                  required={getMeta('treatingFacilityName', 'Treating Facility Name').required}
+                />
+              )}
+              {isFieldActive('diagnosingHospitalAddress') && (
+                <FormInput
+                  label={getMeta('diagnosingHospitalAddress', "Diagnosing Hospital's Address").label}
+                  name="diagnosingHospitalAddress"
+                  value={formData.diagnosingHospitalAddress}
+                  onChange={handleInputChange}
+                  placeholder="Hospital Full Address"
+                  required={getMeta('diagnosingHospitalAddress', "Diagnosing Hospital's Address").required}
+                />
+              )}
+              {isFieldActive('treatingFacilityAddress') && (
+                <FormInput
+                  label={getMeta('treatingFacilityAddress', 'Treating Facility Address').label}
+                  name="treatingFacilityAddress"
+                  value={formData.treatingFacilityAddress}
+                  onChange={handleInputChange}
+                  placeholder="Facility Full Address"
+                  required={getMeta('treatingFacilityAddress', 'Treating Facility Address').required}
+                />
+              )}
+              {isFieldActive('diagnosingFacilityPhone') && (
+                <FormInput
+                  label={getMeta('diagnosingFacilityPhone', 'Diagnosing Facility Phone Number').label}
+                  type="tel"
+                  name="diagnosingFacilityPhone"
+                  value={formData.diagnosingFacilityPhone}
+                  onChange={handleInputChange}
+                  placeholder="(123) 456-7890"
+                  required={getMeta('diagnosingFacilityPhone', 'Diagnosing Facility Phone Number').required}
+                />
+              )}
+              {isFieldActive('treatingFacilityPhone') && (
+                <FormInput
+                  label={getMeta('treatingFacilityPhone', 'Treating Facility Phone Number').label}
+                  type="tel"
+                  name="treatingFacilityPhone"
+                  value={formData.treatingFacilityPhone}
+                  onChange={handleInputChange}
+                  placeholder="(123) 456-7890"
+                  required={getMeta('treatingFacilityPhone', 'Treating Facility Phone Number').required}
+                />
+              )}
             </div>
           </FormSectionCard>
 
@@ -1618,7 +1868,7 @@ export default function NewCaseLeadFollowUpForm({
                             onChange={handleInputChange}
                             rows={3}
                             placeholder={q.placeholder || 'Describe details...'}
-                            className="w-full rounded-xl border border-slate-250 bg-white px-3.5 py-2.5 text-xs text-slate-900 placeholder:text-slate-400 focus:border-blue-600 focus:ring-2 focus:ring-blue-500/15 outline-none shadow-xs transition-all"
+                            className="w-full rounded-xl border border-slate-200 bg-white px-3.5 py-2.5 text-xs text-slate-900 placeholder:text-slate-400 focus:border-blue-600 focus:ring-2 focus:ring-blue-500/15 outline-none shadow-xs transition-all"
                           />
                         </div>
                       );

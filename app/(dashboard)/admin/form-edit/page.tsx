@@ -9,14 +9,21 @@ import {
   AlertTriangle, History, Info, Building2, Megaphone, Filter
 } from 'lucide-react';
 import { useCRMStore } from '@/store/crmStore';
-import NewCaseLeadFollowUpForm from '@/components/vendor-portal/leads/NewCaseLeadFollowUpForm';
+import NewCaseLeadFollowUpForm, {
+  TYPE_OPTIONS,
+  STATUS_OPTIONS,
+  SUBSTATUS_OPTIONS,
+  GENDER_OPTIONS,
+  INCIDENT_TYPE_OPTIONS,
+  DIAGNOSIS_OPTIONS
+} from '@/components/vendor-portal/leads/NewCaseLeadFollowUpForm';
 
 interface FormFieldDefinition {
   id: string;
   name: string;
   label: string;
   type: 'text' | 'select' | 'date' | 'checkbox' | 'textarea';
-  section: 'leadInfo' | 'contactInfo' | 'poa' | 'diagnosis' | 'screening';
+  section: 'leadInfo' | 'contactInfo' | 'poa' | 'diagnosis';
   required: boolean;
   active?: boolean;
   options?: string[];
@@ -24,39 +31,65 @@ interface FormFieldDefinition {
 }
 
 const DEFAULT_FORM_FIELDS: FormFieldDefinition[] = [
-  // 1. Lead Information
+  // ==========================================
+  // SECTION 1: LEAD INFORMATION
+  // ==========================================
   { id: '1', name: 'contactName', label: 'Contact Name', type: 'text', section: 'leadInfo', required: false, active: true, placeholder: 'e.g. Jane Doe' },
-  { id: '2', name: 'type', label: 'Tort Category', type: 'select', section: 'leadInfo', required: true, active: true, options: ['PFAS', 'Rideshare', 'Roblox', 'LA County JDC Sexual Abuse', 'Roundup', 'Storm', 'Talcum', 'Wildfire', 'Camp Lejeune', 'NEC Baby Formula', 'Hair Straightener', 'Personal Injury', 'Other'] },
-  { id: '3', name: 'status', label: 'Initial Status', type: 'select', section: 'leadInfo', required: true, active: true, options: ['New', 'In Progress', 'Sent'] },
-  { id: '4', name: 'leadName', label: 'Lead Full Name', type: 'text', section: 'leadInfo', required: false, active: true, placeholder: 'e.g. Jane Doe' },
-  { id: '5', name: 'substatus', label: 'TCPA Substatus', type: 'select', section: 'leadInfo', required: false, active: true, options: ['None', 'No TCPA', 'Redo TCPA', 'TCPA OK'] },
-  { id: '6', name: 'tier', label: 'Intake Tier Allocation', type: 'select', section: 'leadInfo', required: false, active: true, options: ['Tier 1', 'Tier 2', 'Tier 3'] },
+  { id: '2', name: 'campaignName', label: 'Campaign Name', type: 'select', section: 'leadInfo', required: true, active: true, placeholder: 'Select Campaign' },
+  { id: '3', name: 'type', label: 'Tort Category', type: 'select', section: 'leadInfo', required: true, active: true, options: TYPE_OPTIONS },
+  { id: '4', name: 'status', label: 'Initial Status', type: 'select', section: 'leadInfo', required: true, active: true, options: STATUS_OPTIONS },
+  { id: '5', name: 'leadName', label: 'Lead Full Name', type: 'text', section: 'leadInfo', required: false, active: true, placeholder: 'e.g. Johnathan Smith Lead' },
+  { id: '6', name: 'substatus', label: 'TCPA Substatus', type: 'select', section: 'leadInfo', required: false, active: true, options: SUBSTATUS_OPTIONS },
+  { id: '7', name: 'billable', label: 'Billable Lead', type: 'checkbox', section: 'leadInfo', required: false, active: true },
+  { id: '8', name: 'dateSent', label: 'Date Sent', type: 'date', section: 'leadInfo', required: false, active: true },
+  { id: '9', name: 'dateSubscribed', label: 'Date Subscribed', type: 'date', section: 'leadInfo', required: false, active: true },
+  { id: '10', name: 'tier', label: 'Intake Tier Allocation', type: 'text', section: 'leadInfo', required: false, active: true, placeholder: 'e.g. Tier 1 / Premium' },
+  { id: '11', name: 'callDuration', label: 'Call Duration', type: 'text', section: 'leadInfo', required: false, active: true, placeholder: 'e.g. 05:45 or 345s' },
+  { id: '12', name: 'reasonForRejection', label: 'Reason for Rejection', type: 'text', section: 'leadInfo', required: false, active: true, placeholder: 'e.g. Out of SOL' },
+  { id: '13', name: 'reasonForDQ', label: 'Reason for DQ', type: 'text', section: 'leadInfo', required: false, active: true, placeholder: 'Disqualification rationale' },
+  { id: '14', name: 'reasonForDoesntMeetCriteria', label: "Reason for Doesn't Meet Criteria", type: 'text', section: 'leadInfo', required: false, active: true, placeholder: 'Criteria failure details' },
+  { id: '15', name: 'reasonForSpam', label: 'Reason for Spam', type: 'text', section: 'leadInfo', required: false, active: true, placeholder: 'Spam classification reason' },
+  { id: '16', name: 'trustedForm', label: 'Trusted Form Certificate', type: 'textarea', section: 'leadInfo', required: false, active: true, placeholder: 'https://cert.trustedform.com/...' },
 
-  // 2. Contact Information
-  { id: '7', name: 'firstName', label: 'First Name', type: 'text', section: 'contactInfo', required: true, active: true, placeholder: 'First Name' },
-  { id: '8', name: 'lastName', label: 'Last Name', type: 'text', section: 'contactInfo', required: true, active: true, placeholder: 'Last Name' },
-  { id: '9', name: 'gender', label: 'Gender', type: 'select', section: 'contactInfo', required: false, active: true, options: ['Male', 'Female', 'Other', 'Prefer Not to Say'] },
-  { id: '10', name: 'dateOfBirth', label: 'Date of Birth', type: 'date', section: 'contactInfo', required: false, active: true },
-  { id: '11', name: 'phoneNumber', label: 'Phone Number', type: 'text', section: 'contactInfo', required: true, active: true, placeholder: '(555) 000-0000' },
-  { id: '12', name: 'email', label: 'Email Address', type: 'text', section: 'contactInfo', required: true, active: true, placeholder: 'claimant@example.com' },
-  { id: '13', name: 'state', label: 'State Jurisdiction', type: 'text', section: 'contactInfo', required: true, active: true, placeholder: 'e.g. CA' },
-  { id: '14', name: 'addressStreet', label: 'Address Street & City', type: 'text', section: 'contactInfo', required: false, active: true, placeholder: '123 Main St, Suite 4' },
+  // ==========================================
+  // SECTION 2: CONTACT INFORMATION
+  // ==========================================
+  { id: '17', name: 'firstName', label: 'First Name', type: 'text', section: 'contactInfo', required: true, active: true, placeholder: 'First Name' },
+  { id: '18', name: 'middleName', label: 'Middle Name', type: 'text', section: 'contactInfo', required: false, active: true, placeholder: 'Middle Name' },
+  { id: '19', name: 'lastName', label: 'Last Name', type: 'text', section: 'contactInfo', required: true, active: true, placeholder: 'Last Name' },
+  { id: '20', name: 'gender', label: 'Gender', type: 'select', section: 'contactInfo', required: false, active: true, options: GENDER_OPTIONS },
+  { id: '21', name: 'dateOfBirth', label: 'Date of Birth', type: 'date', section: 'contactInfo', required: false, active: true },
+  { id: '22', name: 'phoneNumber', label: 'Phone Number', type: 'text', section: 'contactInfo', required: true, active: true, placeholder: '(555) 000-0000' },
+  { id: '23', name: 'email', label: 'Email Address', type: 'text', section: 'contactInfo', required: true, active: true, placeholder: 'claimant@example.com' },
+  { id: '24', name: 'addressStreet', label: 'Street Address', type: 'text', section: 'contactInfo', required: false, active: true, placeholder: '123 Main St, Suite 4' },
+  { id: '25', name: 'city', label: 'City', type: 'text', section: 'contactInfo', required: false, active: true, placeholder: 'City' },
+  { id: '26', name: 'state', label: 'State Jurisdiction', type: 'text', section: 'contactInfo', required: true, active: true, placeholder: 'e.g. CA' },
+  { id: '27', name: 'areaCode', label: 'Area / Zip Code', type: 'text', section: 'contactInfo', required: false, active: true, placeholder: '90001' },
 
-  // 3. Power of Attorney
-  { id: '15', name: 'powerOfAttorney', label: 'Power of Attorney Active?', type: 'select', section: 'poa', required: false, active: true, options: ['No', 'Yes'] },
-  { id: '16', name: 'victimName', label: 'Victim / Primary Claimant Name', type: 'text', section: 'poa', required: false, active: true, placeholder: 'Victim Name if different' },
+  // ==========================================
+  // SECTION 3: POWER OF ATTORNEY
+  // ==========================================
+  { id: '28', name: 'powerOfAttorney', label: 'Power of Attorney Active?', type: 'checkbox', section: 'poa', required: false, active: true },
+  { id: '29', name: 'victimName', label: 'Victim First Name', type: 'text', section: 'poa', required: false, active: true, placeholder: 'Victim First Name' },
+  { id: '30', name: 'victimFullName', label: 'Victim Full Name', type: 'text', section: 'poa', required: false, active: true, placeholder: 'Victim Full Name' },
+  { id: '31', name: 'victimLastName', label: 'Victim Last Name', type: 'text', section: 'poa', required: false, active: true, placeholder: 'Victim Last Name' },
+  { id: '32', name: 'victimDOB', label: 'Victim Date of Birth', type: 'date', section: 'poa', required: false, active: true },
+  { id: '33', name: 'victimDOD', label: 'Victim Date of Death (if deceased)', type: 'date', section: 'poa', required: false, active: true },
 
-  // 4. Medical & Diagnosis
-  { id: '17', name: 'incidentType', label: 'Incident Classification', type: 'select', section: 'diagnosis', required: false, active: true, options: ['Oral Vaginal/anal – Rape', 'Vaginal/anal – Penetration', 'Digital penetration', 'Grooming / Sexual Exploitation', 'Physical Abuse', 'Other'] },
-  { id: '18', name: 'diagnosis', label: 'Medical Diagnosis', type: 'select', section: 'diagnosis', required: true, active: true, options: ['PTSD (Post-Traumatic Stress Disorder)', 'Sexual Dysfunction', 'Anxiety', 'Depression', 'Non-Hodgkin Lymphoma', 'Renal Carcinoma / Kidney Cancer', 'Leukemia / Blood Cancer', 'Ovarian Cancer', 'Parkinson\'s Disease', 'Other Medical Condition'] },
-  { id: '19', name: 'diagnosingHospitalName', label: 'Diagnosing Hospital / Clinic', type: 'text', section: 'diagnosis', required: false, active: true, placeholder: 'St. Jude Medical Center' },
-  { id: '20', name: 'treatingDoctorName', label: 'Treating Doctor Name', type: 'text', section: 'diagnosis', required: false, active: true, placeholder: 'Dr. Smith' },
-
-  // 5. Screening & Qualifier Criteria
-  { id: '21', name: 'rideshareProvider', label: 'Rideshare Provider', type: 'select', section: 'screening', required: false, active: true, options: ['Uber', 'Lyft'] },
-  { id: '22', name: 'rideshareAssaulted', label: 'Assaulted in Rideshare?', type: 'select', section: 'screening', required: false, active: true, options: ['Yes', 'No'] },
-  { id: '23', name: 'rideshareNarrative', label: 'Full Incident Narrative', type: 'textarea', section: 'screening', required: false, active: true, placeholder: 'Detailed narrative description of exposure or incident...' },
-  { id: '24', name: 'hasMedicalRecords', label: 'Medical Records Available?', type: 'select', section: 'screening', required: false, active: true, options: ['Yes', 'No'] },
+  // ==========================================
+  // SECTION 4: DIAGNOSIS & INCIDENT INFORMATION
+  // ==========================================
+  { id: '34', name: 'incidentType', label: 'Which Incident Occurred', type: 'select', section: 'diagnosis', required: false, active: true, options: INCIDENT_TYPE_OPTIONS },
+  { id: '35', name: 'diagnosis', label: 'Medical Diagnosis', type: 'select', section: 'diagnosis', required: true, active: true, options: DIAGNOSIS_OPTIONS },
+  { id: '36', name: 'diagnosisYear', label: 'Diagnosis Year / Date', type: 'date', section: 'diagnosis', required: false, active: true },
+  { id: '37', name: 'diagnosingDoctorName', label: "Diagnosing Doctor's Name", type: 'text', section: 'diagnosis', required: false, active: true, placeholder: 'Dr. Full Name' },
+  { id: '38', name: 'treatingDoctorName', label: "Treating Doctor's Name", type: 'text', section: 'diagnosis', required: false, active: true, placeholder: 'Dr. Full Name' },
+  { id: '39', name: 'diagnosingHospitalName', label: "Diagnosing Hospital's Name", type: 'text', section: 'diagnosis', required: false, active: true, placeholder: 'Hospital / Medical Center' },
+  { id: '40', name: 'treatingFacilityName', label: 'Treating Facility Name', type: 'text', section: 'diagnosis', required: false, active: true, placeholder: 'Treating Clinic / Facility' },
+  { id: '41', name: 'diagnosingHospitalAddress', label: "Diagnosing Hospital's Address", type: 'text', section: 'diagnosis', required: false, active: true, placeholder: 'Hospital Full Address' },
+  { id: '42', name: 'treatingFacilityAddress', label: 'Treating Facility Address', type: 'text', section: 'diagnosis', required: false, active: true, placeholder: 'Facility Full Address' },
+  { id: '43', name: 'diagnosingFacilityPhone', label: 'Diagnosing Facility Phone Number', type: 'text', section: 'diagnosis', required: false, active: true, placeholder: '(123) 456-7890' },
+  { id: '44', name: 'treatingFacilityPhone', label: 'Treating Facility Phone Number', type: 'text', section: 'diagnosis', required: false, active: true, placeholder: '(123) 456-7890' },
 ];
 
 export default function AdminFormEditPage() {
@@ -98,29 +131,17 @@ export default function AdminFormEditPage() {
     return campaigns.filter(
       (c: any) =>
         c.vendorId === selectedVendorId ||
+        c.vendor?.id === selectedVendorId ||
         (c.vendorName && vendorObj?.name && c.vendorName.toLowerCase() === vendorObj.name.toLowerCase()) ||
+        (c.vendor?.name && vendorObj?.name && c.vendor.name.toLowerCase() === vendorObj.name.toLowerCase()) ||
         (c.vendors && Array.isArray(c.vendors) && c.vendors.includes(selectedVendorId))
     );
   }, [campaigns, selectedVendorId, vendors]);
 
-  // Handle Vendor Selection Change & Auto-select campaign
+  // Handle Vendor Selection Change & reset campaign selection
   const handleVendorChange = (newVendorId: string) => {
     setSelectedVendorId(newVendorId);
-    if (newVendorId === 'all') {
-      setSelectedCampaignId('all');
-    } else {
-      const vendorObj = vendors.find((v) => v.id === newVendorId);
-      const filtered = campaigns.filter(
-        (c) =>
-          c.vendorId === newVendorId ||
-          (c.vendorName && vendorObj?.name && c.vendorName.toLowerCase() === vendorObj.name.toLowerCase())
-      );
-      if (filtered.length > 0) {
-        setSelectedCampaignId(filtered[0].id);
-      } else {
-        setSelectedCampaignId('all');
-      }
-    }
+    setSelectedCampaignId('all');
   };
 
   // Load server-persisted schema with local fallback
@@ -231,9 +252,20 @@ export default function AdminFormEditPage() {
           setUpdatedAt(data.schema.updatedAt);
           setUpdatedBy(data.schema.updatedBy || 'Admin');
         }
-        localStorage.setItem('lead_form_custom_schema', JSON.stringify(fields));
+        if (selectedVendorId === 'all') {
+          localStorage.setItem('lead_form_custom_schema', JSON.stringify(fields));
+        } else {
+          const scopedKey = selectedCampaignId !== 'all' ? `lead_form_${selectedVendorId}_${selectedCampaignId}` : `lead_form_${selectedVendorId}`;
+          localStorage.setItem(scopedKey, JSON.stringify(fields));
+        }
+        if (typeof window !== 'undefined') {
+          window.dispatchEvent(new Event('lead_form_schema_updated'));
+        }
         setIsDirty(false);
-        showToast(data.message || `Form schema saved successfully (v${data.schema?.version || schemaVersion})!`);
+        const targetDesc = selectedVendorId === 'all'
+          ? 'Globally for all vendors and campaigns'
+          : `for ${selectedVendor?.name || 'Vendor'}${selectedCampaignId !== 'all' ? ` (${assignedCampaigns.find((c: any) => c.id === selectedCampaignId)?.name || selectedCampaignId})` : ''}`;
+        showToast(data.message || `Form schema saved ${targetDesc} (v${data.schema?.version || schemaVersion})!`);
       } else {
         localStorage.setItem('lead_form_custom_schema', JSON.stringify(fields));
         setIsDirty(false);
@@ -418,8 +450,13 @@ export default function AdminFormEditPage() {
                 <Building2 className="h-5 w-5" />
               </div>
               <div>
-                <h3 className="text-xs font-bold text-slate-900 uppercase tracking-wider">Target Vendor & Campaign Context</h3>
-                <p className="text-2xs text-slate-500">Select a vendor to filter associated intake campaigns for schema customization.</p>
+                <h3 className="text-xs font-bold text-slate-900 uppercase tracking-wider">Target Context (Vendor & Campaign)</h3>
+                <p className="text-2xs text-slate-500">
+                  {selectedVendor ? `Configuring for ${selectedVendor.name}` : 'Global form configuration'}
+                  {selectedCampaignId !== 'all' && assignedCampaigns.find((c: any) => c.id === selectedCampaignId)
+                    ? ` • Campaign: ${assignedCampaigns.find((c: any) => c.id === selectedCampaignId)?.name}`
+                    : ''}
+                </p>
               </div>
             </div>
 
@@ -443,23 +480,26 @@ export default function AdminFormEditPage() {
                 </select>
               </div>
 
-              {/* Campaign Dropdown */}
-              <div className="relative w-full sm:w-56">
+              {/* Campaign Dropdown - Displays only campaigns assigned to selected vendor */}
+              <div className="relative w-full sm:w-64">
                 <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400">
                   <Megaphone className="h-3.5 w-3.5" />
                 </div>
                 <select
                   value={selectedCampaignId}
                   onChange={(e) => setSelectedCampaignId(e.target.value)}
-                  disabled={assignedCampaigns.length === 0}
-                  className="w-full pl-9 pr-8 py-2 rounded-xl border border-slate-200 bg-slate-50 text-xs font-semibold text-slate-800 focus:border-blue-600 focus:bg-white focus:ring-2 focus:ring-blue-500/15 outline-none transition-all cursor-pointer disabled:opacity-50"
+                  className="w-full pl-9 pr-8 py-2 rounded-xl border border-slate-200 bg-slate-50 text-xs font-semibold text-slate-800 focus:border-blue-600 focus:bg-white focus:ring-2 focus:ring-blue-500/15 outline-none transition-all cursor-pointer"
                 >
                   <option value="all">
-                    {selectedVendorId === 'all' ? 'All Campaigns' : assignedCampaigns.length === 0 ? 'No Campaigns Assigned' : 'All Vendor Campaigns'}
+                    {selectedVendorId === 'all'
+                      ? 'All Campaigns (Global)'
+                      : assignedCampaigns.length === 0
+                      ? 'No campaigns assigned to this vendor'
+                      : 'All Vendor Campaigns'}
                   </option>
                   {assignedCampaigns.map((c: any) => (
                     <option key={c.id} value={c.id}>
-                      {c.name} ({c.tortName || c.massTort?.name || 'General'})
+                      {c.name}
                     </option>
                   ))}
                 </select>
@@ -483,8 +523,7 @@ export default function AdminFormEditPage() {
               { id: 'leadInfo', label: '1. Lead Information' },
               { id: 'contactInfo', label: '2. Contact Information' },
               { id: 'poa', label: '3. Power of Attorney' },
-              { id: 'diagnosis', label: '4. Medical Diagnosis' },
-              { id: 'screening', label: '5. Screening Criteria' }
+              { id: 'diagnosis', label: '4. Medical Diagnosis' }
             ].map((sec) => (
               <button
                 key={sec.id}
@@ -507,10 +546,15 @@ export default function AdminFormEditPage() {
                 <Settings2 className="h-4 w-4 text-blue-600" />
                 <h3 className="font-bold text-slate-900 text-sm">Configured Form Fields ({filteredFields.length})</h3>
               </div>
-              <div className="flex items-center gap-2">
+              <div className="flex items-center gap-2 flex-wrap">
                 {selectedVendor && (
                   <span className="text-2xs font-bold uppercase tracking-wider text-indigo-700 bg-indigo-50 border border-indigo-200 px-2.5 py-0.5 rounded-full">
                     Vendor: {selectedVendor.name}
+                  </span>
+                )}
+                {selectedCampaignId !== 'all' && (
+                  <span className="text-2xs font-bold uppercase tracking-wider text-blue-700 bg-blue-50 border border-blue-200 px-2.5 py-0.5 rounded-full">
+                    Campaign: {assignedCampaigns.find((c: any) => c.id === selectedCampaignId)?.name || selectedCampaignId}
                   </span>
                 )}
                 <span className="text-2xs font-bold uppercase tracking-wider text-slate-500 bg-slate-200/80 px-2.5 py-0.5 rounded-full">
@@ -566,7 +610,6 @@ export default function AdminFormEditPage() {
                           {field.section === 'contactInfo' && '2. Contact Info'}
                           {field.section === 'poa' && '3. Power of Attorney'}
                           {field.section === 'diagnosis' && '4. Diagnosis'}
-                          {field.section === 'screening' && '5. Screening'}
                         </td>
                         <td className="p-3.5">
                           <span className={`inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-2xs font-bold ${
@@ -629,10 +672,15 @@ export default function AdminFormEditPage() {
               <Eye className="h-4 w-4 text-blue-600" />
               <h3 className="font-bold text-slate-900 text-sm">Live Lead Ingestion Form Preview</h3>
             </div>
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-2 flex-wrap">
               {selectedVendor && (
                 <span className="text-2xs font-bold uppercase tracking-wider text-indigo-700 bg-indigo-50 border border-indigo-200 px-2.5 py-0.5 rounded-full">
                   Vendor: {selectedVendor.name}
+                </span>
+              )}
+              {selectedCampaignId !== 'all' && (
+                <span className="text-2xs font-bold uppercase tracking-wider text-blue-700 bg-blue-50 border border-blue-200 px-2.5 py-0.5 rounded-full">
+                  Campaign: {assignedCampaigns.find((c: any) => c.id === selectedCampaignId)?.name || selectedCampaignId}
                 </span>
               )}
               <span className="text-2xs font-bold uppercase tracking-wider text-emerald-700 bg-emerald-50 border border-emerald-200 px-2.5 py-0.5 rounded-full">
@@ -644,11 +692,14 @@ export default function AdminFormEditPage() {
           <div className="bg-slate-50/50 p-4 rounded-2xl border border-slate-200">
             <NewCaseLeadFollowUpForm
               title={`Admin Preview: New Case Lead Follow Up${selectedVendor ? ` (${selectedVendor.name})` : ''}`}
-              subtitle="Previewing current configured form layout and field options."
+              subtitle={`Previewing current configured form layout${selectedCampaignId !== 'all' && assignedCampaigns.find((c: any) => c.id === selectedCampaignId) ? ` for ${assignedCampaigns.find((c: any) => c.id === selectedCampaignId)?.name}` : ''}.`}
               showCsvOption={true}
               customSchema={fields}
               vendorId={selectedVendorId !== 'all' ? selectedVendorId : undefined}
               vendorName={selectedVendor?.name}
+              initialValues={{
+                campaignName: assignedCampaigns.find((c: any) => c.id === selectedCampaignId)?.name || ''
+              }}
             />
           </div>
         </div>

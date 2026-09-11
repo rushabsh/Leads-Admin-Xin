@@ -1,7 +1,7 @@
 {
-  "version": 1,
-  "updatedAt": "2026-08-25T15:21:48.288Z",
-  "updatedBy": "System Default",
+  "version": 6,
+  "updatedAt": "2026-09-11T17:03:42.879Z",
+  "updatedBy": "MassCore Administrator",
   "fields": [
     {
       "id": "1",
@@ -15,6 +15,16 @@
     },
     {
       "id": "2",
+      "name": "campaignName",
+      "label": "Campaign Name",
+      "type": "select",
+      "section": "leadInfo",
+      "required": true,
+      "active": true,
+      "placeholder": "Select Campaign"
+    },
+    {
+      "id": "3",
       "name": "type",
       "label": "Tort Category",
       "type": "select",
@@ -31,15 +41,22 @@
         "Storm",
         "Talcum",
         "Wildfire",
+        "Women's Prisoner Abuse",
         "Camp Lejeune",
         "NEC Baby Formula",
         "Hair Straightener",
+        "Boy Scouts",
+        "Mesothelioma",
+        "AFFF Firefighting Foam",
+        "Toxic Water Contamination",
+        "Medical Malpractice",
         "Personal Injury",
+        "Mass Tort - General",
         "Other"
       ]
     },
     {
-      "id": "3",
+      "id": "4",
       "name": "status",
       "label": "Initial Status",
       "type": "select",
@@ -53,17 +70,17 @@
       ]
     },
     {
-      "id": "4",
+      "id": "5",
       "name": "leadName",
       "label": "Lead Full Name",
       "type": "text",
       "section": "leadInfo",
       "required": false,
       "active": true,
-      "placeholder": "e.g. Jane Doe"
+      "placeholder": "e.g. Johnathan Smith Lead"
     },
     {
-      "id": "5",
+      "id": "6",
       "name": "substatus",
       "label": "TCPA Substatus",
       "type": "select",
@@ -78,21 +95,104 @@
       ]
     },
     {
-      "id": "6",
+      "id": "7",
+      "name": "billable",
+      "label": "Billable Lead",
+      "type": "checkbox",
+      "section": "leadInfo",
+      "required": false,
+      "active": true
+    },
+    {
+      "id": "8",
+      "name": "dateSent",
+      "label": "Date Sent",
+      "type": "date",
+      "section": "leadInfo",
+      "required": false,
+      "active": true
+    },
+    {
+      "id": "9",
+      "name": "dateSubscribed",
+      "label": "Date Subscribed",
+      "type": "date",
+      "section": "leadInfo",
+      "required": false,
+      "active": true
+    },
+    {
+      "id": "10",
       "name": "tier",
       "label": "Intake Tier Allocation",
-      "type": "select",
+      "type": "text",
       "section": "leadInfo",
       "required": false,
       "active": true,
-      "options": [
-        "Tier 1",
-        "Tier 2",
-        "Tier 3"
-      ]
+      "placeholder": "e.g. Tier 1 / Premium"
     },
     {
-      "id": "7",
+      "id": "11",
+      "name": "callDuration",
+      "label": "Call Duration",
+      "type": "text",
+      "section": "leadInfo",
+      "required": false,
+      "active": true,
+      "placeholder": "e.g. 05:45 or 345s"
+    },
+    {
+      "id": "12",
+      "name": "reasonForRejection",
+      "label": "Reason for Rejection",
+      "type": "text",
+      "section": "leadInfo",
+      "required": false,
+      "active": true,
+      "placeholder": "e.g. Out of SOL"
+    },
+    {
+      "id": "13",
+      "name": "reasonForDQ",
+      "label": "Reason for DQ",
+      "type": "text",
+      "section": "leadInfo",
+      "required": false,
+      "active": true,
+      "placeholder": "Disqualification rationale"
+    },
+    {
+      "id": "14",
+      "name": "reasonForDoesntMeetCriteria",
+      "label": "Reason for Doesn't Meet Criteria",
+      "type": "text",
+      "section": "leadInfo",
+      "required": false,
+      "active": true,
+      "placeholder": "Criteria failure details"
+    },
+    {
+      "id": "15",
+      "name": "reasonForSpam",
+      "label": "Reason for Spam",
+      "type": "text",
+      "section": "leadInfo",
+      "required": false,
+      "active": true,
+      "placeholder": "Spam classification reason"
+    },
+    {
+      "id": "16",
+      "name": "trustedForm",
+      "label": "Trusted Form Certificate",
+      "type": "textarea",
+      "section": "leadInfo",
+      "required": false,
+      "active": true,
+      "placeholder": "https://cert.trustedform.com/..."
+    },
+    {
+      "id": "17",
       "name": "firstName",
       "label": "First Name",
       "type": "text",
@@ -102,7 +202,17 @@
       "placeholder": "First Name"
     },
     {
-      "id": "8",
+      "id": "18",
+      "name": "middleName",
+      "label": "Middle Name",
+      "type": "text",
+      "section": "contactInfo",
+      "required": false,
+      "active": true,
+      "placeholder": "Middle Name"
+    },
+    {
+      "id": "19",
       "name": "lastName",
       "label": "Last Name",
       "type": "text",
@@ -112,7 +222,7 @@
       "placeholder": "Last Name"
     },
     {
-      "id": "9",
+      "id": "20",
       "name": "gender",
       "label": "Gender",
       "type": "select",
@@ -127,7 +237,7 @@
       ]
     },
     {
-      "id": "10",
+      "id": "21",
       "name": "dateOfBirth",
       "label": "Date of Birth",
       "type": "date",
@@ -136,7 +246,7 @@
       "active": true
     },
     {
-      "id": "11",
+      "id": "22",
       "name": "phoneNumber",
       "label": "Phone Number",
       "type": "text",
@@ -146,7 +256,7 @@
       "placeholder": "(555) 000-0000"
     },
     {
-      "id": "12",
+      "id": "23",
       "name": "email",
       "label": "Email Address",
       "type": "text",
@@ -156,7 +266,27 @@
       "placeholder": "claimant@example.com"
     },
     {
-      "id": "13",
+      "id": "24",
+      "name": "addressStreet",
+      "label": "Street Address",
+      "type": "text",
+      "section": "contactInfo",
+      "required": false,
+      "active": true,
+      "placeholder": "123 Main St, Suite 4"
+    },
+    {
+      "id": "25",
+      "name": "city",
+      "label": "City",
+      "type": "text",
+      "section": "contactInfo",
+      "required": false,
+      "active": true,
+      "placeholder": "City"
+    },
+    {
+      "id": "26",
       "name": "state",
       "label": "State Jurisdiction",
       "type": "text",
@@ -166,42 +296,76 @@
       "placeholder": "e.g. CA"
     },
     {
-      "id": "14",
-      "name": "addressStreet",
-      "label": "Address Street & City",
+      "id": "27",
+      "name": "areaCode",
+      "label": "Area / Zip Code",
       "type": "text",
       "section": "contactInfo",
       "required": false,
       "active": true,
-      "placeholder": "123 Main St, Suite 4"
+      "placeholder": "90001"
     },
     {
-      "id": "15",
+      "id": "28",
       "name": "powerOfAttorney",
       "label": "Power of Attorney Active?",
-      "type": "select",
+      "type": "checkbox",
       "section": "poa",
       "required": false,
-      "active": true,
-      "options": [
-        "No",
-        "Yes"
-      ]
+      "active": true
     },
     {
-      "id": "16",
+      "id": "29",
       "name": "victimName",
-      "label": "Victim / Primary Claimant Name",
+      "label": "Victim First Name",
       "type": "text",
       "section": "poa",
       "required": false,
       "active": true,
-      "placeholder": "Victim Name if different"
+      "placeholder": "Victim First Name"
     },
     {
-      "id": "17",
+      "id": "30",
+      "name": "victimFullName",
+      "label": "Victim Full Name",
+      "type": "text",
+      "section": "poa",
+      "required": false,
+      "active": true,
+      "placeholder": "Victim Full Name"
+    },
+    {
+      "id": "31",
+      "name": "victimLastName",
+      "label": "Victim Last Name",
+      "type": "text",
+      "section": "poa",
+      "required": false,
+      "active": true,
+      "placeholder": "Victim Last Name"
+    },
+    {
+      "id": "32",
+      "name": "victimDOB",
+      "label": "Victim Date of Birth",
+      "type": "date",
+      "section": "poa",
+      "required": false,
+      "active": true
+    },
+    {
+      "id": "33",
+      "name": "victimDOD",
+      "label": "Victim Date of Death (if deceased)",
+      "type": "date",
+      "section": "poa",
+      "required": false,
+      "active": true
+    },
+    {
+      "id": "34",
       "name": "incidentType",
-      "label": "Incident Classification",
+      "label": "Which Incident Occurred",
       "type": "select",
       "section": "diagnosis",
       "required": false,
@@ -216,7 +380,7 @@
       ]
     },
     {
-      "id": "18",
+      "id": "35",
       "name": "diagnosis",
       "label": "Medical Diagnosis",
       "type": "select",
@@ -224,8 +388,8 @@
       "required": true,
       "active": true,
       "options": [
-        "PTSD (Post-Traumatic Stress Disorder)",
         "Sexual Dysfunction",
+        "PTSD (Post-Traumatic Stress Disorder)",
         "Anxiety",
         "Depression",
         "Non-Hodgkin Lymphoma",
@@ -233,77 +397,1105 @@
         "Leukemia / Blood Cancer",
         "Ovarian Cancer",
         "Parkinson's Disease",
+        "Prostate Cancer",
+        "Bladder Cancer",
+        "Liver Cancer / Damage",
+        "Multiple Myeloma",
+        "Necrotizing Enterocolitis (NEC)",
+        "Uterine Cancer",
+        "Respiratory Illness / Lung Cancer",
+        "Trauma / Physical Injury",
+        "Sexual Abuse / Trauma",
+        "Property / Environmental Loss",
         "Other Medical Condition"
       ]
     },
     {
-      "id": "19",
-      "name": "diagnosingHospitalName",
-      "label": "Diagnosing Hospital / Clinic",
+      "id": "36",
+      "name": "diagnosisYear",
+      "label": "Diagnosis Year / Date",
+      "type": "date",
+      "section": "diagnosis",
+      "required": false,
+      "active": true
+    },
+    {
+      "id": "37",
+      "name": "diagnosingDoctorName",
+      "label": "Diagnosing Doctor's Name",
       "type": "text",
       "section": "diagnosis",
       "required": false,
       "active": true,
-      "placeholder": "St. Jude Medical Center"
+      "placeholder": "Dr. Full Name"
     },
     {
-      "id": "20",
+      "id": "38",
       "name": "treatingDoctorName",
-      "label": "Treating Doctor Name",
+      "label": "Treating Doctor's Name",
       "type": "text",
       "section": "diagnosis",
       "required": false,
       "active": true,
-      "placeholder": "Dr. Smith"
+      "placeholder": "Dr. Full Name"
     },
     {
-      "id": "21",
-      "name": "rideshareProvider",
-      "label": "Rideshare Provider",
-      "type": "select",
-      "section": "screening",
+      "id": "39",
+      "name": "diagnosingHospitalName",
+      "label": "Diagnosing Hospital's Name",
+      "type": "text",
+      "section": "diagnosis",
       "required": false,
       "active": true,
-      "options": [
-        "Uber",
-        "Lyft"
-      ]
+      "placeholder": "Hospital / Medical Center"
     },
     {
-      "id": "22",
-      "name": "rideshareAssaulted",
-      "label": "Assaulted in Rideshare?",
-      "type": "select",
-      "section": "screening",
+      "id": "40",
+      "name": "treatingFacilityName",
+      "label": "Treating Facility Name",
+      "type": "text",
+      "section": "diagnosis",
       "required": false,
       "active": true,
-      "options": [
-        "Yes",
-        "No"
-      ]
+      "placeholder": "Treating Clinic / Facility"
     },
     {
-      "id": "23",
-      "name": "rideshareNarrative",
-      "label": "Full Incident Narrative",
-      "type": "textarea",
-      "section": "screening",
+      "id": "41",
+      "name": "diagnosingHospitalAddress",
+      "label": "Diagnosing Hospital's Address",
+      "type": "text",
+      "section": "diagnosis",
       "required": false,
       "active": true,
-      "placeholder": "Detailed narrative description of exposure or incident..."
+      "placeholder": "Hospital Full Address"
     },
     {
-      "id": "24",
-      "name": "hasMedicalRecords",
-      "label": "Medical Records Available?",
-      "type": "select",
-      "section": "screening",
+      "id": "42",
+      "name": "treatingFacilityAddress",
+      "label": "Treating Facility Address",
+      "type": "text",
+      "section": "diagnosis",
       "required": false,
       "active": true,
-      "options": [
-        "Yes",
-        "No"
-      ]
+      "placeholder": "Facility Full Address"
+    },
+    {
+      "id": "43",
+      "name": "diagnosingFacilityPhone",
+      "label": "Diagnosing Facility Phone Number",
+      "type": "text",
+      "section": "diagnosis",
+      "required": false,
+      "active": true,
+      "placeholder": "(123) 456-7890"
+    },
+    {
+      "id": "44",
+      "name": "treatingFacilityPhone",
+      "label": "Treating Facility Phone Number",
+      "type": "text",
+      "section": "diagnosis",
+      "required": false,
+      "active": true,
+      "placeholder": "(123) 456-7890"
     }
-  ]
+  ],
+  "overrides": {
+    "6a5d13c8a31fc3c23211fbd8_6a5d13caa31fc3c23211fbde": [
+      {
+        "id": "1",
+        "name": "contactName",
+        "label": "Contact Name",
+        "type": "text",
+        "section": "leadInfo",
+        "required": false,
+        "active": true,
+        "placeholder": "e.g. Jane Doe"
+      },
+      {
+        "id": "2",
+        "name": "campaignName",
+        "label": "Campaign Name",
+        "type": "select",
+        "section": "leadInfo",
+        "required": true,
+        "active": true,
+        "placeholder": "Select Campaign"
+      },
+      {
+        "id": "3",
+        "name": "type",
+        "label": "Tort Category",
+        "type": "select",
+        "section": "leadInfo",
+        "required": true,
+        "active": true,
+        "options": [
+          "Depo-Provera",
+          "PFAS",
+          "Rideshare",
+          "Roblox",
+          "LA County JDC Sexual Abuse",
+          "Roundup",
+          "Storm",
+          "Talcum",
+          "Wildfire",
+          "Women's Prisoner Abuse",
+          "Camp Lejeune",
+          "NEC Baby Formula",
+          "Hair Straightener",
+          "Boy Scouts",
+          "Mesothelioma",
+          "AFFF Firefighting Foam",
+          "Toxic Water Contamination",
+          "Medical Malpractice",
+          "Personal Injury",
+          "Mass Tort - General",
+          "Other"
+        ]
+      },
+      {
+        "id": "4",
+        "name": "status",
+        "label": "Initial Status",
+        "type": "select",
+        "section": "leadInfo",
+        "required": true,
+        "active": true,
+        "options": [
+          "New",
+          "In Progress",
+          "Sent"
+        ]
+      },
+      {
+        "id": "5",
+        "name": "leadName",
+        "label": "Lead Full Name",
+        "type": "text",
+        "section": "leadInfo",
+        "required": false,
+        "active": true,
+        "placeholder": "e.g. Johnathan Smith Lead"
+      },
+      {
+        "id": "6",
+        "name": "substatus",
+        "label": "TCPA Substatus",
+        "type": "select",
+        "section": "leadInfo",
+        "required": false,
+        "active": true,
+        "options": [
+          "None",
+          "No TCPA",
+          "Redo TCPA",
+          "TCPA OK"
+        ]
+      },
+      {
+        "id": "7",
+        "name": "billable",
+        "label": "Billable Lead",
+        "type": "checkbox",
+        "section": "leadInfo",
+        "required": false,
+        "active": true
+      },
+      {
+        "id": "8",
+        "name": "dateSent",
+        "label": "Date Sent",
+        "type": "date",
+        "section": "leadInfo",
+        "required": false,
+        "active": true
+      },
+      {
+        "id": "9",
+        "name": "dateSubscribed",
+        "label": "Date Subscribed",
+        "type": "date",
+        "section": "leadInfo",
+        "required": false,
+        "active": true
+      },
+      {
+        "id": "10",
+        "name": "tier",
+        "label": "Intake Tier Allocation",
+        "type": "text",
+        "section": "leadInfo",
+        "required": false,
+        "active": true,
+        "placeholder": "e.g. Tier 1 / Premium"
+      },
+      {
+        "id": "11",
+        "name": "callDuration",
+        "label": "Call Duration",
+        "type": "text",
+        "section": "leadInfo",
+        "required": false,
+        "active": true,
+        "placeholder": "e.g. 05:45 or 345s"
+      },
+      {
+        "id": "12",
+        "name": "reasonForRejection",
+        "label": "Reason for Rejection",
+        "type": "text",
+        "section": "leadInfo",
+        "required": false,
+        "active": true,
+        "placeholder": "e.g. Out of SOL"
+      },
+      {
+        "id": "13",
+        "name": "reasonForDQ",
+        "label": "Reason for DQ",
+        "type": "text",
+        "section": "leadInfo",
+        "required": false,
+        "active": true,
+        "placeholder": "Disqualification rationale"
+      },
+      {
+        "id": "14",
+        "name": "reasonForDoesntMeetCriteria",
+        "label": "Reason for Doesn't Meet Criteria",
+        "type": "text",
+        "section": "leadInfo",
+        "required": false,
+        "active": true,
+        "placeholder": "Criteria failure details"
+      },
+      {
+        "id": "15",
+        "name": "reasonForSpam",
+        "label": "Reason for Spam",
+        "type": "text",
+        "section": "leadInfo",
+        "required": false,
+        "active": true,
+        "placeholder": "Spam classification reason"
+      },
+      {
+        "id": "16",
+        "name": "trustedForm",
+        "label": "Trusted Form Certificate",
+        "type": "textarea",
+        "section": "leadInfo",
+        "required": false,
+        "active": true,
+        "placeholder": "https://cert.trustedform.com/..."
+      },
+      {
+        "id": "17",
+        "name": "firstName",
+        "label": "First Name",
+        "type": "text",
+        "section": "contactInfo",
+        "required": true,
+        "active": true,
+        "placeholder": "First Name"
+      },
+      {
+        "id": "18",
+        "name": "middleName",
+        "label": "Middle Name",
+        "type": "text",
+        "section": "contactInfo",
+        "required": false,
+        "active": true,
+        "placeholder": "Middle Name"
+      },
+      {
+        "id": "19",
+        "name": "lastName",
+        "label": "Last Name",
+        "type": "text",
+        "section": "contactInfo",
+        "required": true,
+        "active": true,
+        "placeholder": "Last Name"
+      },
+      {
+        "id": "20",
+        "name": "gender",
+        "label": "Gender",
+        "type": "select",
+        "section": "contactInfo",
+        "required": false,
+        "active": true,
+        "options": [
+          "Male",
+          "Female",
+          "Other",
+          "Prefer Not to Say"
+        ]
+      },
+      {
+        "id": "21",
+        "name": "dateOfBirth",
+        "label": "Date of Birth",
+        "type": "date",
+        "section": "contactInfo",
+        "required": false,
+        "active": true
+      },
+      {
+        "id": "22",
+        "name": "phoneNumber",
+        "label": "Phone Number",
+        "type": "text",
+        "section": "contactInfo",
+        "required": true,
+        "active": true,
+        "placeholder": "(555) 000-0000"
+      },
+      {
+        "id": "23",
+        "name": "email",
+        "label": "Email Address",
+        "type": "text",
+        "section": "contactInfo",
+        "required": true,
+        "active": true,
+        "placeholder": "claimant@example.com"
+      },
+      {
+        "id": "24",
+        "name": "addressStreet",
+        "label": "Street Address",
+        "type": "text",
+        "section": "contactInfo",
+        "required": false,
+        "active": true,
+        "placeholder": "123 Main St, Suite 4"
+      },
+      {
+        "id": "25",
+        "name": "city",
+        "label": "City",
+        "type": "text",
+        "section": "contactInfo",
+        "required": false,
+        "active": true,
+        "placeholder": "City"
+      },
+      {
+        "id": "26",
+        "name": "state",
+        "label": "State Jurisdiction",
+        "type": "text",
+        "section": "contactInfo",
+        "required": true,
+        "active": true,
+        "placeholder": "e.g. CA"
+      },
+      {
+        "id": "27",
+        "name": "areaCode",
+        "label": "Area / Zip Code",
+        "type": "text",
+        "section": "contactInfo",
+        "required": false,
+        "active": true,
+        "placeholder": "90001"
+      },
+      {
+        "id": "28",
+        "name": "powerOfAttorney",
+        "label": "Power of Attorney Active?",
+        "type": "checkbox",
+        "section": "poa",
+        "required": false,
+        "active": true
+      },
+      {
+        "id": "29",
+        "name": "victimName",
+        "label": "Victim First Name",
+        "type": "text",
+        "section": "poa",
+        "required": false,
+        "active": true,
+        "placeholder": "Victim First Name"
+      },
+      {
+        "id": "30",
+        "name": "victimFullName",
+        "label": "Victim Full Name",
+        "type": "text",
+        "section": "poa",
+        "required": false,
+        "active": true,
+        "placeholder": "Victim Full Name"
+      },
+      {
+        "id": "31",
+        "name": "victimLastName",
+        "label": "Victim Last Name",
+        "type": "text",
+        "section": "poa",
+        "required": false,
+        "active": true,
+        "placeholder": "Victim Last Name"
+      },
+      {
+        "id": "32",
+        "name": "victimDOB",
+        "label": "Victim Date of Birth",
+        "type": "date",
+        "section": "poa",
+        "required": false,
+        "active": true
+      },
+      {
+        "id": "33",
+        "name": "victimDOD",
+        "label": "Victim Date of Death (if deceased)",
+        "type": "date",
+        "section": "poa",
+        "required": false,
+        "active": true
+      },
+      {
+        "id": "34",
+        "name": "incidentType",
+        "label": "Which Incident Occurred",
+        "type": "select",
+        "section": "diagnosis",
+        "required": false,
+        "active": true,
+        "options": [
+          "Oral Vaginal/anal – Rape",
+          "Vaginal/anal – Penetration",
+          "Digital penetration",
+          "Grooming / Sexual Exploitation",
+          "Physical Abuse",
+          "Other"
+        ]
+      },
+      {
+        "id": "35",
+        "name": "diagnosis",
+        "label": "Medical Diagnosis",
+        "type": "select",
+        "section": "diagnosis",
+        "required": false,
+        "active": true,
+        "options": [
+          "Sexual Dysfunction",
+          "PTSD (Post-Traumatic Stress Disorder)",
+          "Anxiety",
+          "Depression",
+          "Non-Hodgkin Lymphoma",
+          "Renal Carcinoma / Kidney Cancer",
+          "Leukemia / Blood Cancer",
+          "Ovarian Cancer",
+          "Parkinson's Disease",
+          "Prostate Cancer",
+          "Bladder Cancer",
+          "Liver Cancer / Damage",
+          "Multiple Myeloma",
+          "Necrotizing Enterocolitis (NEC)",
+          "Uterine Cancer",
+          "Respiratory Illness / Lung Cancer",
+          "Trauma / Physical Injury",
+          "Sexual Abuse / Trauma",
+          "Property / Environmental Loss",
+          "Other Medical Condition"
+        ]
+      },
+      {
+        "id": "36",
+        "name": "diagnosisYear",
+        "label": "Diagnosis Year / Date",
+        "type": "date",
+        "section": "diagnosis",
+        "required": false,
+        "active": true
+      },
+      {
+        "id": "37",
+        "name": "diagnosingDoctorName",
+        "label": "Diagnosing Doctor's Name",
+        "type": "text",
+        "section": "diagnosis",
+        "required": true,
+        "active": true,
+        "placeholder": "Dr. Full Name"
+      },
+      {
+        "id": "38",
+        "name": "treatingDoctorName",
+        "label": "Treating Doctor's Name",
+        "type": "text",
+        "section": "diagnosis",
+        "required": false,
+        "active": true,
+        "placeholder": "Dr. Full Name"
+      },
+      {
+        "id": "39",
+        "name": "diagnosingHospitalName",
+        "label": "Diagnosing Hospital's Name",
+        "type": "text",
+        "section": "diagnosis",
+        "required": false,
+        "active": true,
+        "placeholder": "Hospital / Medical Center"
+      },
+      {
+        "id": "40",
+        "name": "treatingFacilityName",
+        "label": "Treating Facility Name",
+        "type": "text",
+        "section": "diagnosis",
+        "required": false,
+        "active": true,
+        "placeholder": "Treating Clinic / Facility"
+      },
+      {
+        "id": "41",
+        "name": "diagnosingHospitalAddress",
+        "label": "Diagnosing Hospital's Address",
+        "type": "text",
+        "section": "diagnosis",
+        "required": false,
+        "active": true,
+        "placeholder": "Hospital Full Address"
+      },
+      {
+        "id": "42",
+        "name": "treatingFacilityAddress",
+        "label": "Treating Facility Address",
+        "type": "text",
+        "section": "diagnosis",
+        "required": false,
+        "active": true,
+        "placeholder": "Facility Full Address"
+      },
+      {
+        "id": "43",
+        "name": "diagnosingFacilityPhone",
+        "label": "Diagnosing Facility Phone Number",
+        "type": "text",
+        "section": "diagnosis",
+        "required": false,
+        "active": true,
+        "placeholder": "(123) 456-7890"
+      },
+      {
+        "id": "44",
+        "name": "treatingFacilityPhone",
+        "label": "Treating Facility Phone Number",
+        "type": "text",
+        "section": "diagnosis",
+        "required": false,
+        "active": true,
+        "placeholder": "(123) 456-7890"
+      }
+    ],
+    "6aa17c85f5b002a10c8347e4_6aa17d55f5b002a10c8347e6": [
+      {
+        "id": "1",
+        "name": "contactName",
+        "label": "Contact Name",
+        "type": "text",
+        "section": "leadInfo",
+        "required": false,
+        "active": true,
+        "placeholder": "e.g. Jane Doe"
+      },
+      {
+        "id": "2",
+        "name": "campaignName",
+        "label": "Campaign Name",
+        "type": "select",
+        "section": "leadInfo",
+        "required": true,
+        "active": true,
+        "placeholder": "Select Campaign"
+      },
+      {
+        "id": "3",
+        "name": "type",
+        "label": "Tort Category",
+        "type": "select",
+        "section": "leadInfo",
+        "required": true,
+        "active": true,
+        "options": [
+          "Depo-Provera",
+          "PFAS",
+          "Rideshare",
+          "Roblox",
+          "LA County JDC Sexual Abuse",
+          "Roundup",
+          "Storm",
+          "Talcum",
+          "Wildfire",
+          "Women's Prisoner Abuse",
+          "Camp Lejeune",
+          "NEC Baby Formula",
+          "Hair Straightener",
+          "Boy Scouts",
+          "Mesothelioma",
+          "AFFF Firefighting Foam",
+          "Toxic Water Contamination",
+          "Medical Malpractice",
+          "Personal Injury",
+          "Mass Tort - General",
+          "Other"
+        ]
+      },
+      {
+        "id": "4",
+        "name": "status",
+        "label": "Initial Status",
+        "type": "select",
+        "section": "leadInfo",
+        "required": true,
+        "active": true,
+        "options": [
+          "New",
+          "In Progress",
+          "Sent"
+        ]
+      },
+      {
+        "id": "5",
+        "name": "leadName",
+        "label": "Lead Full Name",
+        "type": "text",
+        "section": "leadInfo",
+        "required": false,
+        "active": true,
+        "placeholder": "e.g. Johnathan Smith Lead"
+      },
+      {
+        "id": "6",
+        "name": "substatus",
+        "label": "TCPA Substatus",
+        "type": "select",
+        "section": "leadInfo",
+        "required": false,
+        "active": true,
+        "options": [
+          "None",
+          "No TCPA",
+          "Redo TCPA",
+          "TCPA OK"
+        ]
+      },
+      {
+        "id": "7",
+        "name": "billable",
+        "label": "Billable Lead",
+        "type": "checkbox",
+        "section": "leadInfo",
+        "required": false,
+        "active": true
+      },
+      {
+        "id": "8",
+        "name": "dateSent",
+        "label": "Date Sent",
+        "type": "date",
+        "section": "leadInfo",
+        "required": false,
+        "active": true
+      },
+      {
+        "id": "9",
+        "name": "dateSubscribed",
+        "label": "Date Subscribed",
+        "type": "date",
+        "section": "leadInfo",
+        "required": false,
+        "active": true
+      },
+      {
+        "id": "10",
+        "name": "tier",
+        "label": "Intake Tier Allocation",
+        "type": "text",
+        "section": "leadInfo",
+        "required": false,
+        "active": true,
+        "placeholder": "e.g. Tier 1 / Premium"
+      },
+      {
+        "id": "11",
+        "name": "callDuration",
+        "label": "Call Duration",
+        "type": "text",
+        "section": "leadInfo",
+        "required": false,
+        "active": true,
+        "placeholder": "e.g. 05:45 or 345s"
+      },
+      {
+        "id": "12",
+        "name": "reasonForRejection",
+        "label": "Reason for Rejection",
+        "type": "text",
+        "section": "leadInfo",
+        "required": false,
+        "active": true,
+        "placeholder": "e.g. Out of SOL"
+      },
+      {
+        "id": "13",
+        "name": "reasonForDQ",
+        "label": "Reason for DQ",
+        "type": "text",
+        "section": "leadInfo",
+        "required": false,
+        "active": true,
+        "placeholder": "Disqualification rationale"
+      },
+      {
+        "id": "14",
+        "name": "reasonForDoesntMeetCriteria",
+        "label": "Reason for Doesn't Meet Criteria",
+        "type": "text",
+        "section": "leadInfo",
+        "required": false,
+        "active": true,
+        "placeholder": "Criteria failure details"
+      },
+      {
+        "id": "15",
+        "name": "reasonForSpam",
+        "label": "Reason for Spam",
+        "type": "text",
+        "section": "leadInfo",
+        "required": false,
+        "active": true,
+        "placeholder": "Spam classification reason"
+      },
+      {
+        "id": "16",
+        "name": "trustedForm",
+        "label": "Trusted Form Certificate",
+        "type": "textarea",
+        "section": "leadInfo",
+        "required": false,
+        "active": true,
+        "placeholder": "https://cert.trustedform.com/..."
+      },
+      {
+        "id": "17",
+        "name": "firstName",
+        "label": "First Name",
+        "type": "text",
+        "section": "contactInfo",
+        "required": true,
+        "active": true,
+        "placeholder": "First Name"
+      },
+      {
+        "id": "18",
+        "name": "middleName",
+        "label": "Middle Name",
+        "type": "text",
+        "section": "contactInfo",
+        "required": false,
+        "active": true,
+        "placeholder": "Middle Name"
+      },
+      {
+        "id": "19",
+        "name": "lastName",
+        "label": "Last Name",
+        "type": "text",
+        "section": "contactInfo",
+        "required": true,
+        "active": true,
+        "placeholder": "Last Name"
+      },
+      {
+        "id": "20",
+        "name": "gender",
+        "label": "Gender",
+        "type": "select",
+        "section": "contactInfo",
+        "required": false,
+        "active": true,
+        "options": [
+          "Male",
+          "Female",
+          "Other",
+          "Prefer Not to Say"
+        ]
+      },
+      {
+        "id": "21",
+        "name": "dateOfBirth",
+        "label": "Date of Birth",
+        "type": "date",
+        "section": "contactInfo",
+        "required": false,
+        "active": true
+      },
+      {
+        "id": "22",
+        "name": "phoneNumber",
+        "label": "Phone Number",
+        "type": "text",
+        "section": "contactInfo",
+        "required": true,
+        "active": true,
+        "placeholder": "(555) 000-0000"
+      },
+      {
+        "id": "23",
+        "name": "email",
+        "label": "Email Address",
+        "type": "text",
+        "section": "contactInfo",
+        "required": true,
+        "active": true,
+        "placeholder": "claimant@example.com"
+      },
+      {
+        "id": "24",
+        "name": "addressStreet",
+        "label": "Street Address",
+        "type": "text",
+        "section": "contactInfo",
+        "required": false,
+        "active": true,
+        "placeholder": "123 Main St, Suite 4"
+      },
+      {
+        "id": "25",
+        "name": "city",
+        "label": "City",
+        "type": "text",
+        "section": "contactInfo",
+        "required": false,
+        "active": true,
+        "placeholder": "City"
+      },
+      {
+        "id": "26",
+        "name": "state",
+        "label": "State Jurisdiction",
+        "type": "text",
+        "section": "contactInfo",
+        "required": true,
+        "active": true,
+        "placeholder": "e.g. CA"
+      },
+      {
+        "id": "27",
+        "name": "areaCode",
+        "label": "Area / Zip Code",
+        "type": "text",
+        "section": "contactInfo",
+        "required": false,
+        "active": true,
+        "placeholder": "90001"
+      },
+      {
+        "id": "28",
+        "name": "powerOfAttorney",
+        "label": "Power of Attorney Active?",
+        "type": "checkbox",
+        "section": "poa",
+        "required": false,
+        "active": true
+      },
+      {
+        "id": "29",
+        "name": "victimName",
+        "label": "Victim First Name",
+        "type": "text",
+        "section": "poa",
+        "required": false,
+        "active": true,
+        "placeholder": "Victim First Name"
+      },
+      {
+        "id": "30",
+        "name": "victimFullName",
+        "label": "Victim Full Name",
+        "type": "text",
+        "section": "poa",
+        "required": false,
+        "active": true,
+        "placeholder": "Victim Full Name"
+      },
+      {
+        "id": "31",
+        "name": "victimLastName",
+        "label": "Victim Last Name",
+        "type": "text",
+        "section": "poa",
+        "required": false,
+        "active": true,
+        "placeholder": "Victim Last Name"
+      },
+      {
+        "id": "32",
+        "name": "victimDOB",
+        "label": "Victim Date of Birth",
+        "type": "date",
+        "section": "poa",
+        "required": false,
+        "active": true
+      },
+      {
+        "id": "33",
+        "name": "victimDOD",
+        "label": "Victim Date of Death (if deceased)",
+        "type": "date",
+        "section": "poa",
+        "required": false,
+        "active": true
+      },
+      {
+        "id": "34",
+        "name": "incidentType",
+        "label": "Which Incident Occurred",
+        "type": "select",
+        "section": "diagnosis",
+        "required": false,
+        "active": true,
+        "options": [
+          "Oral Vaginal/anal – Rape",
+          "Vaginal/anal – Penetration",
+          "Digital penetration",
+          "Grooming / Sexual Exploitation",
+          "Physical Abuse",
+          "Other"
+        ]
+      },
+      {
+        "id": "35",
+        "name": "diagnosis",
+        "label": "Medical Diagnosis",
+        "type": "select",
+        "section": "diagnosis",
+        "required": true,
+        "active": true,
+        "options": [
+          "Sexual Dysfunction",
+          "PTSD (Post-Traumatic Stress Disorder)",
+          "Anxiety",
+          "Depression",
+          "Non-Hodgkin Lymphoma",
+          "Renal Carcinoma / Kidney Cancer",
+          "Leukemia / Blood Cancer",
+          "Ovarian Cancer",
+          "Parkinson's Disease",
+          "Prostate Cancer",
+          "Bladder Cancer",
+          "Liver Cancer / Damage",
+          "Multiple Myeloma",
+          "Necrotizing Enterocolitis (NEC)",
+          "Uterine Cancer",
+          "Respiratory Illness / Lung Cancer",
+          "Trauma / Physical Injury",
+          "Sexual Abuse / Trauma",
+          "Property / Environmental Loss",
+          "Other Medical Condition"
+        ]
+      },
+      {
+        "id": "36",
+        "name": "diagnosisYear",
+        "label": "Diagnosis Year / Date",
+        "type": "date",
+        "section": "diagnosis",
+        "required": false,
+        "active": true
+      },
+      {
+        "id": "37",
+        "name": "diagnosingDoctorName",
+        "label": "Diagnosing Doctor's Name",
+        "type": "text",
+        "section": "diagnosis",
+        "required": false,
+        "active": true,
+        "placeholder": "Dr. Full Name"
+      },
+      {
+        "id": "38",
+        "name": "treatingDoctorName",
+        "label": "Treating Doctor's Name",
+        "type": "text",
+        "section": "diagnosis",
+        "required": false,
+        "active": true,
+        "placeholder": "Dr. Full Name"
+      },
+      {
+        "id": "39",
+        "name": "diagnosingHospitalName",
+        "label": "Diagnosing Hospital's Name",
+        "type": "text",
+        "section": "diagnosis",
+        "required": true,
+        "active": true,
+        "placeholder": "Hospital / Medical Center"
+      },
+      {
+        "id": "40",
+        "name": "treatingFacilityName",
+        "label": "Treating Facility Name",
+        "type": "text",
+        "section": "diagnosis",
+        "required": false,
+        "active": true,
+        "placeholder": "Treating Clinic / Facility"
+      },
+      {
+        "id": "41",
+        "name": "diagnosingHospitalAddress",
+        "label": "Diagnosing Hospital's Address",
+        "type": "text",
+        "section": "diagnosis",
+        "required": false,
+        "active": true,
+        "placeholder": "Hospital Full Address"
+      },
+      {
+        "id": "42",
+        "name": "treatingFacilityAddress",
+        "label": "Treating Facility Address",
+        "type": "text",
+        "section": "diagnosis",
+        "required": false,
+        "active": true,
+        "placeholder": "Facility Full Address"
+      },
+      {
+        "id": "43",
+        "name": "diagnosingFacilityPhone",
+        "label": "Diagnosing Facility Phone Number",
+        "type": "text",
+        "section": "diagnosis",
+        "required": false,
+        "active": true,
+        "placeholder": "(123) 456-7890"
+      },
+      {
+        "id": "44",
+        "name": "treatingFacilityPhone",
+        "label": "Treating Facility Phone Number",
+        "type": "text",
+        "section": "diagnosis",
+        "required": false,
+        "active": true,
+        "placeholder": "(123) 456-7890"
+      }
+    ]
+  }
 }

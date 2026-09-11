@@ -80,9 +80,12 @@ export default function VendorPortal() {
 
   // Aggregate stats using useMemo
   const stats = useMemo(() => {
+    const fallbackCampaignsCount = vendorCampaigns.length > 0 ? vendorCampaigns.length : campaigns.length;
+
     if (dashboardStats) {
       // In backend mode, use computed dashboardStats
       return {
+        totalCampaigns: dashboardStats.campaigns ?? fallbackCampaignsCount,
         totalLeads: dashboardStats.totalLeads,
         qualifiedLeads: dashboardStats.qualifiedLeads,
         rejectedLeads: vendorLeads.filter(l => l.status === 'REJECTED').length,
@@ -99,13 +102,14 @@ export default function VendorPortal() {
     const pendingPayments = vendorInvoices.filter(i => i.status === 'UNPAID').reduce((sum, i) => sum + i.amount, 0);
 
     return {
+      totalCampaigns: fallbackCampaignsCount,
       totalLeads,
       qualifiedLeads,
       rejectedLeads,
       revenue: revenue > 0 ? revenue : 11700,
       pendingPayments: pendingPayments > 0 ? pendingPayments : 7200
     };
-  }, [dashboardStats, vendorLeads, vendorInvoices]);
+  }, [dashboardStats, vendorLeads, vendorCampaigns, campaigns, vendorInvoices]);
 
   const formatCurrency = (val: number) => {
     return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 }).format(val);

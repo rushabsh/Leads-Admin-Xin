@@ -1,80 +1,3144 @@
 {
-  "version": 3,
-  "updatedAt": "2026-08-26T21:16:00.000Z",
-  "updatedBy": "System Admin",
+  "version": 17,
+  "updatedAt": "2026-09-15T16:42:08.371Z",
+  "updatedBy": "MassCore Administrator",
   "questionsMap": {
     "Depo-Provera": [
-      { "id": "dp-1", "name": "depoDuration", "label": "How long did you use the Depo-Provera injections?", "type": "text", "required": true, "placeholder": "e.g. 2 years / 6 months", "categoryBadge": "Exposure Duration" },
-      { "id": "dp-2", "name": "depoFrequency", "label": "How often did you receive Depo-Provera Injections?", "type": "text", "required": true, "placeholder": "e.g. Every 3 months", "categoryBadge": "Usage Frequency" },
-      { "id": "dp-3", "name": "depoTotalInjections", "label": "Total Depo-Provera Injections received?", "type": "text", "required": true, "placeholder": "e.g. 8 injections", "categoryBadge": "Dosage Count" },
-      { "id": "dp-4", "name": "depoStartDate", "label": "When did you Start receiving:", "type": "date", "required": true, "categoryBadge": "Timeline" },
-      { "id": "dp-5", "name": "depoStopDate", "label": "When did you Stop receiving:", "type": "date", "required": true, "categoryBadge": "Timeline" },
-      { "id": "dp-6", "name": "depoAdministeredLocation", "label": "Where was the Injection Administered?", "type": "text", "required": false, "placeholder": "Facility / Clinic Name", "categoryBadge": "Facility" },
-      { "id": "dp-7", "name": "depoAddressAdministered", "label": "What Location/Address was Injection Administered?", "type": "text", "required": false, "placeholder": "Full Clinic Street Address", "categoryBadge": "Location" },
-      { "id": "dp-8", "name": "depoStopReasonSymptoms", "label": "Reason for Stopping Depo-Provera / Symptoms Before Diagnosis:", "type": "textarea", "required": false, "placeholder": "Describe headaches, vision problems, seizures, or symptoms...", "categoryBadge": "Symptoms & Reason" },
-      { "id": "dp-9", "name": "depoSymptomsStartDate", "label": "Symptoms Started Date:", "type": "date", "required": false, "categoryBadge": "Symptom Timeline" },
-      { "id": "dp-10", "name": "depoDiagnosisConfirmTest", "label": "How did they Confirm your Diagnosis / Test before Diagnosis:", "type": "text", "required": true, "placeholder": "e.g. Brain MRI Scan, CT Scan, Biopsy", "categoryBadge": "Diagnosis Test" },
-      { "id": "dp-11", "name": "depoTestDate", "label": "Date of Test:", "type": "date", "required": false, "categoryBadge": "Test Date" },
-      { "id": "dp-12", "name": "depoTreatment", "label": "Treatment Received:", "type": "text", "required": false, "placeholder": "e.g. Surgery, Craniotomy, Radiation, Medication", "categoryBadge": "Treatment" },
-      { "id": "dp-13", "name": "depoTreatmentDate", "label": "Treatment Date:", "type": "date", "required": false, "categoryBadge": "Treatment Date" },
-      { "id": "dp-14", "name": "depoLongTermComplications", "label": "Have you suffered any long-term complications, like infertility?", "type": "select", "required": true, "options": ["Yes", "No"], "categoryBadge": "Complications" },
-      { "id": "dp-15", "name": "depoHivAids", "label": "HIV/AIDS?", "type": "select", "required": false, "options": ["Yes", "No"], "categoryBadge": "Medical History" },
-      { "id": "dp-16", "name": "depoLegalRepresentation", "label": "Did you have any legal representation with any law firm regarding this claim?", "type": "select", "required": true, "options": ["Yes", "No"], "categoryBadge": "Legal Status" },
-      { "id": "dp-17", "name": "depoFelonyConviction", "label": "Conviction Felony/Crime?", "type": "select", "required": true, "options": ["YES", "NO"], "categoryBadge": "Background" },
-      { "id": "dp-18", "name": "depoMedicalRecords", "label": "Do you have Medical Records?", "type": "select", "required": true, "options": ["Yes", "No"], "categoryBadge": "Records Status" }
+      {
+        "id": "dp-1",
+        "name": "depoDuration",
+        "label": "How long did you use the Depo-Provera injections?",
+        "type": "text",
+        "required": true,
+        "placeholder": "e.g. 2 years / 6 months",
+        "categoryBadge": "Exposure Duration"
+      },
+      {
+        "id": "dp-2",
+        "name": "depoFrequency",
+        "label": "How often did you receive Depo-Provera Injections?",
+        "type": "text",
+        "required": true,
+        "placeholder": "e.g. Every 3 months",
+        "categoryBadge": "Usage Frequency"
+      },
+      {
+        "id": "dp-3",
+        "name": "depoTotalInjections",
+        "label": "Total Depo-Provera Injections received?",
+        "type": "text",
+        "required": true,
+        "placeholder": "e.g. 8 injections",
+        "categoryBadge": "Dosage Count"
+      },
+      {
+        "id": "dp-4",
+        "name": "depoStartDate",
+        "label": "When did you Start receiving:",
+        "type": "date",
+        "required": true,
+        "categoryBadge": "Timeline"
+      },
+      {
+        "id": "dp-5",
+        "name": "depoStopDate",
+        "label": "When did you Stop receiving:",
+        "type": "date",
+        "required": true,
+        "categoryBadge": "Timeline"
+      },
+      {
+        "id": "dp-6",
+        "name": "depoAdministeredLocation",
+        "label": "Where was the Injection Administered?",
+        "type": "text",
+        "required": false,
+        "placeholder": "Facility / Clinic Name",
+        "categoryBadge": "Facility"
+      },
+      {
+        "id": "dp-7",
+        "name": "depoAddressAdministered",
+        "label": "What Location/Address was Injection Administered?",
+        "type": "text",
+        "required": false,
+        "placeholder": "Full Clinic Street Address",
+        "categoryBadge": "Location"
+      },
+      {
+        "id": "dp-8",
+        "name": "depoStopReasonSymptoms",
+        "label": "Reason for Stopping Depo-Provera / Symptoms Before Diagnosis:",
+        "type": "textarea",
+        "required": false,
+        "placeholder": "Describe headaches, vision problems, seizures, or symptoms...",
+        "categoryBadge": "Symptoms & Reason"
+      },
+      {
+        "id": "dp-9",
+        "name": "depoSymptomsStartDate",
+        "label": "Symptoms Started Date:",
+        "type": "date",
+        "required": false,
+        "categoryBadge": "Symptom Timeline"
+      },
+      {
+        "id": "dp-10",
+        "name": "depoDiagnosisConfirmTest",
+        "label": "How did they Confirm your Diagnosis / Test before Diagnosis:",
+        "type": "text",
+        "required": true,
+        "placeholder": "e.g. Brain MRI Scan, CT Scan, Biopsy",
+        "categoryBadge": "Diagnosis Test"
+      },
+      {
+        "id": "dp-11",
+        "name": "depoTestDate",
+        "label": "Date of Test:",
+        "type": "date",
+        "required": false,
+        "categoryBadge": "Test Date"
+      },
+      {
+        "id": "dp-12",
+        "name": "depoTreatment",
+        "label": "Treatment Received:",
+        "type": "text",
+        "required": false,
+        "placeholder": "e.g. Surgery, Craniotomy, Radiation, Medication",
+        "categoryBadge": "Treatment"
+      },
+      {
+        "id": "dp-13",
+        "name": "depoTreatmentDate",
+        "label": "Treatment Date:",
+        "type": "date",
+        "required": false,
+        "categoryBadge": "Treatment Date"
+      },
+      {
+        "id": "dp-14",
+        "name": "depoLongTermComplications",
+        "label": "Have you suffered any long-term complications, like infertility?",
+        "type": "select",
+        "required": true,
+        "options": [
+          "Yes",
+          "No"
+        ],
+        "categoryBadge": "Complications"
+      },
+      {
+        "id": "dp-15",
+        "name": "depoHivAids",
+        "label": "HIV/AIDS?",
+        "type": "select",
+        "required": false,
+        "options": [
+          "Yes",
+          "No"
+        ],
+        "categoryBadge": "Medical History"
+      },
+      {
+        "id": "dp-16",
+        "name": "depoLegalRepresentation",
+        "label": "Did you have any legal representation with any law firm regarding this claim?",
+        "type": "select",
+        "required": true,
+        "options": [
+          "Yes",
+          "No"
+        ],
+        "categoryBadge": "Legal Status"
+      },
+      {
+        "id": "dp-17",
+        "name": "depoFelonyConviction",
+        "label": "Conviction Felony/Crime?",
+        "type": "select",
+        "required": true,
+        "options": [
+          "YES",
+          "NO"
+        ],
+        "categoryBadge": "Background"
+      },
+      {
+        "id": "dp-18",
+        "name": "depoMedicalRecords",
+        "label": "Do you have Medical Records?",
+        "type": "select",
+        "required": true,
+        "options": [
+          "Yes",
+          "No"
+        ],
+        "categoryBadge": "Records Status"
+      }
+    ],
+    "PFAS": [],
+    "Rideshare": [
+      {
+        "id": "rs-1",
+        "name": "rideshareAssaulted",
+        "label": "Were you Physically Assaulted (sexual in nature) while in a Rideshare?",
+        "type": "select",
+        "required": true,
+        "options": [
+          "Yes",
+          "No"
+        ],
+        "categoryBadge": "Incident Type"
+      },
+      {
+        "id": "rs-2",
+        "name": "rideshareProvider",
+        "label": "Did this incident happen in a LYFT or UBER?",
+        "type": "select",
+        "required": true,
+        "options": [
+          "Uber",
+          "Lyft",
+          "Other"
+        ],
+        "categoryBadge": "Provider"
+      },
+      {
+        "id": "rs-3",
+        "name": "rideshareIncidentDate",
+        "label": "Date of Incident:",
+        "type": "date",
+        "required": true,
+        "categoryBadge": "Incident Date"
+      },
+      {
+        "id": "rs-4",
+        "name": "rideshareProofOfRide",
+        "label": "Do you have proof of ride (receipt, app screenshot)?",
+        "type": "select",
+        "required": true,
+        "options": [
+          "Yes",
+          "No"
+        ],
+        "categoryBadge": "Verification"
+      },
+      {
+        "id": "rs-5",
+        "name": "rideshareDriverName",
+        "label": "Driver Name / Vehicle Details / License Plate:",
+        "type": "text",
+        "required": false,
+        "placeholder": "Driver Name or License Plate",
+        "categoryBadge": "Driver Info"
+      },
+      {
+        "id": "rs-6",
+        "name": "rideshareIncidentAddress",
+        "label": "Pickup & Dropoff Location / Address where incident occurred:",
+        "type": "text",
+        "required": false,
+        "placeholder": "City, State, Location",
+        "categoryBadge": "Location"
+      },
+      {
+        "id": "rs-7",
+        "name": "rideshareNarrative",
+        "label": "Can you describe the incident in detail?",
+        "type": "textarea",
+        "required": true,
+        "placeholder": "Describe what happened during the ride...",
+        "categoryBadge": "Narrative"
+      },
+      {
+        "id": "rs-8",
+        "name": "rideshareReportedTo",
+        "label": "Did you report this incident to anyone?",
+        "type": "select",
+        "required": false,
+        "options": [
+          "Police",
+          "Parents",
+          "Rideshare App Support",
+          "Friends/Relatives",
+          "No One"
+        ],
+        "categoryBadge": "Reporting"
+      },
+      {
+        "id": "rs-9",
+        "name": "ridesharePoliceReport",
+        "label": "Was a formal Police Report filed? (If yes, Report #):",
+        "type": "text",
+        "required": false,
+        "placeholder": "Police Dept & Report #",
+        "categoryBadge": "Police Report"
+      },
+      {
+        "id": "rs-10",
+        "name": "rideshareEmotionalChanges",
+        "label": "Emotional Changes / Symptoms (PTSD, Anxiety, Depression):",
+        "type": "textarea",
+        "required": false,
+        "placeholder": "Describe emotional trauma, insomnia, panic attacks...",
+        "categoryBadge": "Symptoms"
+      },
+      {
+        "id": "rs-11",
+        "name": "rideshareSymptomsStartDate",
+        "label": "Symptoms Started Date:",
+        "type": "date",
+        "required": false,
+        "categoryBadge": "Symptom Timeline"
+      },
+      {
+        "id": "rs-12",
+        "name": "rideshareDiagnosisConfirmTest",
+        "label": "Medical Exam / Psychological Evaluation Confirmation:",
+        "type": "text",
+        "required": false,
+        "placeholder": "Medical center / therapist evaluation",
+        "categoryBadge": "Evaluation"
+      },
+      {
+        "id": "rs-13",
+        "name": "rideshareTestDate",
+        "label": "Date of Exam / Evaluation:",
+        "type": "date",
+        "required": false,
+        "categoryBadge": "Evaluation Date"
+      },
+      {
+        "id": "rs-14",
+        "name": "rideshareTreatment",
+        "label": "Therapy or Counseling Treatment Received:",
+        "type": "text",
+        "required": false,
+        "placeholder": "Therapy, Counseling, Medication",
+        "categoryBadge": "Treatment"
+      },
+      {
+        "id": "rs-15",
+        "name": "rideshareTreatmentDate",
+        "label": "Treatment Date:",
+        "type": "date",
+        "required": false,
+        "categoryBadge": "Treatment Date"
+      },
+      {
+        "id": "rs-16",
+        "name": "rideshareLegalRepresentation",
+        "label": "Did you have any legal representation with any law firm regarding this claim?",
+        "type": "select",
+        "required": true,
+        "options": [
+          "Yes",
+          "No"
+        ],
+        "categoryBadge": "Legal Status"
+      },
+      {
+        "id": "rs-17",
+        "name": "rideshareFelonyConviction",
+        "label": "Conviction Felony/Crime?",
+        "type": "select",
+        "required": true,
+        "options": [
+          "YES",
+          "NO"
+        ],
+        "categoryBadge": "Background"
+      },
+      {
+        "id": "rs-18",
+        "name": "rideshareMedicalRecords",
+        "label": "Do you have Medical or Therapy Records?",
+        "type": "select",
+        "required": true,
+        "options": [
+          "Yes",
+          "No"
+        ],
+        "categoryBadge": "Records Status"
+      }
     ],
     "Roblox": [
-      { "id": "rbx-1", "name": "robloxClaimFor", "label": "Is this claim for you or someone else?", "type": "select", "required": true, "options": ["Myself", "Loved One/Family Member"], "categoryBadge": "Claimant Type" },
-      { "id": "rbx-2", "name": "robloxApplyingFor", "label": "Who are you applying for? (If for someone else):", "type": "text", "required": false, "placeholder": "e.g. My Son / Daughter / Grandchild", "categoryBadge": "Claimant Info" },
-      { "id": "rbx-3", "name": "robloxVictimAge", "label": "How old was your Son/Daughter/Victim when this happened?", "type": "text", "required": true, "placeholder": "e.g. 12 years old", "categoryBadge": "Victim Age" },
-      { "id": "rbx-4", "name": "robloxStartUsingDate", "label": "When did you first start using Roblox?", "type": "date", "required": true, "categoryBadge": "Timeline" },
-      { "id": "rbx-5", "name": "robloxIncidentDate", "label": "When did this incident happen?", "type": "date", "required": true, "categoryBadge": "Timeline" },
-      { "id": "rbx-6", "name": "robloxDailyTime", "label": "How much time did Victim spend on Roblox daily?", "type": "text", "required": false, "placeholder": "e.g. 3-4 hours daily", "categoryBadge": "Usage Time" },
-      { "id": "rbx-7", "name": "robloxVictimGamertag", "label": "Roblox Username of Son/Daughter/Victim:", "type": "text", "required": true, "placeholder": "Victim Roblox Username", "categoryBadge": "Account Info" },
-      { "id": "rbx-8", "name": "robloxAbuserGamertag", "label": "Abuser's Username on Roblox:", "type": "text", "required": false, "placeholder": "Abuser Roblox Username", "categoryBadge": "Abuser Info" },
-      { "id": "rbx-9", "name": "robloxExternalPlatform", "label": "Did Victim communicate with abuser outside Roblox? (Select platform):", "type": "select", "required": false, "options": ["Snapchat", "Discord", "Instagram", "Other", "No External Communication"], "categoryBadge": "External Platform" },
-      { "id": "rbx-10", "name": "robloxVictimExternalUsername", "label": "What was Victim's Username on Snapchat/Instagram/Discord/Other?", "type": "text", "required": false, "placeholder": "Victim External Username", "categoryBadge": "External Username" },
-      { "id": "rbx-11", "name": "robloxAbuserExternalUsername", "label": "What was Abuser's Username on Snapchat/Instagram/Discord/Other?", "type": "text", "required": false, "placeholder": "Abuser External Username", "categoryBadge": "External Username" },
-      { "id": "rbx-12", "name": "robloxIncidentNarrative", "label": "Explain in detail what your Son/Daughter/Victim went through:", "type": "textarea", "required": true, "placeholder": "Describe grooming, communications, or incident in detail...", "categoryBadge": "Narrative" },
-      { "id": "rbx-13", "name": "robloxPurchasesMade", "label": "Were any purchases made in Roblox during this time?", "type": "select", "required": false, "options": ["Yes", "No", "Other"], "categoryBadge": "Purchases" },
-      { "id": "rbx-14", "name": "robloxReportedToModeration", "label": "Was this reported to Roblox Moderation, Police or Law Enforcement? (If yes, to whom?):", "type": "text", "required": false, "placeholder": "e.g. Reported to Police and Roblox Moderation", "categoryBadge": "Reporting" },
-      { "id": "rbx-15", "name": "robloxEmotionalChanges", "label": "Emotional Changes / Symptoms Before:", "type": "text", "required": false, "placeholder": "Anxiety, social withdrawal, trauma", "categoryBadge": "Symptoms" },
-      { "id": "rbx-16", "name": "robloxSymptomsStartDate", "label": "Symptoms Started Date:", "type": "date", "required": false, "categoryBadge": "Symptom Date" },
-      { "id": "rbx-17", "name": "robloxDiagnosisConfirmTest", "label": "How did they Confirm your Diagnosis / Test before Diagnosis:", "type": "text", "required": false, "placeholder": "Therapist / Psychological evaluation", "categoryBadge": "Diagnosis Test" },
-      { "id": "rbx-18", "name": "robloxTestDate", "label": "Date of Test:", "type": "date", "required": false, "categoryBadge": "Test Date" },
-      { "id": "rbx-19", "name": "robloxTreatment", "label": "Treatment:", "type": "text", "required": false, "placeholder": "Therapy, Counseling, Medical Treatment", "categoryBadge": "Treatment" },
-      { "id": "rbx-20", "name": "robloxTreatmentDate", "label": "Treatment Date:", "type": "date", "required": false, "categoryBadge": "Treatment Date" },
-      { "id": "rbx-21", "name": "robloxLegalRepresentation", "label": "Did you have any legal representation with any law firm regarding this claim?", "type": "select", "required": true, "options": ["Yes", "No"], "categoryBadge": "Legal Status" },
-      { "id": "rbx-22", "name": "robloxFelonyConviction", "label": "Conviction Felony/Crime?", "type": "select", "required": true, "options": ["YES", "NO"], "categoryBadge": "Background" },
-      { "id": "rbx-23", "name": "robloxMedicalRecords", "label": "Do you have Medical Records?", "type": "select", "required": true, "options": ["Yes", "No"], "categoryBadge": "Medical Records" }
+      {
+        "id": "rbx-1",
+        "name": "robloxClaimFor",
+        "label": "Is this claim for you or someone else?",
+        "type": "select",
+        "required": true,
+        "options": [
+          "Myself",
+          "Loved One/Family Member"
+        ],
+        "categoryBadge": "Claimant Type"
+      },
+      {
+        "id": "rbx-2",
+        "name": "robloxApplyingFor",
+        "label": "Who are you applying for? (If for someone else):",
+        "type": "text",
+        "required": false,
+        "placeholder": "e.g. My Son / Daughter / Grandchild",
+        "categoryBadge": "Claimant Info"
+      },
+      {
+        "id": "rbx-3",
+        "name": "robloxVictimAge",
+        "label": "How old was your Son/Daughter/Victim when this happened?",
+        "type": "text",
+        "required": true,
+        "placeholder": "e.g. 12 years old",
+        "categoryBadge": "Victim Age"
+      },
+      {
+        "id": "rbx-4",
+        "name": "robloxStartUsingDate",
+        "label": "When did you first start using Roblox?",
+        "type": "date",
+        "required": true,
+        "categoryBadge": "Timeline"
+      },
+      {
+        "id": "rbx-5",
+        "name": "robloxIncidentDate",
+        "label": "When did this incident happen?",
+        "type": "date",
+        "required": true,
+        "categoryBadge": "Timeline"
+      },
+      {
+        "id": "rbx-6",
+        "name": "robloxDailyTime",
+        "label": "How much time did Victim spend on Roblox daily?",
+        "type": "text",
+        "required": false,
+        "placeholder": "e.g. 3-4 hours daily",
+        "categoryBadge": "Usage Time"
+      },
+      {
+        "id": "rbx-7",
+        "name": "robloxVictimGamertag",
+        "label": "Roblox Username of Son/Daughter/Victim:",
+        "type": "text",
+        "required": true,
+        "placeholder": "Victim Roblox Username",
+        "categoryBadge": "Account Info"
+      },
+      {
+        "id": "rbx-8",
+        "name": "robloxAbuserGamertag",
+        "label": "Abuser's Username on Roblox:",
+        "type": "text",
+        "required": false,
+        "placeholder": "Abuser Roblox Username",
+        "categoryBadge": "Abuser Info"
+      },
+      {
+        "id": "rbx-9",
+        "name": "robloxExternalPlatform",
+        "label": "Did Victim communicate with abuser outside Roblox? (Select platform):",
+        "type": "select",
+        "required": false,
+        "options": [
+          "Snapchat",
+          "Discord",
+          "Instagram",
+          "Other",
+          "No External Communication"
+        ],
+        "categoryBadge": "External Platform"
+      },
+      {
+        "id": "rbx-10",
+        "name": "robloxVictimExternalUsername",
+        "label": "What was Victim's Username on Snapchat/Instagram/Discord/Other?",
+        "type": "text",
+        "required": false,
+        "placeholder": "Victim External Username",
+        "categoryBadge": "External Username"
+      },
+      {
+        "id": "rbx-11",
+        "name": "robloxAbuserExternalUsername",
+        "label": "What was Abuser's Username on Snapchat/Instagram/Discord/Other?",
+        "type": "text",
+        "required": false,
+        "placeholder": "Abuser External Username",
+        "categoryBadge": "External Username"
+      },
+      {
+        "id": "rbx-12",
+        "name": "robloxIncidentNarrative",
+        "label": "Explain in detail what your Son/Daughter/Victim went through:",
+        "type": "textarea",
+        "required": true,
+        "placeholder": "Describe grooming, communications, or incident in detail...",
+        "categoryBadge": "Narrative"
+      },
+      {
+        "id": "rbx-13",
+        "name": "robloxPurchasesMade",
+        "label": "Were any purchases made in Roblox during this time?",
+        "type": "select",
+        "required": false,
+        "options": [
+          "Yes",
+          "No",
+          "Other"
+        ],
+        "categoryBadge": "Purchases"
+      },
+      {
+        "id": "rbx-14",
+        "name": "robloxReportedToModeration",
+        "label": "Was this reported to Roblox Moderation, Police or Law Enforcement? (If yes, to whom?):",
+        "type": "text",
+        "required": false,
+        "placeholder": "e.g. Reported to Police and Roblox Moderation",
+        "categoryBadge": "Reporting"
+      },
+      {
+        "id": "rbx-15",
+        "name": "robloxEmotionalChanges",
+        "label": "Emotional Changes / Symptoms Before:",
+        "type": "text",
+        "required": false,
+        "placeholder": "Anxiety, social withdrawal, trauma",
+        "categoryBadge": "Symptoms"
+      },
+      {
+        "id": "rbx-16",
+        "name": "robloxSymptomsStartDate",
+        "label": "Symptoms Started Date:",
+        "type": "date",
+        "required": false,
+        "categoryBadge": "Symptom Date"
+      },
+      {
+        "id": "rbx-17",
+        "name": "robloxDiagnosisConfirmTest",
+        "label": "How did they Confirm your Diagnosis / Test before Diagnosis:",
+        "type": "text",
+        "required": false,
+        "placeholder": "Therapist / Psychological evaluation",
+        "categoryBadge": "Diagnosis Test"
+      },
+      {
+        "id": "rbx-18",
+        "name": "robloxTestDate",
+        "label": "Date of Test:",
+        "type": "date",
+        "required": false,
+        "categoryBadge": "Test Date"
+      },
+      {
+        "id": "rbx-19",
+        "name": "robloxTreatment",
+        "label": "Treatment:",
+        "type": "text",
+        "required": false,
+        "placeholder": "Therapy, Counseling, Medical Treatment",
+        "categoryBadge": "Treatment"
+      },
+      {
+        "id": "rbx-20",
+        "name": "robloxTreatmentDate",
+        "label": "Treatment Date:",
+        "type": "date",
+        "required": false,
+        "categoryBadge": "Treatment Date"
+      },
+      {
+        "id": "rbx-21",
+        "name": "robloxLegalRepresentation",
+        "label": "Did you have any legal representation with any law firm regarding this claim?",
+        "type": "select",
+        "required": true,
+        "options": [
+          "Yes",
+          "No"
+        ],
+        "categoryBadge": "Legal Status"
+      },
+      {
+        "id": "rbx-22",
+        "name": "robloxFelonyConviction",
+        "label": "Conviction Felony/Crime?",
+        "type": "select",
+        "required": true,
+        "options": [
+          "YES",
+          "NO"
+        ],
+        "categoryBadge": "Background"
+      },
+      {
+        "id": "rbx-23",
+        "name": "robloxMedicalRecords",
+        "label": "Do you have Medical Records?",
+        "type": "select",
+        "required": true,
+        "options": [
+          "Yes",
+          "No"
+        ],
+        "categoryBadge": "Medical Records"
+      }
     ],
     "LA County JDC Sexual Abuse": [
-      { "id": "jdc-1", "name": "jdcFacility", "label": "Which facility were you housed in?", "type": "select", "required": true, "options": ["Maclaren Hall / MacLaren Juvenile Hall", "Barry J. Nidorf Juvenile Hall", "Slymar Juvenile Hall (Barry J. Nidorf Juvenile Hall)", "Los Padrinos Juvenile Hall", "Central Juvenile Hall", "Camp David Gonzales", "Camp Jarvis", "Camp Karl Holton", "Camp Kenyon Scudder", "Camp Kilpatrick", "Camp McNair", "Camp Onizuka", "Camp Resnick", "Camp Scobee", "Camp Scott", "Camp Smith", "Challenger Camps", "Los Prietos Boys Camp", "Dorothy F. Kirby Center", "Fred C. Nelles Youth Correctional Facility", "LAC Afflerbaugh Paige Camp", "Southern Youth Correctional Reception Center & Clinic"], "categoryBadge": "Facility" },
-      { "id": "jdc-2", "name": "jdcDetainedReason", "label": "Reason for getting detained:", "type": "text", "required": false, "placeholder": "Reason for detention", "categoryBadge": "Detention Info" },
-      { "id": "jdc-3", "name": "jdcPrisonerId", "label": "Prisoner ID:", "type": "text", "required": false, "placeholder": "Prisoner ID Number", "categoryBadge": "Detention Info" },
-      { "id": "jdc-4", "name": "jdcIntakeDate", "label": "Approximate Intake Date:", "type": "date", "required": true, "categoryBadge": "Timeline" },
-      { "id": "jdc-5", "name": "jdcReleaseDate", "label": "Approximate Release Date:", "type": "date", "required": false, "categoryBadge": "Timeline" },
-      { "id": "jdc-6", "name": "jdcCaseBookingNumber", "label": "Juvenile Booking / Case Number / Probation Case Number / Court Case Number:", "type": "text", "required": false, "placeholder": "Case / Booking Number", "categoryBadge": "Case Info" },
-      { "id": "jdc-7", "name": "jdcHousingUnitDorm", "label": "Housing Unit / Dorm:", "type": "text", "required": false, "placeholder": "Unit or Dorm Name", "categoryBadge": "Facility Details" },
-      { "id": "jdc-8", "name": "jdcRoomCellIdentifier", "label": "Room / Cell Identifier:", "type": "text", "required": false, "placeholder": "Room or Cell Number", "categoryBadge": "Facility Details" },
-      { "id": "jdc-9", "name": "jdcBedAssignment", "label": "Bed Assignment:", "type": "text", "required": false, "placeholder": "Bed Identifier", "categoryBadge": "Facility Details" },
-      { "id": "jdc-10", "name": "jdcAbuserStaffName", "label": "Name & Title/Officer of Alleged Staff Member:", "type": "text", "required": true, "placeholder": "Staff Name / Officer Title", "categoryBadge": "Alleged Abuser" },
-      { "id": "jdc-11", "name": "jdcFirstAbuseDate", "label": "First Abuse Incident Date:", "type": "date", "required": true, "categoryBadge": "Abuse Timeline" },
-      { "id": "jdc-12", "name": "jdcLastAbuseDate", "label": "Last Abuse Incident Date:", "type": "date", "required": true, "categoryBadge": "Abuse Timeline" },
-      { "id": "jdc-13", "name": "jdcAbuseCount", "label": "How many times were you Abused?", "type": "text", "required": true, "placeholder": "e.g. Multiple times / 5 times", "categoryBadge": "Frequency" },
-      { "id": "jdc-14", "name": "jdcAbuseLocationRoom", "label": "Which Place / Room did it occur in Detention Center?", "type": "text", "required": false, "placeholder": "e.g. Cell, Bathroom, Showers, Office", "categoryBadge": "Location" },
-      { "id": "jdc-15", "name": "jdcReportedInCustody", "label": "Did you report this incident while in custody?", "type": "select", "required": false, "options": ["Family Member", "Counselor", "Probation Officer", "No One"], "categoryBadge": "Reporting" },
-      { "id": "jdc-16", "name": "jdcIncidentNarrative", "label": "Describe the whole Incident what happened:", "type": "textarea", "required": true, "placeholder": "Describe the incident in detail...", "categoryBadge": "Narrative" },
-      { "id": "jdc-17", "name": "jdcEmotionalChanges", "label": "Emotional Changes / Symptoms Before:", "type": "text", "required": false, "placeholder": "Describe trauma or emotional changes", "categoryBadge": "Symptoms" },
-      { "id": "jdc-18", "name": "jdcSymptomsStartDate", "label": "Symptoms Started Date:", "type": "date", "required": false, "categoryBadge": "Symptom Date" },
-      { "id": "jdc-19", "name": "jdcDiagnosisConfirmTest", "label": "How did they Confirm your Diagnosis / Test before Diagnosis:", "type": "text", "required": false, "placeholder": "Psychiatric evaluation, therapy assessment", "categoryBadge": "Diagnosis Test" },
-      { "id": "jdc-20", "name": "jdcTestDate", "label": "Date of Test:", "type": "date", "required": false, "categoryBadge": "Test Date" },
-      { "id": "jdc-21", "name": "jdcTreatment", "label": "Treatment:", "type": "text", "required": false, "placeholder": "Counseling, medication, therapy", "categoryBadge": "Treatment" },
-      { "id": "jdc-22", "name": "jdcTreatmentDate", "label": "Treatment Date:", "type": "date", "required": false, "categoryBadge": "Treatment Date" },
-      { "id": "jdc-23", "name": "jdcLegalRepresentation", "label": "Did you have any legal representation with any law firm regarding this claim?", "type": "select", "required": true, "options": ["Yes", "No"], "categoryBadge": "Legal Status" },
-      { "id": "jdc-24", "name": "jdcFelonyConviction", "label": "Conviction Felony/Crime?", "type": "select", "required": true, "options": ["YES", "NO"], "categoryBadge": "Background" },
-      { "id": "jdc-25", "name": "jdcMedicalRecords", "label": "Do you have Medical Records?", "type": "select", "required": true, "options": ["Yes", "No"], "categoryBadge": "Medical Records" },
-      { "id": "jdc-26", "name": "jdcJuvenileRecords", "label": "Do you have Juvenile Records?", "type": "select", "required": true, "options": ["Yes", "No"], "categoryBadge": "Juvenile Records" }
+      {
+        "id": "jdc-1",
+        "name": "jdcFacility",
+        "label": "Which facility were you housed in?",
+        "type": "select",
+        "required": true,
+        "options": [
+          "Maclaren Hall / MacLaren Juvenile Hall",
+          "Barry J. Nidorf Juvenile Hall",
+          "Slymar Juvenile Hall (Barry J. Nidorf Juvenile Hall)",
+          "Los Padrinos Juvenile Hall",
+          "Central Juvenile Hall",
+          "Camp David Gonzales",
+          "Camp Jarvis",
+          "Camp Karl Holton",
+          "Camp Kenyon Scudder",
+          "Camp Kilpatrick",
+          "Camp McNair",
+          "Camp Onizuka",
+          "Camp Resnick",
+          "Camp Scobee",
+          "Camp Scott",
+          "Camp Smith",
+          "Challenger Camps",
+          "Los Prietos Boys Camp",
+          "Dorothy F. Kirby Center",
+          "Fred C. Nelles Youth Correctional Facility",
+          "LAC Afflerbaugh Paige Camp",
+          "Southern Youth Correctional Reception Center & Clinic"
+        ],
+        "categoryBadge": "Facility"
+      },
+      {
+        "id": "jdc-2",
+        "name": "jdcDetainedReason",
+        "label": "Reason for getting detained:",
+        "type": "text",
+        "required": false,
+        "placeholder": "Reason for detention",
+        "categoryBadge": "Detention Info"
+      },
+      {
+        "id": "jdc-3",
+        "name": "jdcPrisonerId",
+        "label": "Prisoner ID:",
+        "type": "text",
+        "required": false,
+        "placeholder": "Prisoner ID Number",
+        "categoryBadge": "Detention Info"
+      },
+      {
+        "id": "jdc-4",
+        "name": "jdcIntakeDate",
+        "label": "Approximate Intake Date:",
+        "type": "date",
+        "required": true,
+        "categoryBadge": "Timeline"
+      },
+      {
+        "id": "jdc-5",
+        "name": "jdcReleaseDate",
+        "label": "Approximate Release Date:",
+        "type": "date",
+        "required": false,
+        "categoryBadge": "Timeline"
+      },
+      {
+        "id": "jdc-6",
+        "name": "jdcCaseBookingNumber",
+        "label": "Juvenile Booking / Case Number / Probation Case Number / Court Case Number:",
+        "type": "text",
+        "required": false,
+        "placeholder": "Case / Booking Number",
+        "categoryBadge": "Case Info"
+      },
+      {
+        "id": "jdc-7",
+        "name": "jdcHousingUnitDorm",
+        "label": "Housing Unit / Dorm:",
+        "type": "text",
+        "required": false,
+        "placeholder": "Unit or Dorm Name",
+        "categoryBadge": "Facility Details"
+      },
+      {
+        "id": "jdc-8",
+        "name": "jdcRoomCellIdentifier",
+        "label": "Room / Cell Identifier:",
+        "type": "text",
+        "required": false,
+        "placeholder": "Room or Cell Number",
+        "categoryBadge": "Facility Details"
+      },
+      {
+        "id": "jdc-9",
+        "name": "jdcBedAssignment",
+        "label": "Bed Assignment:",
+        "type": "text",
+        "required": false,
+        "placeholder": "Bed Identifier",
+        "categoryBadge": "Facility Details"
+      },
+      {
+        "id": "jdc-10",
+        "name": "jdcAbuserStaffName",
+        "label": "Name & Title/Officer of Alleged Staff Member:",
+        "type": "text",
+        "required": true,
+        "placeholder": "Staff Name / Officer Title",
+        "categoryBadge": "Alleged Abuser"
+      },
+      {
+        "id": "jdc-11",
+        "name": "jdcFirstAbuseDate",
+        "label": "First Abuse Incident Date:",
+        "type": "date",
+        "required": true,
+        "categoryBadge": "Abuse Timeline"
+      },
+      {
+        "id": "jdc-12",
+        "name": "jdcLastAbuseDate",
+        "label": "Last Abuse Incident Date:",
+        "type": "date",
+        "required": true,
+        "categoryBadge": "Abuse Timeline"
+      },
+      {
+        "id": "jdc-13",
+        "name": "jdcAbuseCount",
+        "label": "How many times were you Abused?",
+        "type": "text",
+        "required": true,
+        "placeholder": "e.g. Multiple times / 5 times",
+        "categoryBadge": "Frequency"
+      },
+      {
+        "id": "jdc-14",
+        "name": "jdcAbuseLocationRoom",
+        "label": "Which Place / Room did it occur in Detention Center?",
+        "type": "text",
+        "required": false,
+        "placeholder": "e.g. Cell, Bathroom, Showers, Office",
+        "categoryBadge": "Location"
+      },
+      {
+        "id": "jdc-15",
+        "name": "jdcReportedInCustody",
+        "label": "Did you report this incident while in custody?",
+        "type": "select",
+        "required": false,
+        "options": [
+          "Family Member",
+          "Counselor",
+          "Probation Officer",
+          "No One"
+        ],
+        "categoryBadge": "Reporting"
+      },
+      {
+        "id": "jdc-16",
+        "name": "jdcIncidentNarrative",
+        "label": "Describe the whole Incident what happened:",
+        "type": "textarea",
+        "required": true,
+        "placeholder": "Describe the incident in detail...",
+        "categoryBadge": "Narrative"
+      },
+      {
+        "id": "jdc-17",
+        "name": "jdcEmotionalChanges",
+        "label": "Emotional Changes / Symptoms Before:",
+        "type": "text",
+        "required": false,
+        "placeholder": "Describe trauma or emotional changes",
+        "categoryBadge": "Symptoms"
+      },
+      {
+        "id": "jdc-18",
+        "name": "jdcSymptomsStartDate",
+        "label": "Symptoms Started Date:",
+        "type": "date",
+        "required": false,
+        "categoryBadge": "Symptom Date"
+      },
+      {
+        "id": "jdc-19",
+        "name": "jdcDiagnosisConfirmTest",
+        "label": "How did they Confirm your Diagnosis / Test before Diagnosis:",
+        "type": "text",
+        "required": false,
+        "placeholder": "Psychiatric evaluation, therapy assessment",
+        "categoryBadge": "Diagnosis Test"
+      },
+      {
+        "id": "jdc-20",
+        "name": "jdcTestDate",
+        "label": "Date of Test:",
+        "type": "date",
+        "required": false,
+        "categoryBadge": "Test Date"
+      },
+      {
+        "id": "jdc-21",
+        "name": "jdcTreatment",
+        "label": "Treatment:",
+        "type": "text",
+        "required": false,
+        "placeholder": "Counseling, medication, therapy",
+        "categoryBadge": "Treatment"
+      },
+      {
+        "id": "jdc-22",
+        "name": "jdcTreatmentDate",
+        "label": "Treatment Date:",
+        "type": "date",
+        "required": false,
+        "categoryBadge": "Treatment Date"
+      },
+      {
+        "id": "jdc-23",
+        "name": "jdcLegalRepresentation",
+        "label": "Did you have any legal representation with any law firm regarding this claim?",
+        "type": "select",
+        "required": true,
+        "options": [
+          "Yes",
+          "No"
+        ],
+        "categoryBadge": "Legal Status"
+      },
+      {
+        "id": "jdc-24",
+        "name": "jdcFelonyConviction",
+        "label": "Conviction Felony/Crime?",
+        "type": "select",
+        "required": true,
+        "options": [
+          "YES",
+          "NO"
+        ],
+        "categoryBadge": "Background"
+      },
+      {
+        "id": "jdc-25",
+        "name": "jdcMedicalRecords",
+        "label": "Do you have Medical Records?",
+        "type": "select",
+        "required": true,
+        "options": [
+          "Yes",
+          "No"
+        ],
+        "categoryBadge": "Medical Records"
+      },
+      {
+        "id": "jdc-26",
+        "name": "jdcJuvenileRecords",
+        "label": "Do you have Juvenile Records?",
+        "type": "select",
+        "required": true,
+        "options": [
+          "Yes",
+          "No"
+        ],
+        "categoryBadge": "Juvenile Records"
+      }
+    ],
+    "Roundup": [
+      {
+        "id": "ru-1",
+        "name": "roundupExposureYears",
+        "label": "Years of Exposure to Roundup / Glyphosate Herbicide:",
+        "type": "select",
+        "required": true,
+        "options": [
+          "1-3 Years",
+          "3-5 Years",
+          "5-10 Years",
+          "10+ Years"
+        ],
+        "categoryBadge": "Exposure"
+      },
+      {
+        "id": "ru-2",
+        "name": "roundupUserType",
+        "label": "Primary Use Type:",
+        "type": "select",
+        "required": true,
+        "options": [
+          "Commercial Applicator / Farmer / Landscaper",
+          "Residential / Homeowner Garden Use",
+          "Industrial / Highway Worker",
+          "Agricultural Worker"
+        ],
+        "categoryBadge": "User Type"
+      },
+      {
+        "id": "ru-3",
+        "name": "roundupApplicationFrequency",
+        "label": "Frequency of Roundup Application:",
+        "type": "select",
+        "required": true,
+        "options": [
+          "Daily or Weekly during season",
+          "Monthly",
+          "Several times a year",
+          "Rarely"
+        ],
+        "categoryBadge": "Frequency"
+      },
+      {
+        "id": "ru-4",
+        "name": "roundupDiagnosis",
+        "label": "Diagnosed Cancer Type:",
+        "type": "select",
+        "required": true,
+        "options": [
+          "Non-Hodgkin Lymphoma (NHL)",
+          "Chronic Lymphocytic Leukemia (CLL)",
+          "Multiple Myeloma",
+          "B-Cell Lymphoma",
+          "T-Cell Lymphoma",
+          "Mantle Cell Lymphoma",
+          "Hairy Cell Leukemia"
+        ],
+        "categoryBadge": "Diagnosis"
+      },
+      {
+        "id": "ru-5",
+        "name": "roundupDiagnosisDate",
+        "label": "Date of Diagnosis:",
+        "type": "date",
+        "required": true,
+        "categoryBadge": "Diagnosis Date"
+      },
+      {
+        "id": "ru-6",
+        "name": "roundupDiagnosingHospital",
+        "label": "Treating Oncology Center / Hospital Name:",
+        "type": "text",
+        "required": false,
+        "placeholder": "Cancer center or hospital name",
+        "categoryBadge": "Medical Facility"
+      },
+      {
+        "id": "ru-7",
+        "name": "roundupTreatment",
+        "label": "Treatments Received (Chemotherapy, Radiation, Stem Cell Transplant, CAR-T):",
+        "type": "text",
+        "required": false,
+        "placeholder": "e.g. Chemotherapy (R-CHOP), Radiation",
+        "categoryBadge": "Treatment"
+      },
+      {
+        "id": "ru-8",
+        "name": "roundupTreatmentDate",
+        "label": "Treatment Date:",
+        "type": "date",
+        "required": false,
+        "categoryBadge": "Treatment Date"
+      },
+      {
+        "id": "ru-9",
+        "name": "roundupCurrentStatus",
+        "label": "Current Cancer Status:",
+        "type": "select",
+        "required": false,
+        "options": [
+          "In Active Treatment",
+          "In Remission",
+          "Relapsed",
+          "Deceased"
+        ],
+        "categoryBadge": "Status"
+      },
+      {
+        "id": "ru-10",
+        "name": "roundupLegalRepresentation",
+        "label": "Did you have any legal representation with any law firm regarding this claim?",
+        "type": "select",
+        "required": true,
+        "options": [
+          "Yes",
+          "No"
+        ],
+        "categoryBadge": "Legal Status"
+      },
+      {
+        "id": "ru-11",
+        "name": "roundupFelonyConviction",
+        "label": "Conviction Felony/Crime?",
+        "type": "select",
+        "required": true,
+        "options": [
+          "YES",
+          "NO"
+        ],
+        "categoryBadge": "Background"
+      },
+      {
+        "id": "ru-12",
+        "name": "roundupMedicalRecords",
+        "label": "Do you have Oncology / Biopsy Medical Records?",
+        "type": "select",
+        "required": true,
+        "options": [
+          "Yes",
+          "No"
+        ],
+        "categoryBadge": "Records Status"
+      }
+    ],
+    "Storm": [
+      {
+        "id": "stm-1",
+        "name": "stormName",
+        "label": "Specific Storm, Hurricane, or Catastrophe Event Name:",
+        "type": "text",
+        "required": true,
+        "placeholder": "e.g. Hurricane Ian, Hurricane Milton, Severe Hail Storm",
+        "categoryBadge": "Storm Event"
+      },
+      {
+        "id": "stm-2",
+        "name": "stormDateOfLoss",
+        "label": "Date of Storm Damage / Loss:",
+        "type": "date",
+        "required": true,
+        "categoryBadge": "Loss Date"
+      },
+      {
+        "id": "stm-3",
+        "name": "stormPropertyAddress",
+        "label": "Damaged Property Full Address:",
+        "type": "text",
+        "required": true,
+        "placeholder": "Street address, City, State, Zip",
+        "categoryBadge": "Location"
+      },
+      {
+        "id": "stm-4",
+        "name": "stormPropertyType",
+        "label": "Type of Damaged Property:",
+        "type": "select",
+        "required": true,
+        "options": [
+          "Single Family Home",
+          "Commercial Building",
+          "Multi-Family Residential / Rental",
+          "Condominium / HOA",
+          "Industrial / Warehouse"
+        ],
+        "categoryBadge": "Property Type"
+      },
+      {
+        "id": "stm-5",
+        "name": "stormPrimaryDamage",
+        "label": "Primary Damage Category Sustained:",
+        "type": "select",
+        "required": true,
+        "options": [
+          "Roof Collapse / Severe Shingle Damage",
+          "Wind Intrusion & Structural Failure",
+          "Water / Flood Intrusion",
+          "Interior Ceiling & Drywall Collapse",
+          "Fallen Tree Structural Impact",
+          "Total Destruction"
+        ],
+        "categoryBadge": "Damage Type"
+      },
+      {
+        "id": "stm-6",
+        "name": "stormInsuranceCarrier",
+        "label": "Homeowner / Property Insurance Carrier Name:",
+        "type": "text",
+        "required": true,
+        "placeholder": "e.g. State Farm, Citizens, Allstate",
+        "categoryBadge": "Insurance"
+      },
+      {
+        "id": "stm-7",
+        "name": "stormClaimFiled",
+        "label": "Was an Insurance Claim Filed with your Carrier?",
+        "type": "select",
+        "required": true,
+        "options": [
+          "Yes - Claim Filed",
+          "No - Not Yet Filed"
+        ],
+        "categoryBadge": "Claim Status"
+      },
+      {
+        "id": "stm-8",
+        "name": "stormClaimOutcome",
+        "label": "Current Insurance Claim Status / Outcome:",
+        "type": "select",
+        "required": false,
+        "options": [
+          "Claim Denied completely",
+          "Claim Underpaid / Lowball Offer",
+          "Payment Delayed / Pending",
+          "No Response from Adjuster",
+          "Claim Partially Paid"
+        ],
+        "categoryBadge": "Claim Outcome"
+      },
+      {
+        "id": "stm-9",
+        "name": "stormEstimatedLoss",
+        "label": "Estimated Unreimbursed Repair Cost ($):",
+        "type": "text",
+        "required": false,
+        "placeholder": "e.g. $75,000",
+        "categoryBadge": "Financial Loss"
+      },
+      {
+        "id": "stm-10",
+        "name": "stormFemaAssistance",
+        "label": "Did you apply for FEMA Disaster Assistance?",
+        "type": "select",
+        "required": false,
+        "options": [
+          "Yes - Approved",
+          "Yes - Denied",
+          "No - Did Not Apply"
+        ],
+        "categoryBadge": "FEMA"
+      },
+      {
+        "id": "stm-11",
+        "name": "stormLegalRepresentation",
+        "label": "Did you have any legal representation with any law firm regarding this claim?",
+        "type": "select",
+        "required": true,
+        "options": [
+          "Yes",
+          "No"
+        ],
+        "categoryBadge": "Legal Status"
+      },
+      {
+        "id": "stm-12",
+        "name": "stormHasPhotosPolicy",
+        "label": "Do you have damage photos and copy of your insurance policy?",
+        "type": "select",
+        "required": true,
+        "options": [
+          "Yes",
+          "No"
+        ],
+        "categoryBadge": "Evidence"
+      }
+    ],
+    "Talcum": [
+      {
+        "id": "talc-1",
+        "name": "talcUsageYears",
+        "label": "Years of Daily Cosmetic Talcum Powder Use (Johnson & Johnson):",
+        "type": "select",
+        "required": true,
+        "options": [
+          "1-5 Years",
+          "5-10 Years",
+          "10-20 Years",
+          "20+ Years"
+        ],
+        "categoryBadge": "Usage Duration"
+      },
+      {
+        "id": "talc-2",
+        "name": "talcBrand",
+        "label": "Talcum Powder Brand Used:",
+        "type": "select",
+        "required": true,
+        "options": [
+          "Johnson's Baby Powder",
+          "Shower to Shower",
+          "Both Brands"
+        ],
+        "categoryBadge": "Brand"
+      },
+      {
+        "id": "talc-3",
+        "name": "talcApplicationArea",
+        "label": "Area of Body where Talc was Applied Daily:",
+        "type": "select",
+        "required": true,
+        "options": [
+          "Perineal / Genital Area",
+          "Sanitary Napkins / Undergarments",
+          "Full Body Dusting",
+          "Both Genital and Body"
+        ],
+        "categoryBadge": "Application"
+      },
+      {
+        "id": "talc-4",
+        "name": "talcUsageTimeline",
+        "label": "Approximate Timeline of Daily Usage (Years):",
+        "type": "text",
+        "required": false,
+        "placeholder": "e.g. 1988 - 2018",
+        "categoryBadge": "Timeline"
+      },
+      {
+        "id": "talc-5",
+        "name": "talcDiagnosis",
+        "label": "Diagnosed Medical Condition:",
+        "type": "select",
+        "required": true,
+        "options": [
+          "Ovarian Cancer (Serous/Endometrioid/Clear Cell)",
+          "Mesothelioma",
+          "Fallopian Tube Cancer",
+          "Primary Peritoneal Cancer",
+          "Endometrial Cancer"
+        ],
+        "categoryBadge": "Diagnosis"
+      },
+      {
+        "id": "talc-6",
+        "name": "talcDiagnosisDate",
+        "label": "Date of Diagnosis:",
+        "type": "date",
+        "required": true,
+        "categoryBadge": "Diagnosis Date"
+      },
+      {
+        "id": "talc-7",
+        "name": "talcBiopsyConfirmation",
+        "label": "Was Biopsy Tissue Confirmed Positive for Talc/Asbestos?",
+        "type": "select",
+        "required": false,
+        "options": [
+          "Yes",
+          "No",
+          "Unknown / Not Tested"
+        ],
+        "categoryBadge": "Biopsy"
+      },
+      {
+        "id": "talc-8",
+        "name": "talcSurgeryPerformed",
+        "label": "Surgical Procedures Performed:",
+        "type": "text",
+        "required": false,
+        "placeholder": "e.g. Total Hysterectomy, Oophorectomy, Debulking",
+        "categoryBadge": "Surgery"
+      },
+      {
+        "id": "talc-9",
+        "name": "talcChemotherapy",
+        "label": "Did you receive Chemotherapy or Radiation Treatment?",
+        "type": "select",
+        "required": false,
+        "options": [
+          "Yes - Chemotherapy",
+          "Yes - Radiation",
+          "Both",
+          "No"
+        ],
+        "categoryBadge": "Oncology Treatment"
+      },
+      {
+        "id": "talc-10",
+        "name": "talcLegalRepresentation",
+        "label": "Did you have any legal representation with any law firm regarding this claim?",
+        "type": "select",
+        "required": true,
+        "options": [
+          "Yes",
+          "No"
+        ],
+        "categoryBadge": "Legal Status"
+      },
+      {
+        "id": "talc-11",
+        "name": "talcFelonyConviction",
+        "label": "Conviction Felony/Crime?",
+        "type": "select",
+        "required": true,
+        "options": [
+          "YES",
+          "NO"
+        ],
+        "categoryBadge": "Background"
+      },
+      {
+        "id": "talc-12",
+        "name": "talcMedicalRecords",
+        "label": "Do you have Pathology / Oncology Medical Records?",
+        "type": "select",
+        "required": true,
+        "options": [
+          "Yes",
+          "No"
+        ],
+        "categoryBadge": "Records Status"
+      }
+    ],
+    "Wildfire": [
+      {
+        "id": "wf-1",
+        "name": "wildfireName",
+        "label": "Wildfire Event Name:",
+        "type": "text",
+        "required": true,
+        "placeholder": "e.g. Eaton Fire, Marshall Fire, Camp Fire, Lahaina Fire, Dixie Fire",
+        "categoryBadge": "Wildfire Event"
+      },
+      {
+        "id": "wf-2",
+        "name": "wildfireIncidentDate",
+        "label": "Date Fire Occurred / Property Impacted:",
+        "type": "date",
+        "required": true,
+        "categoryBadge": "Fire Date"
+      },
+      {
+        "id": "wf-3",
+        "name": "wildfireAddress",
+        "label": "Damaged Property Full Address:",
+        "type": "text",
+        "required": true,
+        "placeholder": "Full Property Street Address, City, State, Zip",
+        "categoryBadge": "Location"
+      },
+      {
+        "id": "wf-4",
+        "name": "wildfireClaimantInterest",
+        "label": "Claimant Interest in Property:",
+        "type": "select",
+        "required": true,
+        "options": [
+          "Homeowner (Primary Residence)",
+          "Homeowner (Secondary / Vacation)",
+          "Tenant / Renter",
+          "Commercial Property / Business Owner",
+          "Agricultural / Land Owner"
+        ],
+        "categoryBadge": "Property Ownership"
+      },
+      {
+        "id": "wf-5",
+        "name": "wildfireLossType",
+        "label": "Primary Loss Type Sustained:",
+        "type": "select",
+        "required": true,
+        "options": [
+          "Total Structure Destruction",
+          "Partial Structure Damage / Smoke Intrusion",
+          "Business Interruption / Income Loss",
+          "Landscape / Outbuilding Destruction",
+          "Personal Property Total Loss"
+        ],
+        "categoryBadge": "Loss Type"
+      },
+      {
+        "id": "wf-6",
+        "name": "wildfirePhysicalInjuries",
+        "label": "Did any occupant suffer physical injuries, burns, or smoke inhalation?",
+        "type": "select",
+        "required": false,
+        "options": [
+          "Yes - Smoke Inhalation / Respiratory",
+          "Yes - Severe Burn Injury",
+          "Yes - Trauma / Orthopedic",
+          "No Physical Injuries"
+        ],
+        "categoryBadge": "Injury"
+      },
+      {
+        "id": "wf-7",
+        "name": "wildfireInsuranceStatus",
+        "label": "Property Insurance Coverage & Status:",
+        "type": "select",
+        "required": true,
+        "options": [
+          "Insured - Claim Underpaid / Policy Limits Exceeded",
+          "Insured - Claim Denied",
+          "Insured - Claim Pending",
+          "Uninsured"
+        ],
+        "categoryBadge": "Insurance"
+      },
+      {
+        "id": "wf-8",
+        "name": "wildfireEstimatedLoss",
+        "label": "Estimated Uncompensated Financial Loss ($):",
+        "type": "text",
+        "required": false,
+        "placeholder": "e.g. $350,000",
+        "categoryBadge": "Financial Loss"
+      },
+      {
+        "id": "wf-9",
+        "name": "wildfireDisplacedDuration",
+        "label": "Duration of Displacement from Home:",
+        "type": "text",
+        "required": false,
+        "placeholder": "e.g. 6 months / Still displaced",
+        "categoryBadge": "Displacement"
+      },
+      {
+        "id": "wf-10",
+        "name": "wildfireLegalRepresentation",
+        "label": "Did you have any legal representation with any law firm regarding this claim?",
+        "type": "select",
+        "required": true,
+        "options": [
+          "Yes",
+          "No"
+        ],
+        "categoryBadge": "Legal Status"
+      },
+      {
+        "id": "wf-11",
+        "name": "wildfireFelonyConviction",
+        "label": "Conviction Felony/Crime?",
+        "type": "select",
+        "required": true,
+        "options": [
+          "YES",
+          "NO"
+        ],
+        "categoryBadge": "Background"
+      },
+      {
+        "id": "wf-12",
+        "name": "wildfireRecordsAvailable",
+        "label": "Do you have insurance claim paperwork, proof of residency, or damage photos?",
+        "type": "select",
+        "required": true,
+        "options": [
+          "Yes",
+          "No"
+        ],
+        "categoryBadge": "Documentation"
+      }
+    ],
+    "Women's Prisoner Abuse": [
+      {
+        "id": "wpa-1",
+        "name": "wpaFacilityName",
+        "label": "Name of Women's Prison, Jail, or Detention Facility:",
+        "type": "text",
+        "required": true,
+        "placeholder": "Facility Name & City, State",
+        "categoryBadge": "Facility"
+      },
+      {
+        "id": "wpa-2",
+        "name": "wpaIncarcerationDates",
+        "label": "Dates Incarcerated (Intake Date & Release Date):",
+        "type": "text",
+        "required": true,
+        "placeholder": "e.g. March 2018 - November 2021",
+        "categoryBadge": "Incarceration Timeline"
+      },
+      {
+        "id": "wpa-3",
+        "name": "wpaInmateId",
+        "label": "Inmate ID / Booking Number:",
+        "type": "text",
+        "required": false,
+        "placeholder": "Inmate Registration or Booking #",
+        "categoryBadge": "Identification"
+      },
+      {
+        "id": "wpa-4",
+        "name": "wpaAbuserNameTitle",
+        "label": "Name and Title of Alleged Staff Abuser(s):",
+        "type": "text",
+        "required": true,
+        "placeholder": "Officer / Guard / Staff Name & Rank",
+        "categoryBadge": "Alleged Abuser"
+      },
+      {
+        "id": "wpa-5",
+        "name": "wpaAbuseType",
+        "label": "Nature of Sexual Abuse / Misconduct:",
+        "type": "select",
+        "required": true,
+        "options": [
+          "Forced Sexual Intercourse / Penetration",
+          "Digital Penetration",
+          "Coerced Sexual Favors / Quid Pro Quo for Privileges",
+          "Groping / Inappropriate Strip Searches",
+          "Verbal Grooming & Threat of Retaliation"
+        ],
+        "categoryBadge": "Abuse Nature"
+      },
+      {
+        "id": "wpa-6",
+        "name": "wpaFirstAbuseDate",
+        "label": "Approximate Date of First Incident:",
+        "type": "date",
+        "required": true,
+        "categoryBadge": "Abuse Timeline"
+      },
+      {
+        "id": "wpa-7",
+        "name": "wpaLastAbuseDate",
+        "label": "Approximate Date of Last Incident:",
+        "type": "date",
+        "required": true,
+        "categoryBadge": "Abuse Timeline"
+      },
+      {
+        "id": "wpa-8",
+        "name": "wpaFrequency",
+        "label": "Frequency / Number of Times Abused:",
+        "type": "text",
+        "required": true,
+        "placeholder": "e.g. Multiple times weekly, 5 times",
+        "categoryBadge": "Frequency"
+      },
+      {
+        "id": "wpa-9",
+        "name": "wpaIncidentLocation",
+        "label": "Location within Facility where abuse occurred (Cell, Office, Laundry, Medical):",
+        "type": "text",
+        "required": false,
+        "placeholder": "Specific room or area",
+        "categoryBadge": "Location"
+      },
+      {
+        "id": "wpa-10",
+        "name": "wpaReportedWhileInCustody",
+        "label": "Did you report this incident while in custody (PREA hotline, Grievance, Warden)?",
+        "type": "select",
+        "required": false,
+        "options": [
+          "Reported via PREA Hotline",
+          "Filed Grievance",
+          "Told Medical / Counselor",
+          "Not reported due to fear of retaliation"
+        ],
+        "categoryBadge": "Reporting"
+      },
+      {
+        "id": "wpa-11",
+        "name": "wpaNarrative",
+        "label": "Detailed Statement of what occurred:",
+        "type": "textarea",
+        "required": true,
+        "placeholder": "Describe the conduct, threats, and events...",
+        "categoryBadge": "Narrative"
+      },
+      {
+        "id": "wpa-12",
+        "name": "wpaPhysicalPregnancyInjuries",
+        "label": "Did the abuse result in pregnancy, STD, or physical injury?",
+        "type": "select",
+        "required": false,
+        "options": [
+          "Resulted in Pregnancy",
+          "Contracted STD",
+          "Physical Trauma / Injury",
+          "None of these"
+        ],
+        "categoryBadge": "Injuries"
+      },
+      {
+        "id": "wpa-13",
+        "name": "wpaPsychologicalImpact",
+        "label": "Psychological Impact (PTSD, Depression, Anxiety):",
+        "type": "textarea",
+        "required": false,
+        "placeholder": "Describe therapy, counseling, panic attacks...",
+        "categoryBadge": "Psychological"
+      },
+      {
+        "id": "wpa-14",
+        "name": "wpaLegalRepresentation",
+        "label": "Did you have any legal representation with any law firm regarding this claim?",
+        "type": "select",
+        "required": true,
+        "options": [
+          "Yes",
+          "No"
+        ],
+        "categoryBadge": "Legal Status"
+      },
+      {
+        "id": "wpa-15",
+        "name": "wpaFelonyConviction",
+        "label": "Conviction Felony/Crime?",
+        "type": "select",
+        "required": true,
+        "options": [
+          "YES",
+          "NO"
+        ],
+        "categoryBadge": "Background"
+      },
+      {
+        "id": "wpa-16",
+        "name": "wpaIncarcerationRecords",
+        "label": "Do you have Incarceration or Medical / Counseling Records?",
+        "type": "select",
+        "required": true,
+        "options": [
+          "Yes",
+          "No"
+        ],
+        "categoryBadge": "Records Status"
+      }
+    ],
+    "Camp Lejeune": [
+      {
+        "id": "cl-1",
+        "name": "clDatesOnBase",
+        "label": "Dates Lived or Worked at Camp Lejeune (Must be between Aug 1953 - Dec 1987):",
+        "type": "text",
+        "required": true,
+        "placeholder": "e.g. August 1978 - June 1982",
+        "categoryBadge": "Timeline"
+      },
+      {
+        "id": "cl-2",
+        "name": "clDaysCount",
+        "label": "Did you live or work on base for at least 30 cumulative days?",
+        "type": "select",
+        "required": true,
+        "options": [
+          "Yes - At least 30 Days",
+          "No - Less than 30 Days"
+        ],
+        "categoryBadge": "Eligibility"
+      },
+      {
+        "id": "cl-3",
+        "name": "clMilitaryStatus",
+        "label": "Claimant Military / Residency Status:",
+        "type": "select",
+        "required": true,
+        "options": [
+          "Marine Corps Veteran",
+          "Navy Veteran",
+          "Military Family Member / Dependent",
+          "Civilian Employee / Contractor",
+          "In-Utero Exposure (Mother was on base while pregnant)"
+        ],
+        "categoryBadge": "Status"
+      },
+      {
+        "id": "cl-4",
+        "name": "clBaseLocation",
+        "label": "Base Housing / Barracks Location on Camp Lejeune:",
+        "type": "select",
+        "required": false,
+        "options": [
+          "Hadnot Point",
+          "Tarawa Terrace",
+          "Holcomb Boulevard",
+          "Montford Point / Camp Johnson",
+          "MCAS New River",
+          "Other Area on Base"
+        ],
+        "categoryBadge": "Housing Location"
+      },
+      {
+        "id": "cl-5",
+        "name": "clDiagnosis",
+        "label": "Diagnosed Qualifying Condition:",
+        "type": "select",
+        "required": true,
+        "options": [
+          "Kidney Cancer / Renal Carcinoma",
+          "Liver Cancer",
+          "Non-Hodgkin Lymphoma (NHL)",
+          "Leukemia (all types)",
+          "Multiple Myeloma",
+          "Parkinson's Disease",
+          "Bladder Cancer",
+          "Aplastic Anemia / Myelodysplastic Syndromes",
+          "Cardiac Birth Defects",
+          "Systemic Sclerosis / Scleroderma",
+          "Other Cancer / Condition"
+        ],
+        "categoryBadge": "Diagnosis"
+      },
+      {
+        "id": "cl-6",
+        "name": "clDiagnosisDate",
+        "label": "Date of Diagnosis:",
+        "type": "date",
+        "required": true,
+        "categoryBadge": "Diagnosis Date"
+      },
+      {
+        "id": "cl-7",
+        "name": "clHospital",
+        "label": "Hospital / VA Medical Facility where diagnosed or treated:",
+        "type": "text",
+        "required": false,
+        "placeholder": "VA Hospital or Medical Clinic Name",
+        "categoryBadge": "Facility"
+      },
+      {
+        "id": "cl-8",
+        "name": "clTreatmentReceived",
+        "label": "Treatments Received:",
+        "type": "text",
+        "required": false,
+        "placeholder": "Surgery, Chemotherapy, Radiation, Ongoing medication",
+        "categoryBadge": "Treatment"
+      },
+      {
+        "id": "cl-9",
+        "name": "clJagClaimFiled",
+        "label": "Did you previously file an administrative claim with the Navy JAG under the CLJA?",
+        "type": "select",
+        "required": false,
+        "options": [
+          "Yes - JAG Claim Filed",
+          "No - Not Filed Yet",
+          "Unknown"
+        ],
+        "categoryBadge": "Administrative Claim"
+      },
+      {
+        "id": "cl-10",
+        "name": "clLegalRepresentation",
+        "label": "Did you have any legal representation with any law firm regarding this claim?",
+        "type": "select",
+        "required": true,
+        "options": [
+          "Yes",
+          "No"
+        ],
+        "categoryBadge": "Legal Status"
+      },
+      {
+        "id": "cl-11",
+        "name": "clFelonyConviction",
+        "label": "Conviction Felony/Crime?",
+        "type": "select",
+        "required": true,
+        "options": [
+          "YES",
+          "NO"
+        ],
+        "categoryBadge": "Background"
+      },
+      {
+        "id": "cl-12",
+        "name": "clServiceRecordsAvailable",
+        "label": "Do you have Military Service Records (DD-214) or civilian employment records?",
+        "type": "select",
+        "required": true,
+        "options": [
+          "Yes",
+          "No"
+        ],
+        "categoryBadge": "Records Status"
+      }
+    ],
+    "NEC Baby Formula": [
+      {
+        "id": "nec-1",
+        "name": "necFormulaBrand",
+        "label": "Infant Formula Brand Fed to Premature Baby in Hospital / NICU:",
+        "type": "select",
+        "required": true,
+        "options": [
+          "Similac (Abbott Laboratories)",
+          "Enfamil (Mead Johnson)",
+          "Both Similac and Enfamil",
+          "Other Cow's Milk-Based Formula"
+        ],
+        "categoryBadge": "Formula Brand"
+      },
+      {
+        "id": "nec-2",
+        "name": "necBirthWeeks",
+        "label": "Gestational Age at Birth (Weeks Premature):",
+        "type": "select",
+        "required": true,
+        "options": [
+          "Extremely Premature (Under 28 Weeks)",
+          "Very Premature (28 - 32 Weeks)",
+          "Moderate Premature (32 - 37 Weeks)",
+          "Full Term (37+ Weeks)"
+        ],
+        "categoryBadge": "Gestational Age"
+      },
+      {
+        "id": "nec-3",
+        "name": "necBirthWeight",
+        "label": "Birth Weight of Baby:",
+        "type": "text",
+        "required": false,
+        "placeholder": "e.g. 2 lbs 4 oz or 1100 grams",
+        "categoryBadge": "Birth Weight"
+      },
+      {
+        "id": "nec-4",
+        "name": "necBabyDob",
+        "label": "Baby Date of Birth:",
+        "type": "date",
+        "required": true,
+        "categoryBadge": "Timeline"
+      },
+      {
+        "id": "nec-5",
+        "name": "necDiagnosisDate",
+        "label": "Date Diagnosed with Necrotizing Enterocolitis (NEC):",
+        "type": "date",
+        "required": true,
+        "categoryBadge": "Diagnosis Date"
+      },
+      {
+        "id": "nec-6",
+        "name": "necSurgeryPerformed",
+        "label": "Was Bowel Resection or Exploratory Surgery Performed?",
+        "type": "select",
+        "required": true,
+        "options": [
+          "Yes - Emergency Bowel Resection Surgery",
+          "Yes - Peritoneal Drain Placement",
+          "Medical Management Only (Antibiotics / NPO)",
+          "Deceased due to NEC"
+        ],
+        "categoryBadge": "Surgical Status"
+      },
+      {
+        "id": "nec-7",
+        "name": "necHospitalName",
+        "label": "NICU / Children's Hospital Facility Name:",
+        "type": "text",
+        "required": true,
+        "placeholder": "NICU Hospital Name & City, State",
+        "categoryBadge": "Hospital"
+      },
+      {
+        "id": "nec-8",
+        "name": "necLongTermComplications",
+        "label": "Long-term Health Complications (Short Bowel Syndrome, Growth Delay):",
+        "type": "textarea",
+        "required": false,
+        "placeholder": "Describe feeding tubes, short gut syndrome, developmental delays...",
+        "categoryBadge": "Complications"
+      },
+      {
+        "id": "nec-9",
+        "name": "necChildCurrentStatus",
+        "label": "Current Status of Child:",
+        "type": "select",
+        "required": true,
+        "options": [
+          "Living with ongoing complications",
+          "Living with full recovery",
+          "Deceased"
+        ],
+        "categoryBadge": "Status"
+      },
+      {
+        "id": "nec-10",
+        "name": "necLegalRepresentation",
+        "label": "Did you have any legal representation with any law firm regarding this claim?",
+        "type": "select",
+        "required": true,
+        "options": [
+          "Yes",
+          "No"
+        ],
+        "categoryBadge": "Legal Status"
+      },
+      {
+        "id": "nec-11",
+        "name": "necFelonyConviction",
+        "label": "Conviction Felony/Crime?",
+        "type": "select",
+        "required": true,
+        "options": [
+          "YES",
+          "NO"
+        ],
+        "categoryBadge": "Background"
+      },
+      {
+        "id": "nec-12",
+        "name": "necMedicalRecords",
+        "label": "Are Hospital / NICU Medical Records Available?",
+        "type": "select",
+        "required": true,
+        "options": [
+          "Yes",
+          "No"
+        ],
+        "categoryBadge": "Records Status"
+      }
+    ],
+    "Hair Straightener": [
+      {
+        "id": "hs-1",
+        "name": "hairStraightenerBrands",
+        "label": "Chemical Hair Straightener / Relaxer Brand(s) Used:",
+        "type": "text",
+        "required": true,
+        "placeholder": "e.g. ORS Olive Oil, Just For Me, SoftSheen-Carson, Dark & Lovely, Motions",
+        "categoryBadge": "Product"
+      },
+      {
+        "id": "hs-2",
+        "name": "hairStraightenerYearsUsed",
+        "label": "Total Number of Years Using Chemical Hair Straighteners:",
+        "type": "select",
+        "required": true,
+        "options": [
+          "1-4 Years",
+          "5-9 Years",
+          "10-15 Years",
+          "15+ Years"
+        ],
+        "categoryBadge": "Duration"
+      },
+      {
+        "id": "hs-3",
+        "name": "hairStraightenerFrequency",
+        "label": "Frequency of Chemical Relaxer Treatments:",
+        "type": "select",
+        "required": true,
+        "options": [
+          "4+ Times Per Year (Frequent Use)",
+          "2-3 Times Per Year",
+          "Once a Year / Occasional"
+        ],
+        "categoryBadge": "Frequency"
+      },
+      {
+        "id": "hs-4",
+        "name": "hairStraightenerScalpBurns",
+        "label": "Did you regularly experience scalp burns, tingling, or lesions during application?",
+        "type": "select",
+        "required": false,
+        "options": [
+          "Yes - Frequent Scalp Burns",
+          "Occasionally",
+          "No Scalp Burns"
+        ],
+        "categoryBadge": "Scalp Reaction"
+      },
+      {
+        "id": "hs-5",
+        "name": "hairStraightenerDiagnosis",
+        "label": "Diagnosed Cancer or Reproductive Condition:",
+        "type": "select",
+        "required": true,
+        "options": [
+          "Uterine Cancer",
+          "Endometrial Cancer",
+          "Ovarian Cancer",
+          "Uterine Fibroids (Requiring Hysterectomy / Surgery)"
+        ],
+        "categoryBadge": "Diagnosis"
+      },
+      {
+        "id": "hs-6",
+        "name": "hairStraightenerDiagnosisDate",
+        "label": "Date of Diagnosis:",
+        "type": "date",
+        "required": true,
+        "categoryBadge": "Diagnosis Date"
+      },
+      {
+        "id": "hs-7",
+        "name": "hairStraightenerHospital",
+        "label": "Diagnosing Oncology Center / Hospital Name:",
+        "type": "text",
+        "required": false,
+        "placeholder": "Hospital or Clinic Name",
+        "categoryBadge": "Medical Facility"
+      },
+      {
+        "id": "hs-8",
+        "name": "hairStraightenerHysterectomy",
+        "label": "Was Surgery / Hysterectomy Performed?",
+        "type": "select",
+        "required": true,
+        "options": [
+          "Yes - Total Hysterectomy (Uterus & Ovaries removed)",
+          "Yes - Partial Hysterectomy",
+          "Yes - Myomectomy (Fibroid removal)",
+          "No Surgery"
+        ],
+        "categoryBadge": "Surgery"
+      },
+      {
+        "id": "hs-9",
+        "name": "hairStraightenerTreatment",
+        "label": "Other Treatments Received (Chemotherapy, Radiation, Hormone Therapy):",
+        "type": "text",
+        "required": false,
+        "placeholder": "Describe treatments received...",
+        "categoryBadge": "Treatment"
+      },
+      {
+        "id": "hs-10",
+        "name": "hairStraightenerLegalRepresentation",
+        "label": "Did you have any legal representation with any law firm regarding this claim?",
+        "type": "select",
+        "required": true,
+        "options": [
+          "Yes",
+          "No"
+        ],
+        "categoryBadge": "Legal Status"
+      },
+      {
+        "id": "hs-11",
+        "name": "hairStraightenerFelonyConviction",
+        "label": "Conviction Felony/Crime?",
+        "type": "select",
+        "required": true,
+        "options": [
+          "YES",
+          "NO"
+        ],
+        "categoryBadge": "Background"
+      },
+      {
+        "id": "hs-12",
+        "name": "hairStraightenerMedicalRecords",
+        "label": "Do you have Pathology and Operative Medical Records?",
+        "type": "select",
+        "required": true,
+        "options": [
+          "Yes",
+          "No"
+        ],
+        "categoryBadge": "Records Status"
+      }
+    ],
+    "Boy Scouts": [
+      {
+        "id": "bs-1",
+        "name": "bsTroopNumber",
+        "label": "Boy Scout Troop Number and Local Council Name:",
+        "type": "text",
+        "required": true,
+        "placeholder": "e.g. Troop 142, Greater New York Council",
+        "categoryBadge": "Scout Unit"
+      },
+      {
+        "id": "bs-2",
+        "name": "bsCityState",
+        "label": "City and State where Boy Scout troop was located:",
+        "type": "text",
+        "required": true,
+        "placeholder": "City, State",
+        "categoryBadge": "Location"
+      },
+      {
+        "id": "bs-3",
+        "name": "bsYearsActive",
+        "label": "Years Active in Boy Scouts (Timeline):",
+        "type": "text",
+        "required": true,
+        "placeholder": "e.g. 1974 - 1979",
+        "categoryBadge": "Timeline"
+      },
+      {
+        "id": "bs-4",
+        "name": "bsAgeWhenAbuseStarted",
+        "label": "Age of Claimant when Sexual Abuse Started:",
+        "type": "text",
+        "required": true,
+        "placeholder": "e.g. 11 years old",
+        "categoryBadge": "Victim Age"
+      },
+      {
+        "id": "bs-5",
+        "name": "bsAbuserNameRole",
+        "label": "Name and Role of Alleged Abuser(s):",
+        "type": "text",
+        "required": true,
+        "placeholder": "Scoutmaster Name / Title / Assistant Scoutmaster",
+        "categoryBadge": "Alleged Abuser"
+      },
+      {
+        "id": "bs-6",
+        "name": "bsAbuseLocation",
+        "label": "Locations where Abuse Occurred:",
+        "type": "select",
+        "required": true,
+        "options": [
+          "Scout Campouts / Jamboree",
+          "Scoutmaster's Home / Vehicle",
+          "Church / Scout Meeting Hall",
+          "Multiple Locations"
+        ],
+        "categoryBadge": "Location"
+      },
+      {
+        "id": "bs-7",
+        "name": "bsAbuseNarrative",
+        "label": "Detailed Description of Abuse Occurred:",
+        "type": "textarea",
+        "required": true,
+        "placeholder": "Describe what happened during scouting activities...",
+        "categoryBadge": "Narrative"
+      },
+      {
+        "id": "bs-8",
+        "name": "bsReportedAtTime",
+        "label": "Was the abuse reported to BSA, Church, or Police at the time?",
+        "type": "select",
+        "required": false,
+        "options": [
+          "Reported to Scout Leadership",
+          "Reported to Police",
+          "Reported to Parents",
+          "Not Reported due to Fear"
+        ],
+        "categoryBadge": "Reporting"
+      },
+      {
+        "id": "bs-9",
+        "name": "bsTraumaImpact",
+        "label": "Long-term Psychological & Emotional Impact (Depression, PTSD, Substance):",
+        "type": "textarea",
+        "required": false,
+        "placeholder": "Describe long-term effects on life, relationships...",
+        "categoryBadge": "Psychological"
+      },
+      {
+        "id": "bs-10",
+        "name": "bsTreatment",
+        "label": "Counseling, Psychiatric, or Therapy Treatment Received:",
+        "type": "text",
+        "required": false,
+        "placeholder": "Therapy, Counseling, Inpatient Treatment",
+        "categoryBadge": "Treatment"
+      },
+      {
+        "id": "bs-11",
+        "name": "bsBsaBankruptcyClaim",
+        "label": "Did you previously file a proof of claim in the BSA Bankruptcy proceeding?",
+        "type": "select",
+        "required": false,
+        "options": [
+          "Yes - Filed Bankruptcy Proof of Claim",
+          "No - Did Not File in Bankruptcy",
+          "Unknown"
+        ],
+        "categoryBadge": "Bankruptcy Claim"
+      },
+      {
+        "id": "bs-12",
+        "name": "bsLegalRepresentation",
+        "label": "Did you have any legal representation with any law firm regarding this claim?",
+        "type": "select",
+        "required": true,
+        "options": [
+          "Yes",
+          "No"
+        ],
+        "categoryBadge": "Legal Status"
+      },
+      {
+        "id": "bs-13",
+        "name": "bsFelonyConviction",
+        "label": "Conviction Felony/Crime?",
+        "type": "select",
+        "required": true,
+        "options": [
+          "YES",
+          "NO"
+        ],
+        "categoryBadge": "Background"
+      },
+      {
+        "id": "bs-14",
+        "name": "bsRecordsAvailable",
+        "label": "Do you have any scout registration cards, photos, or therapy records?",
+        "type": "select",
+        "required": true,
+        "options": [
+          "Yes",
+          "No"
+        ],
+        "categoryBadge": "Records Status"
+      }
+    ],
+    "Mesothelioma": [
+      {
+        "id": "meso-1",
+        "name": "mesoExposureSource",
+        "label": "Primary Source / Industry of Asbestos Exposure:",
+        "type": "select",
+        "required": true,
+        "options": [
+          "Shipyard / US Navy Service",
+          "Construction / Demolition / Carpentry",
+          "Industrial / Chemical Plant / Refinery",
+          "Automotive Mechanic (Brake Linings / Clutches)",
+          "Pipefitting / Insulation / Boilermaker",
+          "Secondary / Household Take-Home Exposure"
+        ],
+        "categoryBadge": "Exposure Industry"
+      },
+      {
+        "id": "meso-2",
+        "name": "mesoEmployerLocation",
+        "label": "Employer / Military Branch & Facility Location where exposed:",
+        "type": "text",
+        "required": true,
+        "placeholder": "Employer name, Shipyard name, City, State",
+        "categoryBadge": "Employer"
+      },
+      {
+        "id": "meso-3",
+        "name": "mesoExposureYears",
+        "label": "Years of Asbestos Exposure (Start Year - End Year):",
+        "type": "text",
+        "required": true,
+        "placeholder": "e.g. 1968 - 1992",
+        "categoryBadge": "Exposure Timeline"
+      },
+      {
+        "id": "meso-4",
+        "name": "mesoProductsHandled",
+        "label": "Specific Asbestos Products Handled or Present in Work Area:",
+        "type": "text",
+        "required": false,
+        "placeholder": "e.g. Pipe insulation, joint compound, brake shoes, gaskets, asbestos tiles",
+        "categoryBadge": "Products"
+      },
+      {
+        "id": "meso-5",
+        "name": "mesoDiagnosisType",
+        "label": "Specific Asbestos-Related Diagnosis:",
+        "type": "select",
+        "required": true,
+        "options": [
+          "Pleural Mesothelioma (Lungs)",
+          "Peritoneal Mesothelioma (Abdomen)",
+          "Pericardial Mesothelioma (Heart)",
+          "Asbestosis",
+          "Lung Cancer with verified Asbestos exposure"
+        ],
+        "categoryBadge": "Diagnosis"
+      },
+      {
+        "id": "meso-6",
+        "name": "mesoDiagnosisDate",
+        "label": "Date of Diagnosis:",
+        "type": "date",
+        "required": true,
+        "categoryBadge": "Diagnosis Date"
+      },
+      {
+        "id": "meso-7",
+        "name": "mesoBiopsyConfirmation",
+        "label": "Was diagnosis confirmed by Tissue Biopsy / Pathology report?",
+        "type": "select",
+        "required": true,
+        "options": [
+          "Yes - Pathology Biopsy Confirmed",
+          "Cytology / Pleural Fluid Only",
+          "Clinical / Imaging Only",
+          "Unknown"
+        ],
+        "categoryBadge": "Pathology"
+      },
+      {
+        "id": "meso-8",
+        "name": "mesoTreatingHospital",
+        "label": "Treating Oncology Cancer Center & Doctor Name:",
+        "type": "text",
+        "required": false,
+        "placeholder": "Cancer center name and treating oncologist",
+        "categoryBadge": "Medical Facility"
+      },
+      {
+        "id": "meso-9",
+        "name": "mesoTreatments",
+        "label": "Treatments Received (Surgery, Pleurectomy, Chemotherapy, Immunotherapy):",
+        "type": "text",
+        "required": false,
+        "placeholder": "e.g. Pleurectomy, Chemotherapy (Pemetrexed/Cisplatin), Opdivo",
+        "categoryBadge": "Treatment"
+      },
+      {
+        "id": "meso-10",
+        "name": "mesoCurrentStatus",
+        "label": "Current Health Status of Patient:",
+        "type": "select",
+        "required": true,
+        "options": [
+          "Living - In Active Treatment",
+          "Living - Palliative Care",
+          "Deceased"
+        ],
+        "categoryBadge": "Patient Status"
+      },
+      {
+        "id": "meso-11",
+        "name": "mesoLegalRepresentation",
+        "label": "Did you have any legal representation with any law firm regarding this claim?",
+        "type": "select",
+        "required": true,
+        "options": [
+          "Yes",
+          "No"
+        ],
+        "categoryBadge": "Legal Status"
+      },
+      {
+        "id": "meso-12",
+        "name": "mesoFelonyConviction",
+        "label": "Conviction Felony/Crime?",
+        "type": "select",
+        "required": true,
+        "options": [
+          "YES",
+          "NO"
+        ],
+        "categoryBadge": "Background"
+      },
+      {
+        "id": "meso-13",
+        "name": "mesoMedicalRecords",
+        "label": "Do you have Pathology Reports and Chest CT / PET Scan Records?",
+        "type": "select",
+        "required": true,
+        "options": [
+          "Yes",
+          "No"
+        ],
+        "categoryBadge": "Records Status"
+      }
+    ],
+    "AFFF Firefighting Foam": [
+      {
+        "id": "afff-1",
+        "name": "afffOccupation",
+        "label": "Firefighting / Military Background:",
+        "type": "select",
+        "required": true,
+        "options": [
+          "Military Firefighter (Air Force, Navy, Army, Marines)",
+          "Municipal / Career Firefighter",
+          "Volunteer Firefighter",
+          "Airport / Aviation Crash Rescue Firefighter",
+          "Industrial / Chemical Plant Firefighter"
+        ],
+        "categoryBadge": "Occupation"
+      },
+      {
+        "id": "afff-2",
+        "name": "afffServiceLocations",
+        "label": "Military Base(s), Airport(s), or Fire Stations where exposed to AFFF Foam:",
+        "type": "text",
+        "required": true,
+        "placeholder": "Base names or airport locations and dates",
+        "categoryBadge": "Location"
+      },
+      {
+        "id": "afff-3",
+        "name": "afffServiceYears",
+        "label": "Years of Active Service Exposed to AFFF Foam (Start - End):",
+        "type": "text",
+        "required": true,
+        "placeholder": "e.g. 1982 - 2005",
+        "categoryBadge": "Years Active"
+      },
+      {
+        "id": "afff-4",
+        "name": "afffDirectContact",
+        "label": "Did foam frequently soak through turnout gear or contact bare skin during drills/fires?",
+        "type": "select",
+        "required": true,
+        "options": [
+          "Yes - Frequent Direct Exposure",
+          "Occasionally",
+          "Rarely"
+        ],
+        "categoryBadge": "Exposure Level"
+      },
+      {
+        "id": "afff-5",
+        "name": "afffDiagnosis",
+        "label": "Diagnosed Cancer Type:",
+        "type": "select",
+        "required": true,
+        "options": [
+          "Kidney Cancer / Renal Carcinoma",
+          "Testicular Cancer",
+          "Prostate Cancer",
+          "Pancreatic Cancer",
+          "Bladder Cancer",
+          "Non-Hodgkin Lymphoma / Leukemia",
+          "Thyroid Cancer"
+        ],
+        "categoryBadge": "Diagnosis"
+      },
+      {
+        "id": "afff-6",
+        "name": "afffDiagnosisDate",
+        "label": "Date of Diagnosis:",
+        "type": "date",
+        "required": true,
+        "categoryBadge": "Diagnosis Date"
+      },
+      {
+        "id": "afff-7",
+        "name": "afffHospital",
+        "label": "Diagnosing Oncology Center / Hospital Name:",
+        "type": "text",
+        "required": false,
+        "placeholder": "Hospital or VA Center Name",
+        "categoryBadge": "Medical Facility"
+      },
+      {
+        "id": "afff-8",
+        "name": "afffTreatment",
+        "label": "Treatments Received (Surgery, Chemotherapy, Radiation):",
+        "type": "text",
+        "required": false,
+        "placeholder": "e.g. Nephrectomy, Chemotherapy",
+        "categoryBadge": "Treatment"
+      },
+      {
+        "id": "afff-9",
+        "name": "afffTreatmentDate",
+        "label": "Treatment Date:",
+        "type": "date",
+        "required": false,
+        "categoryBadge": "Treatment Date"
+      },
+      {
+        "id": "afff-10",
+        "name": "afffLegalRepresentation",
+        "label": "Did you have any legal representation with any law firm regarding this claim?",
+        "type": "select",
+        "required": true,
+        "options": [
+          "Yes",
+          "No"
+        ],
+        "categoryBadge": "Legal Status"
+      },
+      {
+        "id": "afff-11",
+        "name": "afffFelonyConviction",
+        "label": "Conviction Felony/Crime?",
+        "type": "select",
+        "required": true,
+        "options": [
+          "YES",
+          "NO"
+        ],
+        "categoryBadge": "Background"
+      },
+      {
+        "id": "afff-12",
+        "name": "afffMedicalRecords",
+        "label": "Do you have Medical Records and Military/Fire Service Documentation?",
+        "type": "select",
+        "required": true,
+        "options": [
+          "Yes",
+          "No"
+        ],
+        "categoryBadge": "Records Status"
+      }
+    ],
+    "Toxic Water Contamination": [
+      {
+        "id": "tw-1",
+        "name": "twWaterSourceLocation",
+        "label": "Contaminated Water Source / Municipal Utility Location:",
+        "type": "text",
+        "required": true,
+        "placeholder": "City, County, State, or Water District Name",
+        "categoryBadge": "Water Source"
+      },
+      {
+        "id": "tw-2",
+        "name": "twYearsConsumed",
+        "label": "Years of Daily Tap Water Consumption at Location (Start - End):",
+        "type": "text",
+        "required": true,
+        "placeholder": "e.g. 1990 - 2012",
+        "categoryBadge": "Timeline"
+      },
+      {
+        "id": "tw-3",
+        "name": "twContaminantType",
+        "label": "Known or Suspected Water Contaminant Agent:",
+        "type": "select",
+        "required": true,
+        "options": [
+          "PFAS / \"Forever Chemicals\"",
+          "Lead / Heavy Metals",
+          "Trichloroethylene (TCE) / PCE Solvents",
+          "Arsenic",
+          "Benzene / Industrial Runoff",
+          "Multiple Contaminants",
+          "Unknown"
+        ],
+        "categoryBadge": "Contaminant"
+      },
+      {
+        "id": "tw-4",
+        "name": "twTapWaterDaily",
+        "label": "Did you drink and cook with tap water from this source daily?",
+        "type": "select",
+        "required": true,
+        "options": [
+          "Yes - Daily Primary Source",
+          "Occasionally",
+          "No"
+        ],
+        "categoryBadge": "Consumption"
+      },
+      {
+        "id": "tw-5",
+        "name": "twDiagnosis",
+        "label": "Diagnosed Illness / Medical Condition:",
+        "type": "select",
+        "required": true,
+        "options": [
+          "Kidney Cancer",
+          "Testicular Cancer",
+          "Thyroid Cancer / Disease",
+          "Lead Poisoning / Neurological Impairment",
+          "Bladder Cancer",
+          "Ulcerative Colitis",
+          "Liver Damage / Cancer",
+          "Birth Defect / Miscarriage",
+          "Other Illness"
+        ],
+        "categoryBadge": "Diagnosis"
+      },
+      {
+        "id": "tw-6",
+        "name": "twDiagnosisDate",
+        "label": "Date of Diagnosis:",
+        "type": "date",
+        "required": true,
+        "categoryBadge": "Diagnosis Date"
+      },
+      {
+        "id": "tw-7",
+        "name": "twHospital",
+        "label": "Treating Hospital / Clinic Name:",
+        "type": "text",
+        "required": false,
+        "placeholder": "Hospital or Healthcare Facility",
+        "categoryBadge": "Medical Facility"
+      },
+      {
+        "id": "tw-8",
+        "name": "twAdvisoryIssued",
+        "label": "Was an official boil water, health advisory, or do-not-drink notice issued for your area?",
+        "type": "select",
+        "required": false,
+        "options": [
+          "Yes - Public Advisory Issued",
+          "No Advisory Issued",
+          "Unknown"
+        ],
+        "categoryBadge": "Official Advisory"
+      },
+      {
+        "id": "tw-9",
+        "name": "twTreatment",
+        "label": "Medical Treatments Received:",
+        "type": "text",
+        "required": false,
+        "placeholder": "Surgery, Medication, Chelation therapy...",
+        "categoryBadge": "Treatment"
+      },
+      {
+        "id": "tw-10",
+        "name": "twLegalRepresentation",
+        "label": "Did you have any legal representation with any law firm regarding this claim?",
+        "type": "select",
+        "required": true,
+        "options": [
+          "Yes",
+          "No"
+        ],
+        "categoryBadge": "Legal Status"
+      },
+      {
+        "id": "tw-11",
+        "name": "twFelonyConviction",
+        "label": "Conviction Felony/Crime?",
+        "type": "select",
+        "required": true,
+        "options": [
+          "YES",
+          "NO"
+        ],
+        "categoryBadge": "Background"
+      },
+      {
+        "id": "tw-12",
+        "name": "twMedicalRecords",
+        "label": "Do you have Medical Records and Proof of Address/Residency?",
+        "type": "select",
+        "required": true,
+        "options": [
+          "Yes",
+          "No"
+        ],
+        "categoryBadge": "Records Status"
+      }
+    ],
+    "Medical Malpractice": [
+      {
+        "id": "med-1",
+        "name": "medProcedurePerformed",
+        "label": "Medical Procedure, Surgery, or Treatment during which injury occurred:",
+        "type": "text",
+        "required": true,
+        "placeholder": "e.g. Spinal fusion surgery, Childbirth delivery, Gallbladder removal",
+        "categoryBadge": "Procedure"
+      },
+      {
+        "id": "med-2",
+        "name": "medIncidentDate",
+        "label": "Date of Surgery / Incident / Malpractice Occurrence:",
+        "type": "date",
+        "required": true,
+        "categoryBadge": "Incident Date"
+      },
+      {
+        "id": "med-3",
+        "name": "medDoctorHospital",
+        "label": "Name of Negligent Doctor, Surgeon, and Hospital Facility:",
+        "type": "text",
+        "required": true,
+        "placeholder": "Dr. Full Name & Hospital / Surgery Center Name",
+        "categoryBadge": "Provider"
+      },
+      {
+        "id": "med-4",
+        "name": "medMalpracticeType",
+        "label": "Primary Category of Medical Error / Negligence:",
+        "type": "select",
+        "required": true,
+        "options": [
+          "Surgical Error / Wrong Site / Retained Foreign Object",
+          "Misdiagnosis or Delayed Cancer Diagnosis",
+          "Labor & Delivery Birth Injury (Cerebral Palsy, Erb's Palsy)",
+          "Anesthesia Error / Brain Damage",
+          "Medication / Prescription Overdose Error",
+          "Failure to Treat Sepsis / Infection",
+          "Discharge Malpractice"
+        ],
+        "categoryBadge": "Malpractice Type"
+      },
+      {
+        "id": "med-5",
+        "name": "medInjuryDescription",
+        "label": "Detailed Description of Injuries and Complications Suffered:",
+        "type": "textarea",
+        "required": true,
+        "placeholder": "Describe nerve damage, organ perforation, permanent disability...",
+        "categoryBadge": "Injuries"
+      },
+      {
+        "id": "med-6",
+        "name": "medCorrectiveSurgery",
+        "label": "Was Emergency Corrective Surgery required to fix the error?",
+        "type": "select",
+        "required": true,
+        "options": [
+          "Yes - Required Revision / Emergency Surgery",
+          "No - Medical Management",
+          "Permanent Irreversible Harm"
+        ],
+        "categoryBadge": "Corrective Care"
+      },
+      {
+        "id": "med-7",
+        "name": "medCorrectiveFacility",
+        "label": "Hospital where Corrective Surgery was performed:",
+        "type": "text",
+        "required": false,
+        "placeholder": "Corrective Hospital / Facility Name",
+        "categoryBadge": "Corrective Facility"
+      },
+      {
+        "id": "med-8",
+        "name": "medPermanentDisability",
+        "label": "Has this resulted in permanent disability or inability to work?",
+        "type": "select",
+        "required": true,
+        "options": [
+          "Yes - Permanent Total Disability",
+          "Yes - Partial Disability / Limitations",
+          "No - Expected Full Recovery"
+        ],
+        "categoryBadge": "Disability"
+      },
+      {
+        "id": "med-9",
+        "name": "medLostWages",
+        "label": "Estimated Lost Wages and Out-of-Pocket Medical Bills ($):",
+        "type": "text",
+        "required": false,
+        "placeholder": "e.g. $120,000 in medical bills and lost earnings",
+        "categoryBadge": "Damages"
+      },
+      {
+        "id": "med-10",
+        "name": "medLegalRepresentation",
+        "label": "Did you have any legal representation with any law firm regarding this claim?",
+        "type": "select",
+        "required": true,
+        "options": [
+          "Yes",
+          "No"
+        ],
+        "categoryBadge": "Legal Status"
+      },
+      {
+        "id": "med-11",
+        "name": "medFelonyConviction",
+        "label": "Conviction Felony/Crime?",
+        "type": "select",
+        "required": true,
+        "options": [
+          "YES",
+          "NO"
+        ],
+        "categoryBadge": "Background"
+      },
+      {
+        "id": "med-12",
+        "name": "medRecordsAvailable",
+        "label": "Do you have Complete Hospital Records, Operative Reports, and Discharge Summaries?",
+        "type": "select",
+        "required": true,
+        "options": [
+          "Yes",
+          "No"
+        ],
+        "categoryBadge": "Records Status"
+      }
+    ],
+    "Personal Injury": [
+      {
+        "id": "pi-1",
+        "name": "piIncidentType",
+        "label": "Personal Injury Accident Category:",
+        "type": "select",
+        "required": true,
+        "options": [
+          "Motor Vehicle Accident (Car / SUV)",
+          "Commercial Semi-Truck / Big Rig Accident",
+          "Slip and Fall / Premises Liability",
+          "Pedestrian / Bicycle Accident",
+          "Motorcycle Accident",
+          "Workplace / Construction Site Injury",
+          "Dog Bite / Animal Attack",
+          "Product Liability / Defective Item"
+        ],
+        "categoryBadge": "Accident Type"
+      },
+      {
+        "id": "pi-2",
+        "name": "piIncidentDate",
+        "label": "Date of Accident / Injury:",
+        "type": "date",
+        "required": true,
+        "categoryBadge": "Incident Date"
+      },
+      {
+        "id": "pi-3",
+        "name": "piIncidentLocation",
+        "label": "City, State, and Street / Highway where accident occurred:",
+        "type": "text",
+        "required": true,
+        "placeholder": "e.g. I-95 North, Miami, FL",
+        "categoryBadge": "Location"
+      },
+      {
+        "id": "pi-4",
+        "name": "piInjuryDescription",
+        "label": "Detailed Description of Injuries Sustained:",
+        "type": "textarea",
+        "required": true,
+        "placeholder": "Describe bone fractures, herniated discs, head trauma/TBI, surgeries...",
+        "categoryBadge": "Injuries"
+      },
+      {
+        "id": "pi-5",
+        "name": "piPoliceReport",
+        "label": "Was a formal Police / Accident Report filed at the scene?",
+        "type": "select",
+        "required": true,
+        "options": [
+          "Yes - Police Report Filed",
+          "No Police Report",
+          "Unknown"
+        ],
+        "categoryBadge": "Police Report"
+      },
+      {
+        "id": "pi-6",
+        "name": "piPoliceDeptReportNo",
+        "label": "Police Department Name & Report Number (if known):",
+        "type": "text",
+        "required": false,
+        "placeholder": "Police Dept & Report #",
+        "categoryBadge": "Police Details"
+      },
+      {
+        "id": "pi-7",
+        "name": "piAtFaultParty",
+        "label": "At-Fault Driver / Responsible Party Name & Insurance Carrier:",
+        "type": "text",
+        "required": false,
+        "placeholder": "Driver Name & Insurance Carrier (e.g. GEICO, Progressive)",
+        "categoryBadge": "Insurance"
+      },
+      {
+        "id": "pi-8",
+        "name": "piEmergencyHospital",
+        "label": "Hospital / ER treated immediately following accident:",
+        "type": "text",
+        "required": false,
+        "placeholder": "Emergency Room / Hospital Name",
+        "categoryBadge": "Emergency Care"
+      },
+      {
+        "id": "pi-9",
+        "name": "piOngoingTreatment",
+        "label": "Ongoing Medical Care Received (Physical Therapy, Chiropractic, Surgery):",
+        "type": "text",
+        "required": false,
+        "placeholder": "Describe ongoing treatment...",
+        "categoryBadge": "Ongoing Treatment"
+      },
+      {
+        "id": "pi-10",
+        "name": "piMissedWork",
+        "label": "Did injuries cause you to miss work / lose income?",
+        "type": "select",
+        "required": false,
+        "options": [
+          "Yes - Missed Work / Lost Wages",
+          "No Missed Work"
+        ],
+        "categoryBadge": "Lost Wages"
+      },
+      {
+        "id": "pi-11",
+        "name": "piLegalRepresentation",
+        "label": "Did you have any legal representation with any law firm regarding this claim?",
+        "type": "select",
+        "required": true,
+        "options": [
+          "Yes",
+          "No"
+        ],
+        "categoryBadge": "Legal Status"
+      },
+      {
+        "id": "pi-12",
+        "name": "piMedicalRecords",
+        "label": "Do you have Medical Bills, ER Records, and Police Report available?",
+        "type": "select",
+        "required": true,
+        "options": [
+          "Yes",
+          "No"
+        ],
+        "categoryBadge": "Records Status"
+      }
+    ],
+    "Mass Tort - General": [
+      {
+        "id": "gen-1",
+        "name": "generalTortCategory",
+        "label": "Specific Litigation / Product / Exposure Category:",
+        "type": "text",
+        "required": true,
+        "placeholder": "e.g. Chemical Exposure, Defective Medical Device, Consumer Drug",
+        "categoryBadge": "Category"
+      },
+      {
+        "id": "gen-2",
+        "name": "generalIncidentDate",
+        "label": "Date of Exposure, Incident, or Procedure:",
+        "type": "date",
+        "required": true,
+        "categoryBadge": "Timeline"
+      },
+      {
+        "id": "gen-3",
+        "name": "generalDuration",
+        "label": "Duration of Exposure or Product Usage:",
+        "type": "text",
+        "required": false,
+        "placeholder": "e.g. 5 years, Daily use",
+        "categoryBadge": "Duration"
+      },
+      {
+        "id": "gen-4",
+        "name": "generalDiagnosis",
+        "label": "Diagnosed Condition / Injury Sustained:",
+        "type": "text",
+        "required": true,
+        "placeholder": "Specific medical condition diagnosed",
+        "categoryBadge": "Diagnosis"
+      },
+      {
+        "id": "gen-5",
+        "name": "generalDiagnosisDate",
+        "label": "Date of Diagnosis:",
+        "type": "date",
+        "required": false,
+        "categoryBadge": "Diagnosis Date"
+      },
+      {
+        "id": "gen-6",
+        "name": "generalHospital",
+        "label": "Diagnosing / Treating Medical Facility Name:",
+        "type": "text",
+        "required": false,
+        "placeholder": "Hospital or Clinic Name and City, State",
+        "categoryBadge": "Facility"
+      },
+      {
+        "id": "gen-7",
+        "name": "generalTreatment",
+        "label": "Treatments / Surgeries Received:",
+        "type": "textarea",
+        "required": false,
+        "placeholder": "Describe surgeries, medications, and treatments...",
+        "categoryBadge": "Treatment"
+      },
+      {
+        "id": "gen-8",
+        "name": "generalLegalRepresentation",
+        "label": "Did you have any legal representation with any law firm regarding this claim?",
+        "type": "select",
+        "required": true,
+        "options": [
+          "Yes",
+          "No"
+        ],
+        "categoryBadge": "Legal Status"
+      },
+      {
+        "id": "gen-9",
+        "name": "generalFelonyConviction",
+        "label": "Conviction Felony/Crime?",
+        "type": "select",
+        "required": true,
+        "options": [
+          "YES",
+          "NO"
+        ],
+        "categoryBadge": "Background"
+      },
+      {
+        "id": "gen-10",
+        "name": "generalMedicalRecords",
+        "label": "Do you have Medical Records confirming diagnosis and treatment?",
+        "type": "select",
+        "required": true,
+        "options": [
+          "Yes",
+          "No"
+        ],
+        "categoryBadge": "Records Status"
+      }
+    ],
+    "Other": [
+      {
+        "id": "oth-1",
+        "name": "otherClaimType",
+        "label": "Detailed Description of Legal Claim / Tort Type:",
+        "type": "text",
+        "required": true,
+        "placeholder": "Explain the type of claim or injury",
+        "categoryBadge": "Claim Type"
+      },
+      {
+        "id": "oth-2",
+        "name": "otherIncidentDate",
+        "label": "Date of Occurrence or Injury:",
+        "type": "date",
+        "required": true,
+        "categoryBadge": "Timeline"
+      },
+      {
+        "id": "oth-3",
+        "name": "otherResponsibleParty",
+        "label": "Responsible Entity, Manufacturer, or Employer Name:",
+        "type": "text",
+        "required": false,
+        "placeholder": "Company or responsible party name",
+        "categoryBadge": "Entity"
+      },
+      {
+        "id": "oth-4",
+        "name": "otherDamagesNarrative",
+        "label": "Comprehensive Narrative of Damages & Events:",
+        "type": "textarea",
+        "required": true,
+        "placeholder": "Describe all events, damages, and injuries in detail...",
+        "categoryBadge": "Narrative"
+      },
+      {
+        "id": "oth-5",
+        "name": "otherDiagnosis",
+        "label": "Diagnosed Injury or Condition (if applicable):",
+        "type": "text",
+        "required": false,
+        "placeholder": "Medical diagnosis or property damage description",
+        "categoryBadge": "Diagnosis"
+      },
+      {
+        "id": "oth-6",
+        "name": "otherMedicalFacility",
+        "label": "Healthcare Facility / Treating Doctor Name:",
+        "type": "text",
+        "required": false,
+        "placeholder": "Hospital or Clinic Name",
+        "categoryBadge": "Facility"
+      },
+      {
+        "id": "oth-7",
+        "name": "otherTreatment",
+        "label": "Treatments or Financial Losses Incurred:",
+        "type": "text",
+        "required": false,
+        "placeholder": "Medical care received or financial loss estimate",
+        "categoryBadge": "Damages"
+      },
+      {
+        "id": "oth-8",
+        "name": "otherLegalRepresentation",
+        "label": "Did you have any legal representation with any law firm regarding this claim?",
+        "type": "select",
+        "required": true,
+        "options": [
+          "Yes",
+          "No"
+        ],
+        "categoryBadge": "Legal Status"
+      },
+      {
+        "id": "oth-9",
+        "name": "otherFelonyConviction",
+        "label": "Conviction Felony/Crime?",
+        "type": "select",
+        "required": true,
+        "options": [
+          "YES",
+          "NO"
+        ],
+        "categoryBadge": "Background"
+      },
+      {
+        "id": "oth-10",
+        "name": "otherRecordsAvailable",
+        "label": "Do you have Supporting Records, Invoices, or Medical Documentation?",
+        "type": "select",
+        "required": true,
+        "options": [
+          "Yes",
+          "No"
+        ],
+        "categoryBadge": "Records Status"
+      }
+    ],
+    "Testing Tort": [
+      {
+        "id": "custom-1789490265022",
+        "name": "testingTort",
+        "label": "Testing tort",
+        "type": "text",
+        "required": false,
+        "categoryBadge": "Qualifier"
+      },
+      {
+        "id": "custom-1789490293390",
+        "name": "testingDropdown",
+        "label": "Testing dropdown",
+        "type": "select",
+        "required": false,
+        "options": [
+          "Yes",
+          "No"
+        ],
+        "categoryBadge": "Qualifier"
+      },
+      {
+        "id": "custom-1789490311768",
+        "name": "testingMultiline",
+        "label": "Testing Multiline",
+        "type": "textarea",
+        "required": false,
+        "categoryBadge": "Qualifier"
+      },
+      {
+        "id": "custom-1789490323896",
+        "name": "testing4",
+        "label": "Testing 4",
+        "type": "date",
+        "required": false,
+        "categoryBadge": "Qualifier"
+      },
+      {
+        "id": "custom-1789490330920",
+        "name": "testing5",
+        "label": "Testing 5",
+        "type": "number",
+        "required": false,
+        "categoryBadge": "Qualifier"
+      },
+      {
+        "id": "custom-1789490338608",
+        "name": "testing6",
+        "label": "Testing 6",
+        "type": "phone",
+        "required": false,
+        "categoryBadge": "Qualifier"
+      },
+      {
+        "id": "custom-1789490345232",
+        "name": "testing7",
+        "label": "Testing 7",
+        "type": "email",
+        "required": false,
+        "categoryBadge": "Qualifier"
+      },
+      {
+        "id": "custom-1789490354480",
+        "name": "testing8",
+        "label": "Testing 8",
+        "type": "checkbox",
+        "required": false,
+        "categoryBadge": "Qualifier"
+      }
     ]
   }
 }

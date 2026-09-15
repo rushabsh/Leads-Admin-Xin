@@ -179,7 +179,7 @@ export default function AdminFormEditPage() {
         if (Array.isArray(parsed) && parsed.length > 0) {
           setFields(parsed);
         }
-      } catch (_) {}
+      } catch (_) { }
     }
     setIsLoadingSchema(false);
     setIsDirty(false);
@@ -301,7 +301,7 @@ export default function AdminFormEditPage() {
           setSchemaVersion(data.schema.version);
           setUpdatedAt(data.schema.updatedAt);
         }
-      } catch (_) {}
+      } catch (_) { }
       localStorage.setItem('lead_form_custom_schema', JSON.stringify(defaultFields));
       setIsDirty(false);
       setIsSavingSchema(false);
@@ -400,11 +400,10 @@ export default function AdminFormEditPage() {
             <button
               onClick={handleSaveSchema}
               disabled={isSavingSchema || isLoadingSchema}
-              className={`inline-flex items-center gap-2 rounded-xl px-4 py-2 text-xs font-bold text-white shadow-md transition-all cursor-pointer ${
-                isDirty
+              className={`inline-flex items-center gap-2 rounded-xl px-4 py-2 text-xs font-bold text-white shadow-md transition-all cursor-pointer ${isDirty
                   ? 'bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 shadow-blue-500/25 ring-2 ring-blue-400/30'
                   : 'bg-blue-600 hover:bg-blue-700 disabled:opacity-50'
-              }`}
+                }`}
             >
               <Save className="h-4 w-4" />
               {isSavingSchema ? 'Saving Schema...' : isDirty ? 'Save Changes *' : 'Save Form Schema'}
@@ -428,11 +427,10 @@ export default function AdminFormEditPage() {
               }
               setActiveTab(tab.id as any);
             }}
-            className={`flex items-center gap-2 py-3 px-4 text-xs font-bold border-b-2 transition-all cursor-pointer ${
-              activeTab === tab.id
+            className={`flex items-center gap-2 py-3 px-4 text-xs font-bold border-b-2 transition-all cursor-pointer ${activeTab === tab.id
                 ? 'border-blue-600 text-blue-600 font-bold bg-blue-50/50 rounded-t-xl'
                 : 'border-transparent text-slate-500 hover:text-slate-800'
-            }`}
+              }`}
           >
             <tab.icon className="h-4 w-4" />
             {tab.label}
@@ -451,7 +449,7 @@ export default function AdminFormEditPage() {
               </div>
               <div>
                 <h3 className="text-xs font-bold text-slate-900 uppercase tracking-wider">Target Context (Vendor & Campaign)</h3>
-                <p className="text-2xs text-slate-500">
+                <p className="text-sm text-slate-500">
                   {selectedVendor ? `Configuring for ${selectedVendor.name}` : 'Global form configuration'}
                   {selectedCampaignId !== 'all' && assignedCampaigns.find((c: any) => c.id === selectedCampaignId)
                     ? ` • Campaign: ${assignedCampaigns.find((c: any) => c.id === selectedCampaignId)?.name}`
@@ -494,8 +492,8 @@ export default function AdminFormEditPage() {
                     {selectedVendorId === 'all'
                       ? 'All Campaigns (Global)'
                       : assignedCampaigns.length === 0
-                      ? 'No campaigns assigned to this vendor'
-                      : 'All Vendor Campaigns'}
+                        ? 'No campaigns assigned to this vendor'
+                        : 'All Vendor Campaigns'}
                   </option>
                   {assignedCampaigns.map((c: any) => (
                     <option key={c.id} value={c.id}>
@@ -528,11 +526,10 @@ export default function AdminFormEditPage() {
               <button
                 key={sec.id}
                 onClick={() => setSelectedSection(sec.id)}
-                className={`rounded-lg px-3 py-1.5 text-xs font-semibold transition-all ${
-                  selectedSection === sec.id
+                className={`rounded-lg px-3 py-1.5 text-xs font-semibold transition-all ${selectedSection === sec.id
                     ? 'bg-blue-600 text-white shadow-xs'
                     : 'bg-white text-slate-600 border border-slate-200 hover:bg-slate-100'
-                }`}
+                  }`}
               >
                 {sec.label}
               </button>
@@ -612,19 +609,17 @@ export default function AdminFormEditPage() {
                           {field.section === 'diagnosis' && '4. Diagnosis'}
                         </td>
                         <td className="p-3.5">
-                          <span className={`inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-2xs font-bold ${
-                            isFieldActive ? 'bg-emerald-50 text-emerald-700 border border-emerald-200' : 'bg-slate-200 text-slate-600'
-                          }`}>
+                          <span className={`inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-2xs font-bold ${isFieldActive ? 'bg-emerald-50 text-emerald-700 border border-emerald-200' : 'bg-slate-200 text-slate-600'
+                            }`}>
                             {isFieldActive ? 'VISIBLE' : 'HIDDEN'}
                           </span>
                         </td>
                         <td className="p-3.5">
                           <span
-                            className={`inline-flex items-center gap-1 rounded-full px-2.5 py-0.5 text-2xs font-bold ${
-                              field.required
+                            className={`inline-flex items-center gap-1 rounded-full px-2.5 py-0.5 text-2xs font-bold ${field.required
                                 ? 'bg-rose-50 text-rose-700 border border-rose-200'
                                 : 'bg-slate-100 text-slate-600'
-                            }`}
+                              }`}
                           >
                             {field.required ? 'REQUIRED *' : 'OPTIONAL'}
                           </span>
@@ -633,11 +628,10 @@ export default function AdminFormEditPage() {
                           <button
                             onClick={() => handleToggleRequired(field.id)}
                             disabled={!isFieldActive}
-                            className={`inline-flex items-center gap-1 rounded-lg px-2.5 py-1 text-xs font-bold transition-all ${
-                              field.required
+                            className={`inline-flex items-center gap-1 rounded-lg px-2.5 py-1 text-xs font-bold transition-all ${field.required
                                 ? 'bg-slate-100 text-slate-700 hover:bg-slate-200 disabled:opacity-50'
                                 : 'bg-blue-50 text-blue-700 hover:bg-blue-100 disabled:opacity-50'
-                            }`}
+                              }`}
                           >
                             {field.required ? <Lock className="h-3 w-3" /> : <Unlock className="h-3 w-3" />}
                             {field.required ? 'Make Optional' : 'Make Required'}
@@ -645,11 +639,10 @@ export default function AdminFormEditPage() {
 
                           <button
                             onClick={() => handleToggleActive(field.id)}
-                            className={`inline-flex items-center gap-1 rounded-lg px-2.5 py-1 text-xs font-bold transition-all ${
-                              isFieldActive
+                            className={`inline-flex items-center gap-1 rounded-lg px-2.5 py-1 text-xs font-bold transition-all ${isFieldActive
                                 ? 'bg-amber-50 text-amber-700 hover:bg-amber-100 border border-amber-200'
                                 : 'bg-emerald-50 text-emerald-700 hover:bg-emerald-100 border border-emerald-200'
-                            }`}
+                              }`}
                           >
                             {isFieldActive ? 'Hide Field' : 'Show Field'}
                           </button>

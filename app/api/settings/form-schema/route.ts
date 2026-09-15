@@ -148,6 +148,28 @@ export async function GET(req: NextRequest) {
       fields = overrides[vendorId];
     }
 
+    // If campaign is specified, ensure its linked mass tort is present in type field options
+    if (campaignId && campaignId !== 'all') {
+      try {
+        const camp = await prisma.campaign.findUnique({
+          where: { id: campaignId },
+          include: { massTort: true },
+        });
+        const tortName = camp?.massTort?.name;
+        if (tortName) {
+          fields = fields.map((f) => {
+            if (f.name === 'type' || f.id === '3') {
+              const opts = Array.isArray(f.options) && f.options.length > 0 ? f.options : [...(DEFAULT_FORM_FIELDS.find((df) => df.id === '3')?.options || [])];
+              if (!opts.includes(tortName)) {
+                return { ...f, options: [...opts, tortName] };
+              }
+            }
+            return f;
+          });
+        }
+      } catch (_) { }
+    }
+
     return NextResponse.json({
       success: true,
       vendorId: vendorId || null,
@@ -171,6 +193,91 @@ export async function PUT(req: NextRequest) {
     const campaignId = body.campaignId || null;
 
     const currentSchema = await readSchema();
+
+    // Support action: 'add-tort'
+    if (body.action === 'add-tort' || body.addTort) {
+      const tortName = (body.tortName || body.addTort || '').trim();
+      if (!tortName) {
+        return NextResponse.json({ success: false, message: 'Tort name is required' }, { status: 400 });
+      }
+
+      const overrides = { ...(currentSchema.overrides || {}) };
+      let mainFields = [...currentSchema.fields];
+
+      const addTortToFieldList = (fieldList: FormFieldDefinition[]): FormFieldDefinition[] => {
+        let found = false;
+        const res = fieldList.map((f) => {
+          if (f.name === 'type' || f.id === '3') {
+            found = true;
+            const existing = Array.isArray(f.options) && f.options.length > 0 ? f.options : [...(DEFAULT_FORM_FIELDS.find((df) => df.id === '3')?.options || [])];
+            if (!existing.includes(tortName)) {
+              return { ...f, options: [...existing, tortName] };
+            }
+          }
+          return f;
+        });
+
+        if (!found) {
+          res.push({
+            id: '3',
+            name: 'type',
+            label: 'Tort Category',
+            type: 'select',
+            section: 'leadInfo',
+            required: true,
+            active: true,
+            options: [...(DEFAULT_FORM_FIELDS.find((df) => df.id === '3')?.options || []), tortName],
+          });
+        }
+        return res;
+      };
+
+      const targetVendorId = body.vendorId && body.vendorId !== 'all' ? body.vendorId : null;
+      const targetCampaignId = body.campaignId && body.campaignId !== 'all' ? body.campaignId : null;
+
+      if (targetVendorId && targetCampaignId) {
+        const key = `${targetVendorId}_${targetCampaignId}`;
+        const base = overrides[key] || overrides[targetVendorId] || mainFields;
+        overrides[key] = addTortToFieldList(base);
+
+        if (overrides[targetVendorId]) {
+          overrides[targetVendorId] = addTortToFieldList(overrides[targetVendorId]);
+        }
+      } else if (targetVendorId) {
+        const base = overrides[targetVendorId] || mainFields;
+        overrides[targetVendorId] = addTortToFieldList(base);
+        for (const k of Object.keys(overrides)) {
+          if (k.startsWith(`${targetVendorId}_`)) {
+            overrides[k] = addTortToFieldList(overrides[k]);
+          }
+        }
+      } else {
+        mainFields = addTortToFieldList(mainFields);
+        for (const k of Object.keys(overrides)) {
+          overrides[k] = addTortToFieldList(overrides[k]);
+        }
+      }
+
+      const newVersion = (currentSchema.version || 0) + 1;
+      const updatedContainer: FormSchemaContainer = {
+        version: newVersion,
+        updatedAt: new Date().toISOString(),
+        updatedBy: user?.name || user?.email || 'Admin User',
+        fields: mainFields,
+        overrides,
+      };
+
+      await writeSchema(updatedContainer);
+
+      return NextResponse.json({
+        success: true,
+        message: `Tort "${tortName}" successfully added to form schema`,
+        vendorId: targetVendorId,
+        campaignId: targetCampaignId,
+        schema: updatedContainer,
+      });
+    }
+
     const newVersion = (currentSchema.version || 0) + 1;
     const newFields: FormFieldDefinition[] = Array.isArray(body.fields) ? body.fields : currentSchema.fields;
 

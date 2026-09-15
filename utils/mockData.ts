@@ -66,6 +66,21 @@ export interface MockCampaign {
   status: string;
   vendorId?: string;
   vendorName: string;
+  massTortId?: string;
+  massTort?: {
+    id?: string;
+    name?: string;
+    description?: string;
+  } | null;
+  vendor?: {
+    id?: string;
+    name?: string;
+  } | null;
+  vendors?: string[];
+  lawFirm?: {
+    id?: string;
+    name?: string;
+  } | null;
 }
 
 export interface MockVendor {

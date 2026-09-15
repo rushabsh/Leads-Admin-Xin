@@ -291,9 +291,10 @@ export const DEFAULT_LEAD_FOLLOW_UP_FORM_DATA: LeadFollowUpFormData = {
 interface FormInputProps extends React.InputHTMLAttributes<HTMLInputElement> {
   label: string;
   required?: boolean;
+  helpText?: string;
 }
 
-const FormInput: React.FC<FormInputProps> = ({ label, required, className = '', ...props }) => (
+const FormInput: React.FC<FormInputProps> = ({ label, required, helpText, className = '', ...props }) => (
   <div className="space-y-1.5">
     <label className="text-xs font-semibold text-slate-700 flex items-center justify-between">
       <span>{label} {required && <span className="text-rose-500">*</span>}</span>
@@ -303,6 +304,7 @@ const FormInput: React.FC<FormInputProps> = ({ label, required, className = '', 
       {...props}
       className={`w-full rounded-xl border border-slate-200 bg-white px-3.5 py-2.5 text-xs font-medium text-slate-900 placeholder:text-slate-400 focus:border-blue-600 focus:ring-2 focus:ring-blue-500/15 outline-none shadow-xs transition-all ${className}`}
     />
+    {helpText && <p className="text-[11px] text-slate-400">{helpText}</p>}
   </div>
 );
 
@@ -310,9 +312,10 @@ interface FormSelectProps extends React.SelectHTMLAttributes<HTMLSelectElement> 
   label: string;
   options: string[];
   required?: boolean;
+  helpText?: string;
 }
 
-const FormSelect: React.FC<FormSelectProps> = ({ label, options, required, className = '', ...props }) => (
+const FormSelect: React.FC<FormSelectProps> = ({ label, options, required, helpText, className = '', ...props }) => (
   <div className="space-y-1.5">
     <label className="text-xs font-semibold text-slate-700 flex items-center justify-between">
       <span>{label} {required && <span className="text-rose-500">*</span>}</span>
@@ -328,6 +331,7 @@ const FormSelect: React.FC<FormSelectProps> = ({ label, options, required, class
         </option>
       ))}
     </select>
+    {helpText && <p className="text-[11px] text-slate-400">{helpText}</p>}
   </div>
 );
 
@@ -583,16 +587,54 @@ export default function NewCaseLeadFollowUpForm({
 
   const getFieldMeta = useCallback((name: string, defaultLabel: string, defaultRequired: boolean = false) => {
     if (!activeSchema || activeSchema.length === 0) {
-      return { label: defaultLabel, required: defaultRequired, active: true };
+      return { label: defaultLabel, required: defaultRequired, active: true, options: undefined as string[] | undefined };
     }
     const found = activeSchema.find((f: any) => f.name === name);
-    if (!found) return { label: defaultLabel, required: defaultRequired, active: true };
+    if (!found) return { label: defaultLabel, required: defaultRequired, active: true, options: undefined as string[] | undefined };
     return {
       label: found.label || defaultLabel,
       required: found.required !== undefined ? found.required : defaultRequired,
       active: found.active !== false,
+      options: found.options as string[] | undefined,
     };
   }, [activeSchema]);
+
+  const tortOptions = React.useMemo(() => {
+    const metaOpts = getFieldMeta('type', 'Tort', true).options;
+    const baseList = metaOpts && Array.isArray(metaOpts) && metaOpts.length > 0
+      ? metaOpts
+      : TYPE_OPTIONS;
+
+    // Also include the campaign's mass tort if assigned
+    const matchedCamp = (campaigns || []).find(
+      (c: any) => c.name === formData.campaignName || c.id === formData.campaignName
+    );
+    const campTort = matchedCamp?.massTort?.name || matchedCamp?.tortName;
+    const extras: string[] = [];
+    if (campTort && !baseList.includes(campTort)) {
+      extras.push(campTort);
+    }
+    if (formData.type && !baseList.includes(formData.type) && !extras.includes(formData.type)) {
+      extras.push(formData.type);
+    }
+    return Array.from(new Set([...baseList, ...extras]));
+  }, [getFieldMeta, campaigns, formData.campaignName, formData.type]);
+
+  // Auto-sync tort when campaign changes
+  useEffect(() => {
+    if (formData.campaignName) {
+      const matchedCamp = (campaigns || []).find(
+        (c: any) => c.name === formData.campaignName || c.id === formData.campaignName
+      );
+      const campTort = matchedCamp?.massTort?.name || matchedCamp?.tortName;
+      if (campTort && (!formData.type || formData.type === 'Other' || formData.type === 'Depo-Provera')) {
+        setFormData((prev) => {
+          if (prev.type === campTort) return prev;
+          return { ...prev, type: campTort };
+        });
+      }
+    }
+  }, [formData.campaignName, campaigns]);
 
   const isFieldActive = (name: string) => getFieldMeta(name, '', false).active;
   const getMeta = (name: string, defaultLabel: string, defaultRequired: boolean = false) =>
@@ -602,12 +644,29 @@ export default function NewCaseLeadFollowUpForm({
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>
   ) => {
     const { name, value, type } = e.target;
-    if (type === 'checkbox') {
-      const checked = (e.target as HTMLInputElement).checked;
-      setFormData((prev) => ({ ...prev, [name]: checked }));
-    } else {
-      setFormData((prev) => ({ ...prev, [name]: value }));
-    }
+    const isChecked = type === 'checkbox' ? (e.target as HTMLInputElement).checked : undefined;
+    const val = type === 'checkbox' ? (isChecked ? 'Yes' : 'No') : value;
+
+    setFormData((prev) => {
+      const updated: any = {
+        ...prev,
+        [name]: type === 'checkbox' ? (name === 'billable' || name === 'powerOfAttorney' ? isChecked : val) : value
+      };
+
+      // Auto-sync standard screening fields if a tort-specific alias was changed
+      const lower = name.toLowerCase();
+      if (lower.includes('legalrep')) {
+        updated.legalRepresentation = val;
+      }
+      if (lower.includes('felony')) {
+        updated.felonyConviction = val;
+      }
+      if (lower.includes('medicalrecord') || lower.includes('recordsstatus') || lower.includes('hasmedicalrecords')) {
+        updated.hasMedicalRecords = val;
+      }
+
+      return updated;
+    });
   };
 
   const handleResetForm = () => {
@@ -1315,7 +1374,7 @@ export default function NewCaseLeadFollowUpForm({
                   name="type"
                   value={formData.type}
                   onChange={handleInputChange}
-                  options={TYPE_OPTIONS}
+                  options={tortOptions}
                   required={getMeta('type', 'Tort', true).required}
                 />
               )}
@@ -1834,7 +1893,7 @@ export default function NewCaseLeadFollowUpForm({
               <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
                 {(() => {
                   const dynamicQuestions = getQuestionsForTort(formData.type);
-                  return dynamicQuestions.map((q) => {
+                  const renderedQuestions = dynamicQuestions.map((q) => {
                     const fieldValue = (formData as any)[q.name] !== undefined ? (formData as any)[q.name] : '';
 
                     if (q.type === 'select') {
@@ -1847,6 +1906,7 @@ export default function NewCaseLeadFollowUpForm({
                           onChange={handleInputChange}
                           options={q.options || YES_NO_OPTIONS}
                           required={q.required}
+                          helpText={q.helpText}
                         />
                       );
                     }
@@ -1870,46 +1930,132 @@ export default function NewCaseLeadFollowUpForm({
                             placeholder={q.placeholder || 'Describe details...'}
                             className="w-full rounded-xl border border-slate-200 bg-white px-3.5 py-2.5 text-xs text-slate-900 placeholder:text-slate-400 focus:border-blue-600 focus:ring-2 focus:ring-blue-500/15 outline-none shadow-xs transition-all"
                           />
+                          {q.helpText && <p className="text-[11px] text-slate-400">{q.helpText}</p>}
                         </div>
                       );
                     }
+
+                    if (q.type === 'checkbox') {
+                      return (
+                        <div key={q.id || q.name} className="flex flex-col justify-end pt-1 pb-1">
+                          <label className="flex items-center gap-2 text-xs font-semibold text-slate-700 cursor-pointer p-2.5 rounded-xl border border-slate-200 bg-white hover:bg-slate-50 transition-colors">
+                            <input
+                              type="checkbox"
+                              name={q.name}
+                              checked={fieldValue === 'Yes' || fieldValue === true || fieldValue === 'true'}
+                              onChange={(e) => handleInputChange({ target: { name: q.name, value: e.target.checked ? 'Yes' : 'No' } } as any)}
+                              className="h-4 w-4 rounded border-slate-300 text-blue-600 focus:ring-blue-500 cursor-pointer"
+                            />
+                            <span>{q.label} {q.required && <span className="text-rose-500">*</span>}</span>
+                          </label>
+                          {q.helpText && <p className="text-[11px] text-slate-400 mt-1">{q.helpText}</p>}
+                        </div>
+                      );
+                    }
+
+                    if (q.type === 'radio') {
+                      const radioOptions = q.options || YES_NO_OPTIONS;
+                      return (
+                        <div key={q.id || q.name} className="space-y-1.5">
+                          <label className="text-xs font-semibold text-slate-700 flex items-center justify-between">
+                            <span>{q.label} {q.required && <span className="text-rose-500">*</span>}</span>
+                            {q.categoryBadge && (
+                              <span className="text-[10px] font-semibold text-amber-700 bg-amber-50 px-2 py-0.5 rounded-md border border-amber-200">
+                                {q.categoryBadge}
+                              </span>
+                            )}
+                          </label>
+                          <div className="flex flex-wrap gap-2 pt-1">
+                            {radioOptions.map((opt) => (
+                              <label key={opt} className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl border text-xs cursor-pointer transition-all ${fieldValue === opt ? 'border-blue-600 bg-blue-50 text-blue-700 font-semibold' : 'border-slate-200 bg-white text-slate-700 hover:bg-slate-50'}`}>
+                                <input
+                                  type="radio"
+                                  name={q.name}
+                                  value={opt}
+                                  checked={fieldValue === opt}
+                                  onChange={handleInputChange}
+                                  className="h-3.5 w-3.5 text-blue-600 border-slate-300 focus:ring-blue-500 cursor-pointer"
+                                />
+                                <span>{opt}</span>
+                              </label>
+                            ))}
+                          </div>
+                          {q.helpText && <p className="text-[11px] text-slate-400">{q.helpText}</p>}
+                        </div>
+                      );
+                    }
+
+                    const inputType = q.type === 'date' ? 'date' : q.type === 'number' ? 'number' : q.type === 'phone' ? 'tel' : q.type === 'email' ? 'email' : 'text';
 
                     return (
                       <FormInput
                         key={q.id || q.name}
                         label={q.label}
-                        type={q.type === 'date' ? 'date' : 'text'}
+                        type={inputType}
                         name={q.name}
                         value={fieldValue}
                         onChange={handleInputChange}
                         placeholder={q.placeholder}
+                        helpText={q.helpText}
                         required={q.required}
                       />
                     );
                   });
-                })()}
 
-                <FormSelect
-                  label="Did you have any legal representation with any law firm regarding this claim?"
-                  name="legalRepresentation"
-                  value={formData.legalRepresentation}
-                  onChange={handleInputChange}
-                  options={YES_NO_OPTIONS}
-                />
-                <FormSelect
-                  label="Conviction Felony/Crime?"
-                  name="felonyConviction"
-                  value={formData.felonyConviction}
-                  onChange={handleInputChange}
-                  options={YES_NO_UPPER_OPTIONS}
-                />
-                <FormSelect
-                  label="Do you have Medical Records?"
-                  name="hasMedicalRecords"
-                  value={formData.hasMedicalRecords}
-                  onChange={handleInputChange}
-                  options={YES_NO_OPTIONS}
-                />
+                  const hasLegalRep = dynamicQuestions.some(
+                    (q) => q.name.toLowerCase().includes('legalrep') || q.label.toLowerCase().includes('legal representation')
+                  );
+                  const hasFelony = dynamicQuestions.some(
+                    (q) => q.name.toLowerCase().includes('felony') || q.label.toLowerCase().includes('felony')
+                  );
+                  const hasMedRecords = dynamicQuestions.some(
+                    (q) =>
+                      q.name.toLowerCase().includes('medicalrecord') ||
+                      q.name.toLowerCase().includes('recordsavailable') ||
+                      q.label.toLowerCase().includes('medical records')
+                  );
+
+                  if (dynamicQuestions.length === 0) {
+                    return (
+                      <div className="col-span-full py-8 text-center text-xs text-slate-400 border border-dashed border-amber-200/80 rounded-xl bg-amber-50/20">
+                        No additional questionnaire items configured for this case category.
+                      </div>
+                    );
+                  }
+
+                  return (
+                    <>
+                      {renderedQuestions}
+                      {!hasLegalRep && (
+                        <FormSelect
+                          label="Did you have any legal representation with any law firm regarding this claim?"
+                          name="legalRepresentation"
+                          value={formData.legalRepresentation}
+                          onChange={handleInputChange}
+                          options={YES_NO_OPTIONS}
+                        />
+                      )}
+                      {!hasFelony && (
+                        <FormSelect
+                          label="Conviction Felony/Crime?"
+                          name="felonyConviction"
+                          value={formData.felonyConviction}
+                          onChange={handleInputChange}
+                          options={YES_NO_UPPER_OPTIONS}
+                        />
+                      )}
+                      {!hasMedRecords && (
+                        <FormSelect
+                          label="Do you have Medical Records?"
+                          name="hasMedicalRecords"
+                          value={formData.hasMedicalRecords}
+                          onChange={handleInputChange}
+                          options={YES_NO_OPTIONS}
+                        />
+                      )}
+                    </>
+                  );
+                })()}
               </div>
             </FormSectionCard>
           </div>

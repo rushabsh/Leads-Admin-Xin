@@ -19,10 +19,14 @@ interface EditLeadModalProps {
 export function extractLeadFormInitialValues(lead: any): Partial<LeadFollowUpFormData> {
   if (!lead) return {};
   let parsed: any = {};
-  if (typeof lead.caseDetails === 'string' && lead.caseDetails.trim().startsWith('{')) {
-    try {
-      parsed = JSON.parse(lead.caseDetails);
-    } catch (_) {}
+  if (lead?.caseDetails) {
+    if (typeof lead.caseDetails === 'string' && lead.caseDetails.trim().startsWith('{')) {
+      try {
+        parsed = JSON.parse(lead.caseDetails);
+      } catch (_) {}
+    } else if (typeof lead.caseDetails === 'object') {
+      parsed = lead.caseDetails;
+    }
   }
 
   const leadInfo = parsed.leadInfo || {};
@@ -30,8 +34,18 @@ export function extractLeadFormInitialValues(lead: any): Partial<LeadFollowUpFor
   const poa = parsed.poa || {};
   const diagnosisInfo = parsed.diagnosisInfo || {};
   const screening = parsed.screeningCriteria || parsed.screening || {};
+  const submittedQuestions = Array.isArray(parsed.submittedQuestions) ? parsed.submittedQuestions : [];
+
+  const dynamicAnswers: Record<string, any> = {};
+  submittedQuestions.forEach((q: any) => {
+    if (q.name && q.value !== undefined) {
+      dynamicAnswers[q.name] = q.value;
+    }
+  });
 
   return {
+    ...screening,
+    ...dynamicAnswers,
     // Section 1: Lead Information
     contactName: leadInfo.contactName || `${lead.firstName || ''} ${lead.lastName || ''}`.trim(),
     campaignName: leadInfo.campaignName || lead.campaign?.name || '',

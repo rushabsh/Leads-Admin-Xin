@@ -168,6 +168,24 @@ export async function GET(req: NextRequest) {
           });
         }
       } catch (_) { }
+    } else if (vendorId && vendorId !== 'all') {
+      try {
+        const vendorCamps = await prisma.campaign.findMany({
+          where: { vendorId },
+          include: { massTort: true },
+        });
+        const tortNames = vendorCamps.map((c) => c.massTort?.name).filter(Boolean) as string[];
+        if (tortNames.length > 0) {
+          fields = fields.map((f) => {
+            if (f.name === 'type' || f.id === '3') {
+              const opts = Array.isArray(f.options) && f.options.length > 0 ? f.options : [...(DEFAULT_FORM_FIELDS.find((df) => df.id === '3')?.options || [])];
+              const uniqueOpts = Array.from(new Set([...opts, ...tortNames]));
+              return { ...f, options: uniqueOpts };
+            }
+            return f;
+          });
+        }
+      } catch (_) { }
     }
 
     return NextResponse.json({
@@ -243,6 +261,7 @@ export async function PUT(req: NextRequest) {
         if (overrides[targetVendorId]) {
           overrides[targetVendorId] = addTortToFieldList(overrides[targetVendorId]);
         }
+        mainFields = addTortToFieldList(mainFields);
       } else if (targetVendorId) {
         const base = overrides[targetVendorId] || mainFields;
         overrides[targetVendorId] = addTortToFieldList(base);
@@ -251,6 +270,7 @@ export async function PUT(req: NextRequest) {
             overrides[k] = addTortToFieldList(overrides[k]);
           }
         }
+        mainFields = addTortToFieldList(mainFields);
       } else {
         mainFields = addTortToFieldList(mainFields);
         for (const k of Object.keys(overrides)) {

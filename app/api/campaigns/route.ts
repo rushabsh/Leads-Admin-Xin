@@ -69,6 +69,11 @@ export async function POST(req: NextRequest) {
         status: status || 'ACTIVE',
         description: description || null,
       },
+      include: {
+        massTort: true,
+        vendor: true,
+        lawFirm: true,
+      },
     });
 
     return NextResponse.json({ success: true, message: 'Campaign created successfully', campaign }, { status: 201 });

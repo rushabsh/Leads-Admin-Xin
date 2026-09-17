@@ -77,10 +77,55 @@ export default function AdminAddQuestionsPage() {
   const [tortQuestionsMap, setTortQuestionsMap] = useState<TortQuestionsMap>(DEFAULT_TORT_QUESTIONS);
   const [searchQuery, setSearchQuery] = useState<string>('');
   const [toastMessage, setToastMessage] = useState<string | null>(null);
+  const [systemMassTorts, setSystemMassTorts] = useState<string[]>([]);
+  const [schemaTortOptions, setSchemaTortOptions] = useState<string[]>([]);
 
   useEffect(() => {
-    fetchData();
+    fetchData(true);
   }, [fetchData]);
+
+  // Load all system mass torts on mount
+  useEffect(() => {
+    async function loadMassTorts() {
+      try {
+        const res = await api.get('/settings/mass-torts');
+        const list = res.data?.massTorts || res.data?.data || [];
+        const names = list.map((m: any) => m.name).filter(Boolean);
+        setSystemMassTorts(names);
+      } catch (err) {
+        console.warn('Could not fetch mass-torts:', err);
+      }
+    }
+    loadMassTorts();
+  }, []);
+
+  // Load form-schema tort options whenever selectedVendorId or selectedCampaignId changes
+  useEffect(() => {
+    if (selectedVendorId === 'all') {
+      setSchemaTortOptions([]);
+      return;
+    }
+    async function loadSchemaTorts() {
+      try {
+        const q = new URLSearchParams();
+        if (selectedVendorId && selectedVendorId !== 'all') q.set('vendorId', selectedVendorId);
+        if (selectedCampaignId && selectedCampaignId !== 'all') q.set('campaignId', selectedCampaignId);
+
+        const res = await fetch(`/api/settings/form-schema?${q.toString()}`);
+        if (res.ok) {
+          const data = await res.json();
+          const fields = data.schema?.fields || [];
+          const typeField = fields.find((f: any) => f.name === 'type' || f.id === '3');
+          if (typeField && Array.isArray(typeField.options)) {
+            setSchemaTortOptions(typeField.options);
+          }
+        }
+      } catch (err) {
+        console.warn('Could not load schema torts for context:', err);
+      }
+    }
+    loadSchemaTorts();
+  }, [selectedVendorId, selectedCampaignId]);
 
   // Find active vendor object
   const selectedVendor = useMemo(() => {
@@ -104,7 +149,42 @@ export default function AdminAddQuestionsPage() {
 
   const handleVendorChange = (newVendorId: string) => {
     setSelectedVendorId(newVendorId);
-    setSelectedCampaignId('all');
+    if (newVendorId === 'all') {
+      setSelectedCampaignId('all');
+      return;
+    }
+    const vendorObj = vendors.find((v) => v.id === newVendorId);
+    const vCamps = campaigns.filter(
+      (c: any) =>
+        c.vendorId === newVendorId ||
+        c.vendor?.id === newVendorId ||
+        (c.vendorName && vendorObj?.name && c.vendorName.toLowerCase() === vendorObj.name.toLowerCase()) ||
+        (c.vendor?.name && vendorObj?.name && c.vendor.name.toLowerCase() === vendorObj.name.toLowerCase()) ||
+        (c.vendors && Array.isArray(c.vendors) && c.vendors.includes(newVendorId))
+    );
+    if (vCamps.length > 0) {
+      const firstCamp = vCamps[0];
+      setSelectedCampaignId(firstCamp.id);
+      const campTort = firstCamp.massTort?.name || firstCamp.tortName;
+      if (campTort) {
+        setSelectedTort(campTort);
+        showToast(`Selected "${vendorObj?.name || 'Vendor'}" → Campaign "${firstCamp.name}" → Tort "${campTort}"`);
+      }
+    } else {
+      setSelectedCampaignId('all');
+    }
+  };
+
+  const handleCampaignChange = (newCampaignId: string) => {
+    setSelectedCampaignId(newCampaignId);
+    if (newCampaignId !== 'all') {
+      const camp = campaigns.find((c: any) => c.id === newCampaignId);
+      const campTort = camp?.massTort?.name || camp?.tortName;
+      if (campTort) {
+        setSelectedTort(campTort);
+        showToast(`Switched Tort to "${campTort}" (linked to campaign "${camp?.name}")`);
+      }
+    }
   };
 
   // Add/Edit Question Modal State
@@ -195,11 +275,54 @@ export default function AdminAddQuestionsPage() {
     setTimeout(() => setToastMessage(null), 3500);
   };
 
-  // Combine default TYPE_OPTIONS with any newly added torts in tortQuestionsMap
+  // Combine default TYPE_OPTIONS with system mass-torts, campaigns torts, schema torts, and tortQuestionsMap
+  // When a specific vendor is selected, restrict dropdown options to the torts of that vendor's campaign(s)
   const allTortOptions = useMemo(() => {
-    const list = Array.from(new Set([...TYPE_OPTIONS, ...Object.keys(tortQuestionsMap)]));
+    if (selectedVendorId && selectedVendorId !== 'all') {
+      const targetCamps = (selectedCampaignId && selectedCampaignId !== 'all')
+        ? assignedCampaigns.filter((c: any) => c.id === selectedCampaignId)
+        : assignedCampaigns;
+
+      const campTorts = targetCamps
+        .map((c: any) => c.massTort?.name || c.tortName)
+        .filter(Boolean);
+
+      const combined = Array.from(
+        new Set([
+          ...campTorts,
+          ...schemaTortOptions,
+          ...(selectedTort ? [selectedTort] : [])
+        ].filter(Boolean))
+      );
+
+      if (combined.length > 0) {
+        return combined;
+      }
+    }
+
+    // Global Mode (All Vendors)
+    const campaignTorts = campaigns
+      .map((c: any) => c.massTort?.name || c.tortName)
+      .filter(Boolean);
+    const list = Array.from(
+      new Set([
+        ...TYPE_OPTIONS,
+        ...systemMassTorts,
+        ...campaignTorts,
+        ...Object.keys(tortQuestionsMap)
+      ])
+    );
     return list;
-  }, [tortQuestionsMap]);
+  }, [selectedVendorId, selectedCampaignId, assignedCampaigns, schemaTortOptions, selectedTort, campaigns, systemMassTorts, tortQuestionsMap]);
+
+  // Auto-sync selectedTort if current selectedTort is not in the active allTortOptions
+  useEffect(() => {
+    if (selectedVendorId && selectedVendorId !== 'all' && allTortOptions.length > 0) {
+      if (!allTortOptions.includes(selectedTort)) {
+        setSelectedTort(allTortOptions[0]);
+      }
+    }
+  }, [selectedVendorId, selectedCampaignId, allTortOptions, selectedTort]);
 
   const activeQuestions: TortQuestion[] = useMemo(() => {
     const fromMap = tortQuestionsMap[selectedTort];
@@ -302,7 +425,7 @@ export default function AdminAddQuestionsPage() {
             (m: any) => m.name.toLowerCase() === trimmedName.toLowerCase()
           );
           if (found) massTortId = found.id;
-        } catch (_) {}
+        } catch (_) { }
       }
 
       // 3. If creating a dedicated campaign or linking existing campaign
@@ -320,7 +443,6 @@ export default function AdminAddQuestionsPage() {
           if (cRes.data?.campaign?.id) {
             resolvedCampaignId = cRes.data.campaign.id;
           }
-          if (fetchCampaigns) await fetchCampaigns();
         } catch (cErr) {
           console.warn('Campaign creation note:', cErr);
         }
@@ -330,22 +452,57 @@ export default function AdminAddQuestionsPage() {
           await api.put(`/campaigns/${newTortFormData.campaignId}`, {
             massTortId: massTortId,
           });
-          if (fetchCampaigns) await fetchCampaigns();
         } catch (uErr) {
           console.warn('Campaign massTort update note:', uErr);
         }
+      } else if (newTortFormData.vendorId !== 'all' && newTortFormData.campaignId === 'all' && massTortId) {
+        // Update all campaigns of this vendor
+        for (const camp of assignedCampaignsForNewTort) {
+          try {
+            await api.put(`/campaigns/${camp.id}`, { massTortId });
+          } catch (_) { }
+        }
       }
 
-      // 4. Automatically inject the tort category into that vendor & campaign's form schema
+      // 4. Proactively update Zustand campaigns store state right away
+      if (massTortId) {
+        useCRMStore.setState((state) => ({
+          campaigns: state.campaigns.map((c: any) => {
+            if (
+              (resolvedCampaignId && resolvedCampaignId !== 'all' && c.id === resolvedCampaignId) ||
+              (newTortFormData.campaignId === 'all' && newTortFormData.vendorId !== 'all' && (c.vendorId === newTortFormData.vendorId || c.vendor?.id === newTortFormData.vendorId))
+            ) {
+              return {
+                ...c,
+                massTortId,
+                massTort: { id: massTortId, name: trimmedName },
+                tortName: trimmedName,
+              };
+            }
+            return c;
+          }),
+        }));
+      }
+
+      setSystemMassTorts((prev) => Array.from(new Set([...prev, trimmedName])));
+
+      // Force refetch campaigns in store with true (bypassing 5-minute cache)
+      if (fetchCampaigns) {
+        await fetchCampaigns(true);
+      }
+      if (fetchData) {
+        await fetchData(true);
+      }
+
+      // 5. Automatically inject the tort category into that vendor & campaign's form schema
       try {
         await api.put('/settings/form-schema', {
           action: 'add-tort',
           tortName: trimmedName,
-          vendorId: newTortFormData.vendorId,
-          campaignId: resolvedCampaignId,
+          vendorId: newTortFormData.vendorId !== 'all' ? newTortFormData.vendorId : null,
+          campaignId: resolvedCampaignId !== 'all' ? resolvedCampaignId : null,
         });
 
-        // If vendor was selected and all campaigns selected, also update all assigned campaigns
         if (newTortFormData.vendorId !== 'all' && newTortFormData.campaignId === 'all') {
           for (const camp of assignedCampaignsForNewTort) {
             try {
@@ -355,7 +512,7 @@ export default function AdminAddQuestionsPage() {
                 vendorId: newTortFormData.vendorId,
                 campaignId: camp.id,
               });
-            } catch (_) {}
+            } catch (_) { }
           }
         }
       } catch (schemaErr) {
@@ -509,6 +666,26 @@ export default function AdminAddQuestionsPage() {
       showToast(`New question added to ${selectedTort}!`);
     }
 
+    // Ensure tort is active in form schema for this vendor/campaign
+    try {
+      fetch('/api/settings/form-schema', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          action: 'add-tort',
+          tortName: selectedTort,
+          vendorId: selectedVendorId !== 'all' ? selectedVendorId : null,
+          campaignId: selectedCampaignId !== 'all' ? selectedCampaignId : null,
+        }),
+      })
+        .then(() => {
+          if (typeof window !== 'undefined') {
+            window.dispatchEvent(new Event('lead_form_schema_updated'));
+          }
+        })
+        .catch(() => { });
+    } catch (_) { }
+
     setShowQuestionModal(false);
   };
 
@@ -559,14 +736,6 @@ export default function AdminAddQuestionsPage() {
             >
               <Plus className="h-4 w-4" />
               Add New Tort
-            </button>
-
-            <button
-              onClick={handleOpenAddModal}
-              className="inline-flex items-center gap-2 rounded-xl bg-amber-600 px-4 py-2 text-xs font-bold text-white shadow-md hover:bg-amber-700 transition-all cursor-pointer"
-            >
-              <Plus className="h-4 w-4" />
-              Add Question for {selectedTort}
             </button>
           </div>
         </div>
@@ -652,7 +821,7 @@ export default function AdminAddQuestionsPage() {
               </select>
 
               <button
-                type="button"
+                type="button" 
                 onClick={handleOpenAddTortModal}
                 className="shrink-0 px-3 py-2.5 rounded-xl border border-emerald-300 bg-emerald-50 text-emerald-800 hover:bg-emerald-100 text-xs font-bold transition-all cursor-pointer inline-flex items-center gap-1.5 shadow-2xs"
                 title="Add a new Tort Category"
@@ -687,7 +856,7 @@ export default function AdminAddQuestionsPage() {
             </label>
             <select
               value={selectedCampaignId}
-              onChange={(e) => setSelectedCampaignId(e.target.value)}
+              onChange={(e) => handleCampaignChange(e.target.value)}
               className="w-full rounded-xl border border-slate-200 bg-slate-50 px-3 py-2.5 text-xs font-semibold text-slate-800 focus:border-amber-500 focus:bg-white outline-none cursor-pointer"
             >
               <option value="all">
@@ -697,14 +866,40 @@ export default function AdminAddQuestionsPage() {
                     ? 'No campaigns assigned to this vendor'
                     : 'All Vendor Campaigns'}
               </option>
-              {assignedCampaigns.map((c: any) => (
-                <option key={c.id} value={c.id}>
-                  {c.name}
-                </option>
-              ))}
+              {assignedCampaigns.map((c: any) => {
+                const cTort = c.massTort?.name || c.tortName;
+                return (
+                  <option key={c.id} value={c.id}>
+                    {c.name} {cTort ? `[Tort: ${cTort}]` : ''}
+                  </option>
+                );
+              })}
             </select>
           </div>
         </div>
+
+        {/* ACTIVE WORKFLOW CONTEXT LINKAGE BANNER */}
+        {(selectedVendorId !== 'all' || selectedCampaignId !== 'all') && (
+          <div className="flex flex-wrap items-center justify-between gap-3 p-3 bg-gradient-to-r from-amber-50/80 via-orange-50/50 to-emerald-50/60 border border-amber-200/90 rounded-xl text-xs shadow-2xs">
+            <div className="flex flex-wrap items-center gap-2">
+              <span className="font-bold text-slate-700">Active Setup:</span>
+              <span className="inline-flex items-center gap-1 rounded-lg bg-white px-2.5 py-1 font-semibold text-slate-800 border border-slate-200 shadow-2xs">
+                <Building2 className="h-3.5 w-3.5 text-blue-600" />
+                {selectedVendor ? selectedVendor.name : 'All Vendors'}
+              </span>
+              <span className="text-slate-400 font-bold">→</span>
+              <span className="inline-flex items-center gap-1 rounded-lg bg-white px-2.5 py-1 font-semibold text-slate-800 border border-slate-200 shadow-2xs">
+                <Megaphone className="h-3.5 w-3.5 text-indigo-600" />
+                {campaigns.find((c: any) => c.id === selectedCampaignId)?.name || (selectedCampaignId === 'all' ? 'All Campaigns' : 'Selected Campaign')}
+              </span>
+              <span className="text-slate-400 font-bold">→</span>
+              <span className="inline-flex items-center gap-1.5 rounded-lg bg-emerald-600 text-white px-3 py-1 font-bold shadow-xs">
+                <Tag className="h-3.5 w-3.5" />
+                Target Tort Category: {selectedTort}
+              </span>
+            </div>
+          </div>
+        )}
 
         {/* SEARCH FILTER */}
         <div className="relative pt-1">

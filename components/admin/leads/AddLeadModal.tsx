@@ -193,13 +193,15 @@ export default function AddLeadModal({
         {/* Embedded Full Vendor Portal Lead Form */}
         <div className="flex-1 overflow-y-auto p-6 bg-white">
           <NewCaseLeadFollowUpForm
+            key={`${selectedVendorId}_${selectedCampaignId}`}
             isModal={true}
-            title="Step 2: Enter Lead Prospect & Case Details"
+            title="New Case: Lead Follow Up"
             subtitle={`Configured for ${selectedVendor?.name || 'Selected Vendor'} | Campaign: ${selectedCampaign?.name || 'Default Campaign'}`}
             vendorId={selectedVendorId}
             vendorName={selectedVendor?.name}
             initialValues={{
-              campaignName: selectedCampaign?.name || ''
+              campaignName: selectedCampaign?.name || '',
+              type: selectedCampaign?.massTort?.name || selectedCampaign?.tortName || ''
             }}
             showCsvOption={false}
             onCancel={() => setShowAddModal(false)}

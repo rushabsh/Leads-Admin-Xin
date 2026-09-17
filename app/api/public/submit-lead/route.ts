@@ -163,6 +163,7 @@ export async function POST(req: NextRequest) {
         treatingFacilityPhone: treatingFacilityPhone || ''
       },
       screeningCriteria: {
+        ...body,
         // Roblox
         robloxGamertag: robloxGamertag || '',
         robloxAccountAccess: robloxAccountAccess || 'Yes',
@@ -192,7 +193,8 @@ export async function POST(req: NextRequest) {
         legalRepresentation: legalRepresentation || 'No',
         felonyConviction: felonyConviction || 'No',
         hasMedicalRecords: hasMedicalRecords || 'Yes'
-      }
+      },
+      submittedQuestions: Array.isArray(body.submittedQuestions) ? body.submittedQuestions : []
     };
 
     const caseDetailsFormatted = JSON.stringify(caseDetailsObj, null, 2);

@@ -8,6 +8,8 @@ import {
   Trash2, Eye, FileText, CheckCircle2, ShieldCheck, Tag, X, Stethoscope, Scale, User as UserIcon
 } from 'lucide-react';
 
+import { getQuestionsForTort } from '@/store/tortQuestionsStore';
+
 interface VendorPortalLeadsTableProps {
   searchTerm: string;
   setSearchTerm: (val: string) => void;
@@ -210,7 +212,8 @@ export default function VendorPortalLeadsTable({
                         <h4 className="font-bold text-slate-900 text-sm">4. Diagnosis Information</h4>
                       </div>
                       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
-                        <div><strong className="text-slate-500 block">Diagnosis:</strong> <span className="font-bold text-emerald-700">{diagnosisInfo.diagnosis || activeDetailLead.diagnosis || 'Non-Hodgkin Lymphoma'}</span></div>
+                        <div><strong className="text-slate-500 block">Incident Occurred:</strong> <span className="font-semibold text-rose-700">{diagnosisInfo.incidentType || '—'}</span></div>
+                        <div><strong className="text-slate-500 block">Diagnosis:</strong> <span className="font-bold text-emerald-700">{diagnosisInfo.diagnosis || activeDetailLead.diagnosis || '—'}</span></div>
                         <div><strong className="text-slate-500 block">Diagnosis Year/Date:</strong> {diagnosisInfo.diagnosisYear || '—'}</div>
                         <div><strong className="text-slate-500 block">Diagnosing Doctor:</strong> {diagnosisInfo.diagnosingDoctorName || '—'}</div>
                         <div><strong className="text-slate-500 block">Treating Doctor:</strong> {diagnosisInfo.treatingDoctorName || '—'}</div>
@@ -224,32 +227,110 @@ export default function VendorPortalLeadsTable({
 
                     {/* Section 5: Other Case Information */}
                     {(() => {
-                      const screening = parsed?.screeningCriteria || {};
+                      const screening = parsed?.screeningCriteria || parsed?.screening || {};
+                      const submittedQuestions: any[] = Array.isArray(parsed?.submittedQuestions) ? parsed.submittedQuestions : [];
+                      const tortType = leadInfo.type || activeDetailLead.tortName || activeDetailLead.type || '';
+
+                      if (submittedQuestions.length > 0) {
+                        return (
+                          <div className="rounded-xl border border-slate-200 bg-slate-50/50 p-4 space-y-3">
+                            <div className="flex items-center justify-between border-b border-slate-200 pb-2">
+                              <div className="flex items-center gap-2">
+                                <Tag className="h-4 w-4 text-amber-600" />
+                                <h4 className="font-bold text-slate-900 text-sm">
+                                  5. Other Case Information ({tortType || 'Tort Specific'})
+                                </h4>
+                              </div>
+                              <span className="text-[10px] font-bold text-amber-800 bg-amber-100 px-2.5 py-0.5 rounded-full border border-amber-200">
+                                {submittedQuestions.length} Question{submittedQuestions.length > 1 ? 's' : ''} Submitted
+                              </span>
+                            </div>
+                            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
+                              {submittedQuestions.map((q) => {
+                                const displayVal = q.value !== undefined && q.value !== null && q.value !== '' ? String(q.value) : '—';
+                                return (
+                                  <div key={q.id || q.name} className={q.type === 'textarea' ? 'sm:col-span-2 md:col-span-3' : ''}>
+                                    <strong className="text-slate-500 block">
+                                      {q.label}:
+                                    </strong>
+                                    <span className="font-semibold text-slate-800 break-words">{displayVal}</span>
+                                  </div>
+                                );
+                              })}
+                            </div>
+                          </div>
+                        );
+                      }
+
+                      const dynamicQuestions = getQuestionsForTort(tortType);
+
+                      if (dynamicQuestions.length > 0) {
+                        return (
+                          <div className="rounded-xl border border-slate-200 bg-slate-50/50 p-4 space-y-3">
+                            <div className="flex items-center justify-between border-b border-slate-200 pb-2">
+                              <div className="flex items-center gap-2">
+                                <Tag className="h-4 w-4 text-amber-600" />
+                                <h4 className="font-bold text-slate-900 text-sm">
+                                  5. Other Case Information ({tortType || 'Tort Specific'})
+                                </h4>
+                              </div>
+                              <span className="text-[10px] font-bold text-amber-800 bg-amber-100 px-2.5 py-0.5 rounded-full border border-amber-200">
+                                {dynamicQuestions.length} Question{dynamicQuestions.length > 1 ? 's' : ''} Configured
+                              </span>
+                            </div>
+                            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
+                              {dynamicQuestions.map((q) => {
+                                const rawVal = screening[q.name] ?? (parsed as any)?.[q.name] ?? (activeDetailLead as any)?.[q.name];
+                                const displayVal = rawVal !== undefined && rawVal !== null && rawVal !== '' ? String(rawVal) : '—';
+                                return (
+                                  <div key={q.id || q.name} className={q.type === 'textarea' ? 'sm:col-span-2 md:col-span-3' : ''}>
+                                    <strong className="text-slate-500 block">
+                                      {q.label} {q.required && <span className="text-rose-500">*</span>}:
+                                    </strong>
+                                    <span className="font-semibold text-slate-800 break-words">{displayVal}</span>
+                                  </div>
+                                );
+                              })}
+                            </div>
+                          </div>
+                        );
+                      }
+
+                      // Fallback: If no predefined dynamic questions configured for this tort, check if any non-internal keys exist in screening
+                      const nonInternalKeys = Object.entries(screening).filter(
+                        ([k, v]) =>
+                          !['contactName', 'campaignName', 'type', 'status', 'leadName', 'substatus', 'billable', 'firstName', 'middleName', 'lastName', 'gender', 'dateOfBirth', 'phoneNumber', 'email', 'addressStreet', 'city', 'state', 'areaCode', 'powerOfAttorney', 'victimName', 'victimFullName', 'victimLastName', 'victimDOB', 'victimDOD', 'incidentType', 'diagnosis', 'diagnosisYear', 'diagnosingDoctorName', 'treatingDoctorName', 'diagnosingHospitalName', 'treatingFacilityName', 'diagnosingHospitalAddress', 'treatingFacilityAddress', 'diagnosingFacilityPhone', 'treatingFacilityPhone', 'submittedQuestions'].includes(k) &&
+                          v !== undefined &&
+                          v !== null &&
+                          v !== ''
+                      );
+
+                      if (nonInternalKeys.length > 0) {
+                        return (
+                          <div className="rounded-xl border border-slate-200 bg-slate-50/50 p-4 space-y-3">
+                            <div className="flex items-center gap-2 border-b border-slate-200 pb-2">
+                              <Tag className="h-4 w-4 text-amber-600" />
+                              <h4 className="font-bold text-slate-900 text-sm">5. Other Case Information</h4>
+                            </div>
+                            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
+                              {nonInternalKeys.map(([k, v]) => (
+                                <div key={k}>
+                                  <strong className="text-slate-500 block capitalize">{k.replace(/([A-Z])/g, ' $1')}:</strong>
+                                  <span className="font-semibold text-slate-800 break-words">{String(v)}</span>
+                                </div>
+                              ))}
+                            </div>
+                          </div>
+                        );
+                      }
+
                       return (
-                        <div className="rounded-xl border border-slate-200 bg-slate-50/50 p-4 space-y-3">
+                        <div className="rounded-xl border border-slate-200 bg-slate-50/50 p-4 space-y-2">
                           <div className="flex items-center gap-2 border-b border-slate-200 pb-2">
                             <Tag className="h-4 w-4 text-amber-600" />
                             <h4 className="font-bold text-slate-900 text-sm">5. Other Case Information</h4>
                           </div>
-                          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
-                            <div><strong className="text-slate-500 block">Assaulted in Rideshare:</strong> {screening.rideshareAssaulted || '—'}</div>
-                            <div><strong className="text-slate-500 block">Lyft or UBER:</strong> {screening.rideshareProvider || '—'}</div>
-                            <div><strong className="text-slate-500 block">Date of Incident:</strong> {screening.rideshareIncidentDate || '—'}</div>
-                            <div><strong className="text-slate-500 block">Proof of Ride:</strong> {screening.rideshareProofOfRide || '—'}</div>
-                            <div><strong className="text-slate-500 block">Driver Name:</strong> {screening.rideshareDriverName || '—'}</div>
-                            <div><strong className="text-slate-500 block">Incident Address:</strong> {screening.rideshareIncidentAddress || '—'}</div>
-                            <div><strong className="text-slate-500 block">Reported To:</strong> {screening.rideshareReportedTo || '—'}</div>
-                            <div><strong className="text-slate-500 block">Symptoms Details:</strong> {screening.rideshareSymptomsDetails || '—'}</div>
-                            <div><strong className="text-slate-500 block">Symptoms Date:</strong> {screening.rideshareSymptomsDate || '—'}</div>
-                            <div><strong className="text-slate-500 block">Test Details:</strong> {screening.rideshareDiagnosisTestDetails || '—'}</div>
-                            <div><strong className="text-slate-500 block">Test Date:</strong> {screening.rideshareDiagnosisTestDate || '—'}</div>
-                            <div><strong className="text-slate-500 block">Treatment Details:</strong> {screening.rideshareTreatmentDetails || '—'}</div>
-                            <div><strong className="text-slate-500 block">Treatment Date:</strong> {screening.rideshareTreatmentDate || '—'}</div>
-                            <div><strong className="text-slate-500 block">Legal Representation:</strong> {screening.legalRepresentation || '—'}</div>
-                            <div><strong className="text-slate-500 block">Felony Conviction:</strong> {screening.felonyConviction || '—'}</div>
-                            <div><strong className="text-slate-500 block">Medical Records:</strong> {screening.hasMedicalRecords || '—'}</div>
-                            <div className="sm:col-span-3"><strong className="text-slate-500 block">Incident Narrative:</strong> {screening.rideshareNarrative || '—'}</div>
-                          </div>
+                          <p className="text-xs text-slate-400 italic">No additional questionnaire items recorded for this case category.</p>
                         </div>
                       );
                     })()}

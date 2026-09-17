@@ -456,9 +456,11 @@ export default function NewCaseLeadFollowUpForm({
     let isMounted = true;
     const fetchSchema = async () => {
       try {
-        const matchedCamp = (campaigns || []).find(
-          (c: any) => c.name === formData.campaignName || c.id === formData.campaignName
-        );
+        const cleanCampName = (formData.campaignName || '').trim().toLowerCase();
+        const matchedCamp = (campaigns || []).find((c: any) => {
+          const cName = (c.name || '').trim().toLowerCase();
+          return (cleanCampName && cName === cleanCampName) || c.id === formData.campaignName;
+        });
         const campId = matchedCamp?.id;
         const q = new URLSearchParams();
         if (activeVendorId && activeVendorId !== 'all') q.set('vendorId', activeVendorId);
@@ -605,16 +607,28 @@ export default function NewCaseLeadFollowUpForm({
       ? metaOpts
       : TYPE_OPTIONS;
 
-    // Also include the campaign's mass tort if assigned
-    const matchedCamp = (campaigns || []).find(
-      (c: any) => c.name === formData.campaignName || c.id === formData.campaignName
-    );
+    // Find the campaign by matching name (trimmed/case-insensitive) or ID
+    const cleanCampName = (formData.campaignName || '').trim().toLowerCase();
+    const matchedCamp = (campaigns || []).find((c: any) => {
+      const cName = (c.name || '').trim().toLowerCase();
+      return (cleanCampName && cName === cleanCampName) || c.id === formData.campaignName;
+    });
+
     const campTort = matchedCamp?.massTort?.name || matchedCamp?.tortName;
     const extras: string[] = [];
-    if (campTort && !baseList.includes(campTort)) {
+
+    // Also include any mass torts present across all available campaigns
+    (campaigns || []).forEach((c: any) => {
+      const t = c.massTort?.name || c.tortName;
+      if (t && !baseList.some((opt: string) => opt.trim().toLowerCase() === t.trim().toLowerCase()) && !extras.includes(t)) {
+        extras.push(t);
+      }
+    });
+
+    if (campTort && !baseList.some((opt: string) => opt.trim().toLowerCase() === campTort.trim().toLowerCase()) && !extras.includes(campTort)) {
       extras.push(campTort);
     }
-    if (formData.type && !baseList.includes(formData.type) && !extras.includes(formData.type)) {
+    if (formData.type && !baseList.some((opt: string) => opt.trim().toLowerCase() === formData.type.trim().toLowerCase()) && !extras.includes(formData.type)) {
       extras.push(formData.type);
     }
     return Array.from(new Set([...baseList, ...extras]));
@@ -623,11 +637,13 @@ export default function NewCaseLeadFollowUpForm({
   // Auto-sync tort when campaign changes
   useEffect(() => {
     if (formData.campaignName) {
-      const matchedCamp = (campaigns || []).find(
-        (c: any) => c.name === formData.campaignName || c.id === formData.campaignName
-      );
+      const cleanCampName = (formData.campaignName || '').trim().toLowerCase();
+      const matchedCamp = (campaigns || []).find((c: any) => {
+        const cName = (c.name || '').trim().toLowerCase();
+        return (cleanCampName && cName === cleanCampName) || c.id === formData.campaignName;
+      });
       const campTort = matchedCamp?.massTort?.name || matchedCamp?.tortName;
-      if (campTort && (!formData.type || formData.type === 'Other' || formData.type === 'Depo-Provera')) {
+      if (campTort) {
         setFormData((prev) => {
           if (prev.type === campTort) return prev;
           return { ...prev, type: campTort };
@@ -665,6 +681,19 @@ export default function NewCaseLeadFollowUpForm({
         updated.hasMedicalRecords = val;
       }
 
+      // If campaign changes, synchronously update type to the campaign's mass tort
+      if (name === 'campaignName' && value) {
+        const cleanCampName = String(value).trim().toLowerCase();
+        const matched = (campaigns || []).find((c: any) => {
+          const cName = (c.name || '').trim().toLowerCase();
+          return (cleanCampName && cName === cleanCampName) || c.id === value;
+        });
+        const campTort = matched?.massTort?.name || matched?.tortName;
+        if (campTort) {
+          updated.type = campTort;
+        }
+      }
+
       return updated;
     });
   };
@@ -700,6 +729,21 @@ export default function NewCaseLeadFollowUpForm({
 
     const finalCampaignName = data.campaignName || selectedCampaign?.name || `${data.type} Campaign`;
     const resolvedCampaignId = selectedCampaign?.id || activeVendorId;
+
+    const dynamicQuestions = getQuestionsForTort(data.type);
+    const submittedQuestions = dynamicQuestions.map((q) => {
+      const rawVal = (data as any)[q.name];
+      const displayVal = rawVal !== undefined && rawVal !== null ? rawVal : '';
+      return {
+        id: q.id || q.name,
+        name: q.name,
+        label: q.label,
+        value: displayVal,
+        type: q.type,
+        categoryBadge: q.categoryBadge,
+        helpText: q.helpText
+      };
+    });
 
     const caseDetailsFormatted = JSON.stringify({
       leadInfo: {
@@ -785,7 +829,8 @@ export default function NewCaseLeadFollowUpForm({
         legalRepresentation: data.legalRepresentation,
         felonyConviction: data.felonyConviction,
         hasMedicalRecords: data.hasMedicalRecords
-      }
+      },
+      submittedQuestions: submittedQuestions
     }, null, 2);
 
     return {
@@ -1411,7 +1456,19 @@ export default function NewCaseLeadFollowUpForm({
                   <select
                     name="campaignName"
                     value={formData.campaignName}
-                    onChange={handleInputChange}
+                    onChange={(e) => {
+                      handleInputChange(e);
+                      const selectedCamp = e.target.value;
+                      const cleanCampName = selectedCamp.trim().toLowerCase();
+                      const matched = (campaigns || []).find((c: any) => {
+                        const cName = (c.name || '').trim().toLowerCase();
+                        return (cleanCampName && cName === cleanCampName) || c.id === selectedCamp;
+                      });
+                      const campTort = matched?.massTort?.name || matched?.tortName;
+                      if (campTort) {
+                        setFormData((prev) => ({ ...prev, campaignName: selectedCamp, type: campTort }));
+                      }
+                    }}
                     required={getMeta('campaignName', 'Campaign Name', true).required}
                     className="w-full rounded-xl border border-slate-200 bg-white px-3.5 py-2.5 text-xs font-medium text-slate-900 focus:border-blue-600 focus:ring-2 focus:ring-blue-500/15 outline-none shadow-xs transition-all cursor-pointer"
                   >
@@ -2002,19 +2059,6 @@ export default function NewCaseLeadFollowUpForm({
                     );
                   });
 
-                  const hasLegalRep = dynamicQuestions.some(
-                    (q) => q.name.toLowerCase().includes('legalrep') || q.label.toLowerCase().includes('legal representation')
-                  );
-                  const hasFelony = dynamicQuestions.some(
-                    (q) => q.name.toLowerCase().includes('felony') || q.label.toLowerCase().includes('felony')
-                  );
-                  const hasMedRecords = dynamicQuestions.some(
-                    (q) =>
-                      q.name.toLowerCase().includes('medicalrecord') ||
-                      q.name.toLowerCase().includes('recordsavailable') ||
-                      q.label.toLowerCase().includes('medical records')
-                  );
-
                   if (dynamicQuestions.length === 0) {
                     return (
                       <div className="col-span-full py-8 text-center text-xs text-slate-400 border border-dashed border-amber-200/80 rounded-xl bg-amber-50/20">
@@ -2023,38 +2067,7 @@ export default function NewCaseLeadFollowUpForm({
                     );
                   }
 
-                  return (
-                    <>
-                      {renderedQuestions}
-                      {!hasLegalRep && (
-                        <FormSelect
-                          label="Did you have any legal representation with any law firm regarding this claim?"
-                          name="legalRepresentation"
-                          value={formData.legalRepresentation}
-                          onChange={handleInputChange}
-                          options={YES_NO_OPTIONS}
-                        />
-                      )}
-                      {!hasFelony && (
-                        <FormSelect
-                          label="Conviction Felony/Crime?"
-                          name="felonyConviction"
-                          value={formData.felonyConviction}
-                          onChange={handleInputChange}
-                          options={YES_NO_UPPER_OPTIONS}
-                        />
-                      )}
-                      {!hasMedRecords && (
-                        <FormSelect
-                          label="Do you have Medical Records?"
-                          name="hasMedicalRecords"
-                          value={formData.hasMedicalRecords}
-                          onChange={handleInputChange}
-                          options={YES_NO_OPTIONS}
-                        />
-                      )}
-                    </>
-                  );
+                  return <>{renderedQuestions}</>;
                 })()}
               </div>
             </FormSectionCard>

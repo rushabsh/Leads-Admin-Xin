@@ -247,6 +247,9 @@ export const useCRMStore = create<CRMState>((set, get) => ({
     const promise = (async () => {
       try {
         const res = await api.get('/campaigns');
+        if (res.data?.data) {
+          saveToStorage('mc_campaigns', res.data.data);
+        }
         set({
           campaigns: res.data.data,
           lastFetched: { ...get().lastFetched, campaigns: Date.now() },

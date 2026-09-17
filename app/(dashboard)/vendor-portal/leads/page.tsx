@@ -82,7 +82,7 @@ export default function VendorLeadsPage() {
         ...prev,
         campaignId: defaultCamp.id,
         campaignName: defaultCamp.name,
-        tortName: defaultCamp.tortName || 'Camp Lejeune'
+        tortName: defaultCamp.massTort?.name || defaultCamp.tortName || 'Camp Lejeune'
       }));
     }
   }, [campaigns, vendorId, formData.campaignId]);
@@ -92,8 +92,6 @@ export default function VendorLeadsPage() {
     setTimeout(() => setToast(null), 3000);
   };
 
-
-
   const handleCampaignChange = (campId: string) => {
     const camp = campaigns.find(c => c.id === campId);
     if (camp) {
@@ -101,7 +99,7 @@ export default function VendorLeadsPage() {
         ...prev,
         campaignId: camp.id,
         campaignName: camp.name,
-        tortName: camp.tortName || ''
+        tortName: camp.massTort?.name || camp.tortName || ''
       }));
     }
   };
@@ -118,7 +116,7 @@ export default function VendorLeadsPage() {
       status: 'NEW',
       campaignId: vendorCampaigns[0]?.id || '',
       campaignName: vendorCampaigns[0]?.name || '',
-      tortName: vendorCampaigns[0]?.tortName || '',
+      tortName: vendorCampaigns[0]?.massTort?.name || vendorCampaigns[0]?.tortName || '',
       vendorId: vendorId,
       vendorName: user?.name || 'Premier Leads LLC',
       sourceName: 'Vendor Portal Form',

@@ -1,6 +1,6 @@
 {
-  "version": 17,
-  "updatedAt": "2026-09-15T16:42:08.371Z",
+  "version": 22,
+  "updatedAt": "2026-09-16T16:42:16.191Z",
   "updatedBy": "MassCore Administrator",
   "questionsMap": {
     "Depo-Provera": [
@@ -3137,6 +3137,36 @@
         "label": "Testing 8",
         "type": "checkbox",
         "required": false,
+        "categoryBadge": "Qualifier"
+      }
+    ],
+    "Testing Tort 1": [
+      {
+        "id": "custom-1789572363514",
+        "name": "testingTort",
+        "label": "Testing Tort",
+        "type": "text",
+        "required": true,
+        "categoryBadge": "Qualifier"
+      },
+      {
+        "id": "custom-1789572377585",
+        "name": "testing2",
+        "label": "Testing 2",
+        "type": "select",
+        "required": false,
+        "options": [
+          "Yes",
+          "No"
+        ],
+        "categoryBadge": "Qualifier"
+      },
+      {
+        "id": "custom-1789576934964",
+        "name": "testingQuestion3",
+        "label": "Testing Question 3",
+        "type": "textarea",
+        "required": true,
         "categoryBadge": "Qualifier"
       }
     ]

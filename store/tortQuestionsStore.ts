@@ -382,10 +382,17 @@ export async function fetchCentralQuestionsFromApi(): Promise<TortQuestionsMap> 
 
 export function getQuestionsForTort(tortType: string): TortQuestion[] {
   if (!tortType) return [];
+  const cleanTort = tortType.trim().toLowerCase();
 
   // Check API cached map first
-  if (cachedApiQuestionsMap && cachedApiQuestionsMap[tortType] !== undefined) {
-    return cachedApiQuestionsMap[tortType];
+  if (cachedApiQuestionsMap) {
+    if (cachedApiQuestionsMap[tortType] !== undefined) {
+      return cachedApiQuestionsMap[tortType];
+    }
+    const match = Object.keys(cachedApiQuestionsMap).find((k) => k.trim().toLowerCase() === cleanTort);
+    if (match && cachedApiQuestionsMap[match] !== undefined) {
+      return cachedApiQuestionsMap[match];
+    }
   }
 
   // Load from localStorage if customized
@@ -397,6 +404,10 @@ export function getQuestionsForTort(tortType: string): TortQuestion[] {
         if (parsed[tortType] !== undefined) {
           return parsed[tortType];
         }
+        const match = Object.keys(parsed).find((k) => k.trim().toLowerCase() === cleanTort);
+        if (match && parsed[match] !== undefined) {
+          return parsed[match];
+        }
       } catch (_) {}
     }
   }
@@ -406,9 +417,9 @@ export function getQuestionsForTort(tortType: string): TortQuestion[] {
     return DEFAULT_TORT_QUESTIONS[tortType];
   }
 
-  // Fallback search
+  // Fallback search in presets
   const keys = Object.keys(DEFAULT_TORT_QUESTIONS);
-  const match = keys.find(k => k.toLowerCase() === tortType.toLowerCase());
+  const match = keys.find((k) => k.trim().toLowerCase() === cleanTort);
   if (match && DEFAULT_TORT_QUESTIONS[match] !== undefined) {
     return DEFAULT_TORT_QUESTIONS[match];
   }

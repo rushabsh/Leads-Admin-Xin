@@ -60,6 +60,11 @@ export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: 
     const campaign = await prisma.campaign.update({
       where: { id },
       data: body,
+      include: {
+        massTort: true,
+        vendor: true,
+        lawFirm: true,
+      },
     });
 
     return NextResponse.json({ success: true, message: 'Campaign updated successfully', campaign });

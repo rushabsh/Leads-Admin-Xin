@@ -15,6 +15,7 @@ import {
 import api from '../../../../../lib/api';
 import { useCRMStore } from '../../../../../store/crmStore';
 import { useAuthStore } from '../../../../../store/authStore';
+import { getQuestionsForTort } from '@/store/tortQuestionsStore';
 import EditLeadModal from '@/components/admin/leads/EditLeadModal';
 
 interface PageProps {
@@ -44,7 +45,7 @@ interface ActivityFeedItem {
 export default function VendorLeadDetailPage({ params }: PageProps) {
   const { id } = use(params);
   const router = useRouter();
-  const { user } = useAuthStore();
+  const { user } = useAuthStore();  
   const { leads: storeLeads, fetchData } = useCRMStore();
 
   const [lead, setLead] = useState<any>(null);
@@ -354,16 +355,24 @@ export default function VendorLeadDetailPage({ params }: PageProps) {
 
   // Safely parse JSON case details if present
   let parsedDetails: any = null;
-  if (lead?.caseDetails && typeof lead.caseDetails === 'string' && lead.caseDetails.trim().startsWith('{')) {
-    try {
-      parsedDetails = JSON.parse(lead.caseDetails);
-    } catch (_) { }
+  if (lead?.caseDetails) {
+    if (typeof lead.caseDetails === 'string' && lead.caseDetails.trim().startsWith('{')) {
+      try {
+        parsedDetails = JSON.parse(lead.caseDetails);
+      } catch (_) { }
+    } else if (typeof lead.caseDetails === 'object') {
+      parsedDetails = lead.caseDetails;
+    }
   }
 
   const parsedLeadInfo = parsedDetails?.leadInfo || {};
   const parsedContactInfo = parsedDetails?.contactInfo || {};
   const parsedPOAInfo = parsedDetails?.poa || {};
   const parsedDiagnosisInfo = parsedDetails?.diagnosisInfo || {};
+  const submittedQuestionsList: any[] = Array.isArray(parsedDetails?.submittedQuestions) ? parsedDetails.submittedQuestions : [];
+
+  const displayTort = parsedLeadInfo.type || lead.tortName || lead.campaign?.massTort?.name || 'Mass Tort Intake';
+  const displayCampaign = parsedLeadInfo.campaignName || lead.campaignName || lead.campaign?.name || 'General Campaign';
 
   return (
     <div className="space-y-6 max-w-7xl mx-auto pb-16">
@@ -409,40 +418,53 @@ export default function VendorLeadDetailPage({ params }: PageProps) {
         <div className="flex flex-col gap-6 md:flex-row md:items-center md:justify-between">
           <div className="flex items-start gap-4">
             <div className="flex h-16 w-16 shrink-0 items-center justify-center rounded-2xl bg-blue-50 text-blue-600 font-bold text-2xl border border-blue-100 shadow-xs">
-              {lead.firstName?.[0] || 'V'}{lead.lastName?.[0] || 'D'}
+              {(lead.firstName || parsedContactInfo.firstName)?.[0] || 'L'}{(lead.lastName || parsedContactInfo.lastName)?.[0] || 'D'}
             </div>
 
             <div className="space-y-1.5">
               <div className="flex flex-wrap items-center gap-2.5">
                 <h1 className="text-2xl font-bold tracking-tight text-slate-900">
-                  {lead.firstName} {lead.lastName}
+                  {lead.firstName || parsedContactInfo.firstName || 'Lead'} {lead.lastName || parsedContactInfo.lastName || ''}
                 </h1>
                 <span className="rounded-lg bg-slate-100 px-3 py-1 text-xs font-mono font-bold text-slate-700 border border-slate-200">
-                  Case/Lead ID: {lead.leadId}
+                  Case/Lead ID: {lead.leadId || id}
                 </span>
-                <span className="inline-flex items-center gap-1.5 rounded-full bg-rose-50 text-rose-700 border border-rose-200 px-3 py-1 text-xs font-bold">
-                  <span className="h-2 w-2 rounded-full bg-rose-600"></span>
-                  Status: Closed
+                <span className={`inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-bold ${
+                  (lead.status || parsedLeadInfo.status)?.toUpperCase() === 'QUALIFIED' || (lead.status || parsedLeadInfo.status)?.toUpperCase() === 'SENT' ? 'bg-emerald-50 text-emerald-700 border border-emerald-200' :
+                  (lead.status || parsedLeadInfo.status)?.toUpperCase() === 'CLOSED' || (lead.status || parsedLeadInfo.status)?.toUpperCase() === 'REJECTED' || (lead.status || parsedLeadInfo.status)?.toUpperCase() === 'DISQUALIFIED' ? 'bg-rose-50 text-rose-700 border border-rose-200' :
+                  'bg-blue-50 text-blue-700 border border-blue-200'
+                }`}>
+                  <span className={`h-2 w-2 rounded-full ${
+                    (lead.status || parsedLeadInfo.status)?.toUpperCase() === 'QUALIFIED' || (lead.status || parsedLeadInfo.status)?.toUpperCase() === 'SENT' ? 'bg-emerald-600' :
+                    (lead.status || parsedLeadInfo.status)?.toUpperCase() === 'CLOSED' || (lead.status || parsedLeadInfo.status)?.toUpperCase() === 'REJECTED' || (lead.status || parsedLeadInfo.status)?.toUpperCase() === 'DISQUALIFIED' ? 'bg-rose-600' :
+                    'bg-blue-600'
+                  }`}></span>
+                  Status: {lead.status || parsedLeadInfo.status || 'NEW'}
                 </span>
                 <span className="rounded-full bg-indigo-50 text-indigo-700 border border-indigo-200 px-2.5 py-0.5 text-xs font-semibold">
-                  Mass Tort Intake
+                  {displayTort}
                 </span>
               </div>
 
               <div className="flex flex-wrap items-center gap-4 text-xs text-slate-500 pt-0.5">
                 <span className="flex items-center gap-1">
                   <Mail className="h-3.5 w-3.5 text-slate-400" />
-                  <strong>Email:</strong> {lead.email}
+                  <strong>Email:</strong> {lead.email || parsedContactInfo.email || '—'}
                 </span>
                 <span>•</span>
                 <span className="flex items-center gap-1">
                   <Phone className="h-3.5 w-3.5 text-slate-400" />
-                  <strong>Phone:</strong> {lead.phone}
+                  <strong>Phone:</strong> {lead.phone || parsedContactInfo.phoneNumber || '—'}
+                </span>
+                <span>•</span>
+                <span className="flex items-center gap-1">
+                  <Building2 className="h-3.5 w-3.5 text-slate-400" />
+                  <strong>Campaign:</strong> {displayCampaign}
                 </span>
                 <span>•</span>
                 <span className="flex items-center gap-1">
                   <Tag className="h-3.5 w-3.5 text-slate-400" />
-                  <strong>Service/Category:</strong> {lead.tortName || lead.campaignName || 'Camp Lejeune Litigation'}
+                  <strong>TORT Category:</strong> {displayTort}
                 </span>
               </div>
             </div>
@@ -459,18 +481,18 @@ export default function VendorLeadDetailPage({ params }: PageProps) {
                 Edit Lead Details
               </button>
             )}
-            {lead.phone && (
+            {(lead.phone || parsedContactInfo.phoneNumber) && (
               <a
-                href={`tel:${lead.phone}`}
+                href={`tel:${lead.phone || parsedContactInfo.phoneNumber}`}
                 className="inline-flex items-center gap-2 rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-xs font-bold text-slate-700 shadow-xs hover:bg-slate-50 transition-colors"
               >
                 <Phone className="h-4 w-4 text-emerald-600" />
                 Call Phone
               </a>
             )}
-            {lead.email && (
+            {(lead.email || parsedContactInfo.email) && (
               <a
-                href={`mailto:${lead.email}`}
+                href={`mailto:${lead.email || parsedContactInfo.email}`}
                 className="inline-flex items-center gap-2 rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-xs font-bold text-slate-700 shadow-xs hover:bg-slate-50 transition-colors"
               >
                 <Mail className="h-4 w-4 text-blue-600" />
@@ -478,7 +500,7 @@ export default function VendorLeadDetailPage({ params }: PageProps) {
               </a>
             )}
             <button
-              onClick={() => handleCopy(`Lead ID: ${lead.leadId}\nName: ${lead.firstName} ${lead.lastName}\nEmail: ${lead.email}\nPhone: ${lead.phone}`, 'Header Summary')}
+              onClick={() => handleCopy(`Lead ID: ${lead.leadId || id}\nName: ${lead.firstName || parsedContactInfo.firstName} ${lead.lastName || parsedContactInfo.lastName}\nEmail: ${lead.email || parsedContactInfo.email}\nPhone: ${lead.phone || parsedContactInfo.phoneNumber}\nCampaign: ${displayCampaign}\nTORT: ${displayTort}`, 'Header Summary')}
               className="inline-flex items-center gap-2 rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-xs font-bold text-slate-700 shadow-xs hover:bg-slate-50 transition-colors"
             >
               <Copy className="h-4 w-4" />
@@ -490,18 +512,18 @@ export default function VendorLeadDetailPage({ params }: PageProps) {
 
       {/* TWO-COLUMN WIREFRAME MAIN LAYOUT */}
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
-        {/* LEFT COLUMN (2 SPANS) - SECTIONS 2 to 6 */}
+        {/* LEFT COLUMN (2 SPANS) - SECTIONS 2 to 7 */}
         <div className="lg:col-span-2 space-y-6">
 
           {/* 2. LEAD INFORMATION SECTION */}
           <div className="rounded-2xl border border-slate-200 bg-white shadow-sm overflow-hidden">
             <div className="border-b border-slate-100 p-5 flex items-center justify-between">
               <div className="flex items-center gap-2">
-                <User className="h-5 w-5 text-blue-600" />
-                <h3 className="font-bold text-slate-900">2. Lead Information</h3>
+                <FileText className="h-5 w-5 text-blue-600" />
+                <h3 className="font-bold text-slate-900">1. Lead Information</h3>
               </div>
               <span className="text-xs font-bold uppercase tracking-wider text-blue-700 bg-blue-50 px-2.5 py-0.5 rounded-full border border-blue-200">
-                Core Profile Specs
+                Core Lead Setup
               </span>
             </div>
 
@@ -509,49 +531,67 @@ export default function VendorLeadDetailPage({ params }: PageProps) {
               {/* Lead Details Grid */}
               <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-5">
                 <div>
-                  <label className="text-xs font-bold uppercase tracking-wider text-slate-500">Type</label>
-                  <p className="mt-1 text-xs font-semibold text-slate-900">Direct Vendor Ingestion</p>
+                  <label className="text-xs font-bold uppercase tracking-wider text-slate-500">Campaign Name</label>
+                  <p className="mt-1 text-xs font-bold text-slate-900">{displayCampaign}</p>
                 </div>
 
                 <div>
-                  <label className="text-xs font-bold uppercase tracking-wider text-slate-500">First Name</label>
-                  <p className="mt-1 text-xs font-semibold text-slate-900">{lead.firstName || '—'}</p>
+                  <label className="text-xs font-bold uppercase tracking-wider text-slate-500">TORT Category</label>
+                  <p className="mt-1 text-xs font-bold text-blue-700">{displayTort}</p>
                 </div>
 
                 <div>
-                  <label className="text-xs font-bold uppercase tracking-wider text-slate-500">Last Name</label>
-                  <p className="mt-1 text-xs font-semibold text-slate-900">{lead.lastName || '—'}</p>
+                  <label className="text-xs font-bold uppercase tracking-wider text-slate-500">Contact / Lead Name</label>
+                  <p className="mt-1 text-xs font-semibold text-slate-900">{parsedLeadInfo.contactName || parsedLeadInfo.leadName || `${lead.firstName || parsedContactInfo.firstName || ''} ${lead.lastName || parsedContactInfo.lastName || ''}`.trim() || '—'}</p>
                 </div>
 
                 <div>
-                  <label className="text-xs font-bold uppercase tracking-wider text-slate-500">Token / Token Names</label>
-                  <p className="mt-1 text-xs font-mono font-bold text-indigo-600">TOK-LEAD-9921-X</p>
+                  <label className="text-xs font-bold uppercase tracking-wider text-slate-500">Lead Status</label>
+                  <p className="mt-1 text-xs font-semibold text-slate-900">{lead.status || parsedLeadInfo.status || 'NEW'}</p>
                 </div>
 
                 <div>
-                  <label className="text-xs font-bold uppercase tracking-wider text-slate-500">Closed / Countries Completed</label>
-                  <p className="mt-1 text-xs font-semibold text-slate-900">United States (50 States)</p>
+                  <label className="text-xs font-bold uppercase tracking-wider text-slate-500">Substatus / Billable</label>
+                  <p className="mt-1 text-xs font-semibold text-indigo-700">
+                    {parsedLeadInfo.substatus || 'None'} {parsedLeadInfo.billable !== undefined ? (parsedLeadInfo.billable ? '• Billable' : '• Non-billable') : '• Billable'}
+                  </p>
                 </div>
 
                 <div>
-                  <label className="text-xs font-bold uppercase tracking-wider text-slate-500">Search for Republics</label>
-                  <div className="mt-1 relative">
-                    <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-slate-400" />
-                    <input
-                      type="text"
-                      placeholder="Search republics..."
-                      value={republicSearch}
-                      onChange={(e) => setRepublicSearch(e.target.value)}
-                      className="w-full rounded-xl border border-slate-200 bg-white py-1.5 pl-8 pr-3 text-xs text-slate-900 outline-none focus:border-blue-600 shadow-xs"
-                    />
+                  <label className="text-xs font-bold uppercase tracking-wider text-slate-500">Tier / Priority</label>
+                  <p className="mt-1 text-xs font-bold text-indigo-700">
+                    {parsedLeadInfo.tier || (lead.priority === 'HIGH' ? 'Tier 1' : 'Tier 2')}
+                  </p>
+                </div>
+
+                {parsedLeadInfo.trustedForm && (
+                  <div className="sm:col-span-2">
+                    <label className="text-xs font-bold uppercase tracking-wider text-slate-500">TrustedForm Certificate</label>
+                    <p className="mt-1 text-xs font-mono font-semibold text-slate-800 break-all">{parsedLeadInfo.trustedForm}</p>
                   </div>
-                </div>
+                )}
+
+                {parsedLeadInfo.callDuration && (
+                  <div>
+                    <label className="text-xs font-bold uppercase tracking-wider text-slate-500">Call Duration</label>
+                    <p className="mt-1 text-xs font-semibold text-slate-900">{parsedLeadInfo.callDuration}</p>
+                  </div>
+                )}
+
+                {(parsedLeadInfo.reasonForRejection || parsedLeadInfo.reasonForDQ || parsedLeadInfo.reasonForDoesntMeetCriteria || parsedLeadInfo.reasonForSpam) && (
+                  <div className="sm:col-span-3 rounded-xl bg-rose-50 border border-rose-200 p-3 space-y-1">
+                    <label className="text-xs font-bold text-rose-700 uppercase">Reason / Feedback Notes</label>
+                    <p className="text-xs text-rose-900 font-medium">
+                      {parsedLeadInfo.reasonForRejection || parsedLeadInfo.reasonForDQ || parsedLeadInfo.reasonForDoesntMeetCriteria || parsedLeadInfo.reasonForSpam}
+                    </p>
+                  </div>
+                )}
               </div>
 
               {/* Checkbox & Ribbons indicator */}
               <div className="rounded-xl border border-slate-200 bg-slate-50/50 p-4">
                 <label className="text-xs font-bold uppercase tracking-wider text-slate-500 block mb-2">
-                  Checkbox & Ribbons Indicators
+                  Compliance & Verification Status
                 </label>
                 <div className="flex flex-wrap items-center gap-3">
                   <label className="inline-flex items-center gap-2 rounded-xl bg-white px-3 py-1.5 text-xs font-semibold text-emerald-700 shadow-xs border border-emerald-200">
@@ -561,7 +601,7 @@ export default function VendorLeadDetailPage({ params }: PageProps) {
 
                   <label className="inline-flex items-center gap-2 rounded-xl bg-white px-3 py-1.5 text-xs font-semibold text-amber-700 shadow-xs border border-amber-200">
                     <Ribbon className="h-4 w-4 text-amber-600" />
-                    <span>Priority Ribbon Verified</span>
+                    <span>{parsedLeadInfo.tier || 'Priority Tier 1'}</span>
                   </label>
 
                   <label className="inline-flex items-center gap-2 rounded-xl bg-white px-3 py-1.5 text-xs font-semibold text-indigo-700 shadow-xs border border-indigo-200">
@@ -574,7 +614,7 @@ export default function VendorLeadDetailPage({ params }: PageProps) {
               {/* Timestamps Grid */}
               <div className="space-y-2 pt-1">
                 <h4 className="text-xs font-bold uppercase tracking-wider text-slate-500">Timestamps Lifecycle</h4>
-                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                   <div className="rounded-xl bg-slate-50 p-3 border border-slate-200">
                     <span className="text-xs text-slate-500 block">Date/Time Opened</span>
                     <span className="text-xs font-bold text-slate-900 mt-1 block">
@@ -583,62 +623,87 @@ export default function VendorLeadDetailPage({ params }: PageProps) {
                   </div>
 
                   <div className="rounded-xl bg-slate-50 p-3 border border-slate-200">
-                    <span className="text-xs text-slate-500 block">Date Next</span>
+                    <span className="text-xs text-slate-500 block">Date Sent</span>
                     <span className="text-xs font-bold text-slate-900 mt-1 block">
-                      {nextDate.toLocaleDateString()} 10:00 AM
+                      {parsedLeadInfo.dateSent || openedDate.toLocaleDateString()}
                     </span>
                   </div>
 
                   <div className="rounded-xl bg-slate-50 p-3 border border-slate-200">
-                    <span className="text-xs text-slate-500 block">Date/Time Accepted</span>
+                    <span className="text-xs text-slate-500 block">Date Subscribed</span>
                     <span className="text-xs font-bold text-slate-900 mt-1 block">
-                      {acceptedDate.toLocaleDateString()} {acceptedDate.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-                    </span>
-                  </div>
-
-                  <div className="rounded-xl bg-slate-50 p-3 border border-slate-200">
-                    <span className="text-xs text-slate-500 block">Date/Time Closed/Lission</span>
-                    <span className="text-xs font-bold text-rose-600 mt-1 block">
-                      {closedDate.toLocaleDateString()} {closedDate.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                      {parsedLeadInfo.dateSubscribed || '—'}
                     </span>
                   </div>
                 </div>
               </div>
+            </div>
+          </div>
 
-              {/* System/Sales Fields */}
-              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-5 pt-2">
+          {/* 2. CONTACT INFORMATION SECTION */}
+          <div className="rounded-2xl border border-slate-200 bg-white shadow-sm overflow-hidden">
+            <div className="border-b border-slate-100 p-5 flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <User className="h-5 w-5 text-indigo-600" />
+                <h3 className="font-bold text-slate-900">2. Contact Information & Demographics</h3>
+              </div>
+              <span className="text-xs font-bold uppercase tracking-wider text-indigo-700 bg-indigo-50 px-2.5 py-0.5 rounded-full border border-indigo-200">
+                Claimant Profile
+              </span>
+            </div>
+
+            <div className="p-6 space-y-5">
+              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-5">
                 <div>
-                  <label className="text-xs font-bold uppercase tracking-wider text-slate-500">Reason / Reason Code</label>
-                  <p className="mt-1 text-xs font-bold text-emerald-600">QUALIFIED_INTAKE_01</p>
+                  <label className="text-xs font-bold uppercase tracking-wider text-slate-500">First Name</label>
+                  <p className="mt-1 text-xs font-semibold text-slate-900">{lead.firstName || parsedContactInfo.firstName || '—'}</p>
                 </div>
 
                 <div>
-                  <label className="text-xs font-bold uppercase tracking-wider text-slate-500">Coqout Senina Hafia</label>
-                  <input
-                    type="text"
-                    placeholder="Search Coqout..."
-                    value={coqoutSearch}
-                    onChange={(e) => setCoqoutSearch(e.target.value)}
-                    className="mt-1 w-full rounded-xl border border-slate-200 bg-white px-3 py-1.5 text-xs text-slate-900 outline-none focus:border-blue-600 shadow-xs"
-                  />
+                  <label className="text-xs font-bold uppercase tracking-wider text-slate-500">Middle Name</label>
+                  <p className="mt-1 text-xs font-semibold text-slate-900">{parsedContactInfo.middleName || '—'}</p>
                 </div>
 
                 <div>
-                  <label className="text-xs font-bold uppercase tracking-wider text-slate-500">Report For Sales</label>
-                  <p className="mt-1 text-xs font-semibold text-slate-900">Verified Sales Report #882</p>
+                  <label className="text-xs font-bold uppercase tracking-wider text-slate-500">Last Name</label>
+                  <p className="mt-1 text-xs font-semibold text-slate-900">{lead.lastName || parsedContactInfo.lastName || '—'}</p>
                 </div>
 
                 <div>
-                  <label className="text-xs font-bold uppercase tracking-wider text-slate-500">Product Reference / URL</label>
-                  <a
-                    href="https://crm.legalportal.com/ref/p-9012"
-                    target="_blank"
-                    rel="noreferrer"
-                    className="mt-1 inline-flex items-center gap-1 text-xs font-semibold text-primary hover:underline"
-                  >
-                    <span>p-9012 Link</span>
-                    <ExternalLink className="h-3 w-3" />
-                  </a>
+                  <label className="text-xs font-bold uppercase tracking-wider text-slate-500">Gender</label>
+                  <p className="mt-1 text-xs font-semibold text-slate-900">{lead.gender || parsedContactInfo.gender || '—'}</p>
+                </div>
+
+                <div>
+                  <label className="text-xs font-bold uppercase tracking-wider text-slate-500">Date of Birth (DOB)</label>
+                  <p className="mt-1 text-xs font-semibold text-slate-900">{lead.dob || parsedContactInfo.dateOfBirth || '—'}</p>
+                </div>
+
+                <div>
+                  <label className="text-xs font-bold uppercase tracking-wider text-slate-500">Phone Number</label>
+                  <p className="mt-1 text-xs font-semibold text-slate-900">{lead.phone || parsedContactInfo.phoneNumber || '—'}</p>
+                </div>
+
+                <div>
+                  <label className="text-xs font-bold uppercase tracking-wider text-slate-500">Email Address</label>
+                  <p className="mt-1 text-xs font-semibold text-slate-900">{lead.email || parsedContactInfo.email || '—'}</p>
+                </div>
+
+                <div>
+                  <label className="text-xs font-bold uppercase tracking-wider text-slate-500">State</label>
+                  <p className="mt-1 text-xs font-bold text-slate-900 font-mono">{lead.state || parsedContactInfo.state || '—'}</p>
+                </div>
+
+                <div>
+                  <label className="text-xs font-bold uppercase tracking-wider text-slate-500">Area Code / Zip</label>
+                  <p className="mt-1 text-xs font-semibold text-slate-900">{parsedContactInfo.areaCode || '—'}</p>
+                </div>
+
+                <div className="sm:col-span-3">
+                  <label className="text-xs font-bold uppercase tracking-wider text-slate-500">Street Address & City</label>
+                  <p className="mt-1 text-xs font-semibold text-slate-900">
+                    {parsedContactInfo.addressStreet || lead.address || '—'}{parsedContactInfo.city ? `, ${parsedContactInfo.city}` : ''}
+                  </p>
                 </div>
               </div>
             </div>
@@ -658,73 +723,56 @@ export default function VendorLeadDetailPage({ params }: PageProps) {
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-5">
                 <div>
                   <label className="text-xs font-bold uppercase tracking-wider text-slate-500">Case Number</label>
-                  <p className="mt-1 text-xs font-mono font-bold text-blue-600">CAS-2026-90412</p>
+                  <p className="mt-1 text-xs font-mono font-bold text-blue-600">{lead.leadId ? `CAS-${lead.leadId}` : 'CAS-2026-90412'}</p>
                 </div>
 
                 <div className="sm:col-span-2">
                   <label className="text-xs font-bold uppercase tracking-wider text-slate-500">Description</label>
                   <p className="mt-1 text-xs text-slate-700 leading-relaxed">
-                    {lead.caseDetails || 'Claimant stationed at Camp Lejeune military base between 1982 and 1987. Diagnosed with Non-Hodgkin Lymphoma secondary to toxic water contamination.'}
+                    {parsedLeadInfo.contactName
+                      ? `Lead Contact: ${parsedLeadInfo.contactName} • Campaign: ${displayCampaign} • Tort: ${displayTort}`
+                      : (typeof lead.caseDetails === 'string' && !lead.caseDetails.trim().startsWith('{') ? lead.caseDetails : 'Lead follow-up intake details recorded.')}
                   </p>
-                </div>
-              </div>
-
-              {/* Exposure Tracking */}
-              <div className="rounded-xl bg-slate-50 p-4 border border-slate-200 space-y-3">
-                <h4 className="text-xs font-bold uppercase tracking-wider text-slate-500 flex items-center gap-1.5">
-                  <Activity className="h-4 w-4 text-indigo-600" />
-                  Exposure Tracking Calendar
-                </h4>
-                <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                  <div>
-                    <span className="text-xs text-slate-500 block">Date of Incident</span>
-                    <span className="text-xs font-semibold text-slate-900 mt-0.5 block">2018-05-14</span>
-                  </div>
-
-                  <div>
-                    <span className="text-xs text-slate-500 block">Date First Exposure</span>
-                    <span className="text-xs font-bold text-indigo-600 mt-0.5 block">1982-03-01</span>
-                  </div>
-
-                  <div>
-                    <span className="text-xs text-slate-500 block">Date Last Exposure</span>
-                    <span className="text-xs font-bold text-indigo-600 mt-0.5 block">1987-11-30</span>
-                  </div>
                 </div>
               </div>
             </div>
           </div>
 
-          {/* 4. DIAGNOSIS INFORMATION SECTION */}
+          {/* 4. DIAGNOSIS & INCIDENT INFORMATION SECTION */}
           <div className="rounded-2xl border border-slate-200 bg-white shadow-sm overflow-hidden">
             <div className="border-b border-slate-100 p-5 flex items-center justify-between">
               <div className="flex items-center gap-2">
                 <Stethoscope className="h-5 w-5 text-emerald-600" />
-                <h3 className="font-bold text-slate-900">4. Diagnosis & Medical Details</h3>
+                <h3 className="font-bold text-slate-900">4. Diagnosis & Incident Information</h3>
               </div>
             </div>
 
             <div className="p-6 space-y-6">
               {/* Diagnosis Details & Staff */}
-              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-5">
+              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-5">
                 <div>
-                  <label className="text-xs font-bold uppercase tracking-wider text-slate-500">Diagnosis</label>
-                  <p className="mt-1 text-xs font-bold text-emerald-600">Non-Hodgkin Lymphoma / Renal Carcinoma</p>
+                  <label className="text-xs font-bold uppercase tracking-wider text-slate-500">Which Incident Occurred</label>
+                  <p className="mt-1 text-xs font-semibold text-rose-700">{parsedDiagnosisInfo.incidentType || '—'}</p>
                 </div>
 
                 <div>
-                  <label className="text-xs font-bold uppercase tracking-wider text-slate-500">Diagnosis Year</label>
-                  <p className="mt-1 text-xs font-semibold text-slate-900">2021</p>
+                  <label className="text-xs font-bold uppercase tracking-wider text-slate-500">Diagnosis</label>
+                  <p className="mt-1 text-xs font-bold text-emerald-600">{parsedDiagnosisInfo.diagnosis || lead.diagnosis || '—'}</p>
+                </div>
+
+                <div>
+                  <label className="text-xs font-bold uppercase tracking-wider text-slate-500">Diagnosis Year / Date</label>
+                  <p className="mt-1 text-xs font-semibold text-slate-900">{parsedDiagnosisInfo.diagnosisYear || '—'}</p>
                 </div>
 
                 <div>
                   <label className="text-xs font-bold uppercase tracking-wider text-slate-500">Diagnosing Doctor Name</label>
-                  <p className="mt-1 text-xs font-semibold text-slate-900">Dr. Robert Vance, MD</p>
+                  <p className="mt-1 text-xs font-semibold text-slate-900">{parsedDiagnosisInfo.diagnosingDoctorName || '—'}</p>
                 </div>
 
                 <div>
                   <label className="text-xs font-bold uppercase tracking-wider text-slate-500">Treating Doctor Name</label>
-                  <p className="mt-1 text-xs font-semibold text-slate-900">Dr. Elena Rostova, MD</p>
+                  <p className="mt-1 text-xs font-semibold text-slate-900">{parsedDiagnosisInfo.treatingDoctorName || '—'}</p>
                 </div>
               </div>
 
@@ -735,24 +783,24 @@ export default function VendorLeadDetailPage({ params }: PageProps) {
                   {/* Diagnosing Facility */}
                   <div className="rounded-xl border border-slate-200 bg-slate-50/60 p-4 space-y-2">
                     <h5 className="text-xs font-bold text-slate-900">Diagnosing Facility</h5>
-                    <p className="text-xs font-semibold text-emerald-600">St. Jude Medical Center</p>
+                    <p className="text-xs font-semibold text-emerald-600">{parsedDiagnosisInfo.diagnosingHospitalName || lead.hospital || '—'}</p>
                     <p className="text-xs text-slate-500">
-                      <strong>Address:</strong> 123 Health Ave, Suite 400, Baltimore, MD 21201
+                      <strong>Address:</strong> {parsedDiagnosisInfo.diagnosingHospitalAddress || '—'}
                     </p>
                     <p className="text-xs text-slate-500">
-                      <strong>Phone:</strong> (410) 555-0199
+                      <strong>Phone:</strong> {parsedDiagnosisInfo.diagnosingFacilityPhone || '—'}
                     </p>
                   </div>
 
                   {/* Treating Facility */}
                   <div className="rounded-xl border border-slate-200 bg-slate-50/60 p-4 space-y-2">
                     <h5 className="text-xs font-bold text-slate-900">Treating / Existing Facility</h5>
-                    <p className="text-xs font-semibold text-blue-600">Johns Hopkins Hospital</p>
+                    <p className="text-xs font-semibold text-blue-600">{parsedDiagnosisInfo.treatingFacilityName || '—'}</p>
                     <p className="text-xs text-slate-500">
-                      <strong>Address:</strong> 600 N Wolfe St, Baltimore, MD 21287
+                      <strong>Address:</strong> {parsedDiagnosisInfo.treatingFacilityAddress || '—'}
                     </p>
                     <p className="text-xs text-slate-500">
-                      <strong>Phone:</strong> (410) 555-0244
+                      <strong>Phone:</strong> {parsedDiagnosisInfo.treatingFacilityPhone || '—'}
                     </p>
                   </div>
                 </div>
@@ -770,21 +818,30 @@ export default function VendorLeadDetailPage({ params }: PageProps) {
             </div>
 
             <div className="p-6 space-y-6">
-              {/* POA Block with Checkbox */}
-              <div className="rounded-xl border border-amber-200 bg-amber-50 p-4 flex items-center justify-between">
+              {/* POA Block */}
+              <div className={`rounded-xl border p-4 flex items-center justify-between ${
+                parsedPOAInfo.powerOfAttorney ? 'border-amber-200 bg-amber-50' : 'border-slate-200 bg-slate-50'
+              }`}>
                 <div className="flex items-center gap-3">
                   <input
                     type="checkbox"
-                    defaultChecked
-                    className="h-4 w-4 rounded border-amber-300 text-amber-600 focus:ring-amber-500 cursor-pointer"
+                    checked={Boolean(parsedPOAInfo.powerOfAttorney)}
+                    readOnly
+                    className="h-4 w-4 rounded border-slate-300 text-amber-600 pointer-events-none"
                   />
                   <div>
-                    <h5 className="text-xs font-bold text-amber-900">POA Reason / Reascory</h5>
-                    <p className="text-xs text-amber-800">Power of Attorney legally executed by primary representative</p>
+                    <h5 className="text-xs font-bold text-slate-900">POA Reason / Status</h5>
+                    <p className="text-xs text-slate-600">
+                      {parsedPOAInfo.powerOfAttorney
+                        ? 'Power of Attorney legally executed by primary representative'
+                        : 'No Power of Attorney on file for this lead'}
+                    </p>
                   </div>
                 </div>
-                <span className="text-xs font-bold uppercase text-amber-800 bg-amber-200/60 border border-amber-300 px-2.5 py-0.5 rounded-full">
-                  ACTIVE POA
+                <span className={`text-xs font-bold uppercase px-2.5 py-0.5 rounded-full border ${
+                  parsedPOAInfo.powerOfAttorney ? 'text-amber-800 bg-amber-200/60 border-amber-300' : 'text-slate-600 bg-slate-200 border-slate-300'
+                }`}>
+                  {parsedPOAInfo.powerOfAttorney ? 'ACTIVE POA' : 'NO POA'}
                 </span>
               </div>
 
@@ -794,118 +851,192 @@ export default function VendorLeadDetailPage({ params }: PageProps) {
                 <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-5 gap-4">
                   <div>
                     <label className="text-xs text-slate-500 block">Victim Name</label>
-                    <span className="text-xs font-bold text-slate-900 mt-0.5 block">Johnathan Sr.</span>
+                    <span className="text-xs font-bold text-slate-900 mt-0.5 block">{parsedPOAInfo.victimName || '—'}</span>
                   </div>
 
                   <div>
                     <label className="text-xs text-slate-500 block">Victim Full Name</label>
-                    <span className="text-xs font-bold text-slate-900 mt-0.5 block">Johnathan Marcus Doe Sr.</span>
+                    <span className="text-xs font-bold text-slate-900 mt-0.5 block">{parsedPOAInfo.victimFullName || '—'}</span>
                   </div>
 
                   <div>
                     <label className="text-xs text-slate-500 block">Victim Last Name</label>
-                    <span className="text-xs font-bold text-slate-900 mt-0.5 block">Doe</span>
+                    <span className="text-xs font-bold text-slate-900 mt-0.5 block">{parsedPOAInfo.victimLastName || '—'}</span>
                   </div>
 
                   <div>
                     <label className="text-xs text-slate-500 block">Victim DOB</label>
-                    <span className="text-xs font-semibold text-slate-800 mt-0.5 block">1955-08-12</span>
+                    <span className="text-xs font-semibold text-slate-800 mt-0.5 block">{parsedPOAInfo.victimDOB || '—'}</span>
                   </div>
 
                   <div>
                     <label className="text-xs text-slate-500 block">Victim DOD</label>
-                    <span className="text-xs font-semibold text-slate-800 mt-0.5 block">Deceased (2024-01-15)</span>
+                    <span className="text-xs font-semibold text-slate-800 mt-0.5 block">{parsedPOAInfo.victimDOD || '—'}</span>
                   </div>
                 </div>
               </div>
             </div>
           </div>
 
-          {/* 5.5 SCREENING & CAMPAIGN QUALIFICATION SECTION */}
-          {parsedDetails?.screening && (() => {
-            const sc = parsedDetails.screening;
+          {/* 6. DYNAMIC TORT-SPECIFIC OTHER CASE INFORMATION SECTION */}
+          {(() => {
+            const screening = parsedDetails?.screeningCriteria || parsedDetails?.screening || {};
+            const tortType = displayTort;
+
+            // Strategy 1: If submitted questions were snapshotted at time of submission, render them directly!
+            if (submittedQuestionsList.length > 0) {
+              return (
+                <div className="rounded-2xl border border-slate-200 bg-white shadow-sm overflow-hidden space-y-4 p-6">
+                  <div className="flex items-center justify-between border-b pb-3 border-slate-100">
+                    <h3 className="font-bold text-slate-900 flex items-center gap-2">
+                      <ShieldCheck className="h-5 w-5 text-amber-600" />
+                      Section 5: Other Case Information ({tortType})
+                    </h3>
+                    <span className="text-xs font-bold uppercase text-amber-800 bg-amber-100 border border-amber-200 px-3 py-1 rounded-full">
+                      {submittedQuestionsList.length} Question{submittedQuestionsList.length > 1 ? 's' : ''} Submitted
+                    </span>
+                  </div>
+
+                  <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+                    {submittedQuestionsList.map((q) => {
+                      const displayVal = q.value !== undefined && q.value !== null && q.value !== '' ? String(q.value) : '—';
+                      return (
+                        <div
+                          key={q.id || q.name}
+                          className={`rounded-xl bg-slate-50/80 p-3.5 border border-slate-200/80 space-y-1 ${
+                            q.type === 'textarea' ? 'sm:col-span-2 md:col-span-3' : ''
+                          }`}
+                        >
+                          <div className="flex items-center justify-between">
+                            <label className="text-xs font-bold text-slate-600">
+                              {q.label}
+                            </label>
+                            {q.categoryBadge && (
+                              <span className="text-[10px] font-semibold text-amber-700 bg-amber-50 px-2 py-0.5 rounded-md border border-amber-200">
+                                {q.categoryBadge}
+                              </span>
+                            )}
+                          </div>
+                          <p className="text-xs font-semibold text-slate-900 whitespace-pre-wrap mt-1">
+                            {displayVal}
+                          </p>
+                          {q.helpText && (
+                            <p className="text-[10px] text-slate-400 italic mt-0.5">ℹ️ {q.helpText}</p>
+                          )}
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
+              );
+            }
+
+            // Strategy 2: Load configured questions from central tort store
+            const dynamicQuestions = getQuestionsForTort(tortType);
+
+            if (dynamicQuestions.length > 0) {
+              return (
+                <div className="rounded-2xl border border-slate-200 bg-white shadow-sm overflow-hidden space-y-4 p-6">
+                  <div className="flex items-center justify-between border-b pb-3 border-slate-100">
+                    <h3 className="font-bold text-slate-900 flex items-center gap-2">
+                      <ShieldCheck className="h-5 w-5 text-amber-600" />
+                      Section 5: Other Case Information ({tortType})
+                    </h3>
+                    <span className="text-xs font-bold uppercase text-amber-800 bg-amber-100 border border-amber-200 px-3 py-1 rounded-full">
+                      {dynamicQuestions.length} Question{dynamicQuestions.length > 1 ? 's' : ''} Configured
+                    </span>
+                  </div>
+
+                  <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+                    {dynamicQuestions.map((q) => {
+                      const rawVal = screening[q.name] ?? (parsedDetails as any)?.[q.name] ?? (lead as any)?.[q.name];
+                      const displayVal = rawVal !== undefined && rawVal !== null && rawVal !== '' ? String(rawVal) : '—';
+                      return (
+                        <div
+                          key={q.id || q.name}
+                          className={`rounded-xl bg-slate-50/80 p-3.5 border border-slate-200/80 space-y-1 ${
+                            q.type === 'textarea' ? 'sm:col-span-2 md:col-span-3' : ''
+                          }`}
+                        >
+                          <div className="flex items-center justify-between">
+                            <label className="text-xs font-bold text-slate-600">
+                              {q.label} {q.required && <span className="text-rose-500">*</span>}
+                            </label>
+                            {q.categoryBadge && (
+                              <span className="text-[10px] font-semibold text-amber-700 bg-amber-50 px-2 py-0.5 rounded-md border border-amber-200">
+                                {q.categoryBadge}
+                              </span>
+                            )}
+                          </div>
+                          <p className="text-xs font-semibold text-slate-900 whitespace-pre-wrap mt-1">
+                            {displayVal}
+                          </p>
+                          {q.helpText && (
+                            <p className="text-[10px] text-slate-400 italic mt-0.5">ℹ️ {q.helpText}</p>
+                          )}
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
+              );
+            }
+
+            // Strategy 3: Fallback if no predefined dynamic questions match this tort, check if any non-internal keys exist in screening
+            const nonInternalKeys = Object.entries(screening).filter(
+              ([k, v]) =>
+                !['contactName', 'campaignName', 'type', 'status', 'leadName', 'substatus', 'billable', 'firstName', 'middleName', 'lastName', 'gender', 'dateOfBirth', 'phoneNumber', 'email', 'addressStreet', 'city', 'state', 'areaCode', 'powerOfAttorney', 'victimName', 'victimFullName', 'victimLastName', 'victimDOB', 'victimDOD', 'incidentType', 'diagnosis', 'diagnosisYear', 'diagnosingDoctorName', 'treatingDoctorName', 'diagnosingHospitalName', 'treatingFacilityName', 'diagnosingHospitalAddress', 'treatingFacilityAddress', 'diagnosingFacilityPhone', 'treatingFacilityPhone', 'submittedQuestions'].includes(k) &&
+                v !== undefined &&
+                v !== null &&
+                v !== ''
+            );
+
+            if (nonInternalKeys.length > 0) {
+              return (
+                <div className="rounded-2xl border border-slate-200 bg-white shadow-sm overflow-hidden space-y-4 p-6">
+                  <div className="flex items-center justify-between border-b pb-3 border-slate-100">
+                    <h3 className="font-bold text-slate-900 flex items-center gap-2">
+                      <ShieldCheck className="h-5 w-5 text-amber-600" />
+                      Section 5: Other Case Information ({tortType})
+                    </h3>
+                    <span className="text-xs font-bold uppercase text-amber-800 bg-amber-100 border border-amber-200 px-3 py-1 rounded-full">
+                      Case Responses
+                    </span>
+                  </div>
+
+                  <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+                    {nonInternalKeys.map(([k, v]) => (
+                      <div key={k} className="rounded-xl bg-slate-50/80 p-3.5 border border-slate-200/80 space-y-1">
+                        <label className="text-xs font-bold text-slate-600 capitalize">
+                          {k.replace(/([A-Z])/g, ' $1')}
+                        </label>
+                        <p className="text-xs font-semibold text-slate-900 whitespace-pre-wrap mt-1">
+                          {String(v)}
+                        </p>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              );
+            }
+
             return (
-              <div className="rounded-2xl border border-slate-200 bg-white shadow-sm overflow-hidden space-y-4 p-6">
-                <div className="flex items-center justify-between border-b pb-3 border-slate-100">
-                  <h3 className="font-bold text-slate-900 flex items-center gap-2">
-                    <ShieldCheck className="h-5 w-5 text-emerald-600" />
-                    Campaign Screening & Case Follow-up Details
-                  </h3>
-                  <span className="text-xs font-bold uppercase text-emerald-700 bg-emerald-50 border border-emerald-200 px-3 py-1 rounded-full">
-                    Verified Intake
-                  </span>
-                </div>
-
-                <div className="space-y-4">
-                  {/* Question 1: Symptoms */}
-                  <div className="rounded-xl bg-amber-50/70 p-4 border border-amber-200/80 space-y-2">
-                    <div className="flex items-center justify-between">
-                      <h4 className="text-xs font-bold text-amber-900">1. Emotional Changes / Symptoms Before Diagnosis</h4>
-                      <span className="text-[10px] font-bold text-amber-800 bg-amber-100 px-2.5 py-0.5 rounded-md border border-amber-200">
-                        Date: {sc.rideshareSymptomsDate || 'N/A'}
-                      </span>
-                    </div>
-                    <p className="text-xs text-slate-800 font-medium whitespace-pre-wrap">
-                      {sc.rideshareSymptomsDetails || 'No details provided.'}
-                    </p>
-                  </div>
-
-                  {/* Question 2: Test / Diagnosis Confirmation */}
-                  <div className="rounded-xl bg-indigo-50/70 p-4 border border-indigo-200/80 space-y-2">
-                    <div className="flex items-center justify-between">
-                      <h4 className="text-xs font-bold text-indigo-900">2. Confirmation of Diagnosis / Tests</h4>
-                      <span className="text-[10px] font-bold text-indigo-800 bg-indigo-100 px-2.5 py-0.5 rounded-md border border-indigo-200">
-                        Date: {sc.rideshareDiagnosisTestDate || 'N/A'}
-                      </span>
-                    </div>
-                    <p className="text-xs text-slate-800 font-medium whitespace-pre-wrap">
-                      {sc.rideshareDiagnosisTestDetails || 'No details provided.'}
-                    </p>
-                  </div>
-
-                  {/* Question 3: Treatment */}
-                  <div className="rounded-xl bg-emerald-50/70 p-4 border border-emerald-200/80 space-y-2">
-                    <div className="flex items-center justify-between">
-                      <h4 className="text-xs font-bold text-emerald-900">3. Treatment Received</h4>
-                      <span className="text-[10px] font-bold text-emerald-800 bg-emerald-100 px-2.5 py-0.5 rounded-md border border-emerald-200">
-                        Date: {sc.rideshareTreatmentDate || 'N/A'}
-                      </span>
-                    </div>
-                    <p className="text-xs text-slate-800 font-medium whitespace-pre-wrap">
-                      {sc.rideshareTreatmentDetails || 'No details provided.'}
-                    </p>
-                  </div>
-
-                  {/* Extra Grid */}
-                  <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 pt-2 text-xs">
-                    <div className="rounded-lg bg-slate-50 p-2.5 border border-slate-200">
-                      <span className="text-slate-500 block text-[10px] font-bold uppercase">Assaulted (Rideshare)</span>
-                      <span className="font-bold text-slate-900 block mt-0.5">{sc.rideshareAssaulted || 'N/A'}</span>
-                    </div>
-                    <div className="rounded-lg bg-slate-50 p-2.5 border border-slate-200">
-                      <span className="text-slate-500 block text-[10px] font-bold uppercase">Provider</span>
-                      <span className="font-bold text-slate-900 block mt-0.5">{sc.rideshareProvider || 'N/A'}</span>
-                    </div>
-                    <div className="rounded-lg bg-slate-50 p-2.5 border border-slate-200">
-                      <span className="text-slate-500 block text-[10px] font-bold uppercase">Proof of Ride</span>
-                      <span className="font-bold text-slate-900 block mt-0.5">{sc.rideshareProofOfRide || 'N/A'}</span>
-                    </div>
-                    <div className="rounded-lg bg-slate-50 p-2.5 border border-slate-200">
-                      <span className="text-slate-500 block text-[10px] font-bold uppercase">Driver Name</span>
-                      <span className="font-bold text-slate-900 block mt-0.5">{sc.rideshareDriverName || 'N/A'}</span>
-                    </div>
-                  </div>
-                </div>
+              <div className="rounded-2xl border border-slate-200 bg-white shadow-sm overflow-hidden p-6 space-y-2">
+                <h3 className="font-bold text-slate-900 flex items-center gap-2">
+                  <ShieldCheck className="h-5 w-5 text-amber-600" />
+                  Section 5: Other Case Information ({tortType})
+                </h3>
+                <p className="text-xs text-slate-400 italic">No additional questionnaire items recorded for this case category.</p>
               </div>
             );
           })()}
 
-          {/* 6. SYSTEM INFORMATION SECTION */}
+          {/* 7. SYSTEM INFORMATION SECTION */}
           <div className="rounded-2xl border border-slate-200 bg-white shadow-sm overflow-hidden">
             <div className="border-b border-slate-100 p-5 flex items-center justify-between">
               <div className="flex items-center gap-2">
                 <Layers className="h-5 w-5 text-blue-600" />
-                <h3 className="font-bold text-slate-900">6. System Information & Tags</h3>
+                <h3 className="font-bold text-slate-900">7. System Information & Tags</h3>
               </div>
             </div>
 
@@ -929,7 +1060,7 @@ export default function VendorLeadDetailPage({ params }: PageProps) {
                 <div className="mt-1.5 flex items-center gap-2">
                   <span className="inline-flex items-center gap-1 rounded-lg bg-blue-50 text-blue-700 border border-blue-200 px-3 py-1 text-xs font-bold">
                     <Tag className="h-3 w-3" />
-                    Water Contamination Exposure
+                    {displayTort}
                   </span>
                 </div>
               </div>
@@ -939,7 +1070,7 @@ export default function VendorLeadDetailPage({ params }: PageProps) {
                 <div className="mt-1.5 flex items-center gap-2">
                   <span className="inline-flex items-center gap-1 rounded-lg bg-emerald-50 text-emerald-700 border border-emerald-200 px-3 py-1 text-xs font-bold">
                     <Building2 className="h-3 w-3" />
-                    {lead.campaignName || 'Camp Lejeune Justice'}
+                    {displayCampaign}
                   </span>
                 </div>
               </div>

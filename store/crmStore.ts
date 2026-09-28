@@ -450,7 +450,13 @@ export const useCRMStore = create<CRMState>((set, get) => ({
         set({ leads: updated });
         saveToStorage('mc_leads', updated);
       }
-    } catch (e) {
+    } catch (e: any) {
+      if (e.response?.status === 409 || e.response?.data?.message?.includes('Duplicate') || e.response?.data?.message?.includes('already Exist')) {
+        const rollback = get().leads.filter(l => l.id !== optimisticLead.id);
+        set({ leads: rollback });
+        saveToStorage('mc_leads', rollback);
+        throw e;
+      }
       console.warn('API error during lead creation, staying with local/optimistic lead.', e);
       const currentLogs = get().logs;
       const newLog: MockLog = {

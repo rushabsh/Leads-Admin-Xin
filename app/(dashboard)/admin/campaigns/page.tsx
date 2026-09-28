@@ -131,6 +131,16 @@ export default function CampaignsPage() {
     setShowAddEditModal(true);
   };
 
+  const formatDateInput = (dateVal?: string) => {
+    if (!dateVal) return '';
+    try {
+      const d = new Date(dateVal);
+      return isNaN(d.getTime()) ? '' : d.toISOString().split('T')[0];
+    } catch {
+      return '';
+    }
+  };
+
   const handleOpenEditModal = (campaign: CampaignData) => {
     setEditingCampaign(campaign);
     setFormData({
@@ -141,8 +151,8 @@ export default function CampaignsPage() {
       vendorId: campaign.vendorId || '',
       lawFirmId: campaign.lawFirmId || '',
       marketingSource: campaign.marketingSource || 'Facebook Ads',
-      startDate: campaign.startDate ? new Date(campaign.startDate).toISOString().split('T')[0] : '',
-      endDate: campaign.endDate ? new Date(campaign.endDate).toISOString().split('T')[0] : '',
+      startDate: formatDateInput(campaign.startDate),
+      endDate: formatDateInput(campaign.endDate),
       costPerLeadTarget: campaign.costPerLeadTarget || 0,
       expectedLeadTarget: campaign.expectedLeadTarget || 0,
       status: campaign.status

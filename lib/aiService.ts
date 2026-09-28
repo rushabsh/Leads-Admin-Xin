@@ -16,46 +16,124 @@ Summary: Subject exhibits key diagnostic criteria matching the litigation parame
 Subject expressed clear intent to participate in mass tort action. Key points mentioned: ${notes || 'Client confirmed contact details and timeline of diagnosis'}. The client answered positively to qualification questions. Transfer of call completed successfully.`;
   }
 
-  static async checkDuplicateLead(firstName: string, lastName: string, email: string, phone: string): Promise<boolean> {
-    const normalizedEmail = email ? email.toLowerCase().trim() : '';
-    const normalizedPhone = phone ? phone.replace(/\D/g, '') : '';
-    const isPlaceholderEmail = !normalizedEmail || normalizedEmail.includes('example.com') || normalizedEmail.includes('public.lead');
-    const isPlaceholderPhone = !normalizedPhone || normalizedPhone === '5550000000' || normalizedPhone.length < 7;
+  static normalizeEmail(email?: string): string {
+    if (!email) return '';
+    return email.toLowerCase().trim();
+  }
 
-    const orConditions: any[] = [];
+  static normalizePhone(phone?: string): string {
+    if (!phone) return '';
+    return phone.replace(/\D/g, '');
+  }
 
-    if (!isPlaceholderEmail) {
-      orConditions.push({ email: { equals: normalizedEmail, mode: 'insensitive' } });
-    }
+  static isPlaceholderEmail(email?: string): boolean {
+    const norm = this.normalizeEmail(email);
+    if (!norm) return true;
+    if (norm === 'lead@example.com') return true;
+    if (norm.startsWith('public.lead.')) return true;
+    return false;
+  }
 
-    if (!isPlaceholderPhone) {
-      orConditions.push({ phone: { contains: normalizedPhone } });
-    }
+  static isPlaceholderPhone(phone?: string): boolean {
+    const norm = this.normalizePhone(phone);
+    if (!norm) return true;
+    if (norm === '5550000000') return true;
+    if (norm.length < 7) return true;
+    return false;
+  }
 
-    // Require matching name AND at least one matching contact detail to prevent false positives on common names
-    if (firstName && lastName && (!isPlaceholderEmail || !isPlaceholderPhone)) {
-      const contactConditions: any[] = [];
-      if (!isPlaceholderEmail) contactConditions.push({ email: { equals: normalizedEmail, mode: 'insensitive' } });
-      if (!isPlaceholderPhone) contactConditions.push({ phone: { contains: normalizedPhone } });
+  static async findDuplicateLead(email?: string, phone?: string): Promise<{ isDuplicate: boolean; reason?: string; existingLead?: any }> {
+    const normEmail = this.normalizeEmail(email);
+    const normPhone = this.normalizePhone(phone);
 
-      orConditions.push({
-        AND: [
-          { firstName: { equals: firstName.trim(), mode: 'insensitive' } },
-          { lastName: { equals: lastName.trim(), mode: 'insensitive' } },
-          { OR: contactConditions }
-        ]
+    const hasValidEmail = !this.isPlaceholderEmail(normEmail);
+    const hasValidPhone = !this.isPlaceholderPhone(normPhone);
+
+    // 1. Strict Global Email Check
+    if (hasValidEmail) {
+      const existingByEmail = await prisma.lead.findFirst({
+        where: {
+          email: { equals: normEmail, mode: 'insensitive' }
+        },
+        include: {
+          campaign: { select: { id: true, name: true } },
+          vendor: { select: { id: true, name: true } }
+        }
       });
+
+      if (existingByEmail) {
+        return {
+          isDuplicate: true,
+          reason: 'Lead already Exist',
+          existingLead: existingByEmail
+        };
+      }
     }
 
-    if (orConditions.length === 0) return false;
+    // 2. Strict Global Phone Check (Normalized digits matching)
+    if (hasValidPhone) {
+      const last10 = normPhone.length >= 10 ? normPhone.slice(-10) : normPhone;
 
-    const existingLead = await prisma.lead.findFirst({
-      where: {
-        OR: orConditions
+      // Direct indexed check
+      const directPhoneMatch = await prisma.lead.findFirst({
+        where: {
+          OR: [
+            { phone: { equals: phone ? phone.trim() : '' } },
+            { phone: { contains: last10 } },
+            { phone: { contains: normPhone } }
+          ]
+        },
+        include: {
+          campaign: { select: { id: true, name: true } },
+          vendor: { select: { id: true, name: true } }
+        }
+      });
+
+      if (directPhoneMatch) {
+        const foundDigits = (directPhoneMatch.phone || '').replace(/\D/g, '');
+        if (foundDigits && foundDigits !== '5550000000' && foundDigits.length >= 7) {
+          return {
+            isDuplicate: true,
+            reason: 'Lead already Exist',
+            existingLead: directPhoneMatch
+          };
+        }
       }
-    });
 
-    return !!existingLead;
+      // Normalized digits scan across all leads
+      const candidates = await prisma.lead.findMany({
+        where: { phone: { not: '' } },
+        select: {
+          id: true,
+          phone: true,
+          email: true,
+          campaign: { select: { id: true, name: true } },
+          vendor: { select: { id: true, name: true } }
+        }
+      });
+
+      const matchedPhoneLead = candidates.find(c => {
+        const cPhoneDigits = (c.phone || '').replace(/\D/g, '');
+        if (!cPhoneDigits || cPhoneDigits === '5550000000' || cPhoneDigits.length < 7) return false;
+        const cLast10 = cPhoneDigits.length >= 10 ? cPhoneDigits.slice(-10) : cPhoneDigits;
+        return cPhoneDigits === normPhone || cLast10 === last10;
+      });
+
+      if (matchedPhoneLead) {
+        return {
+          isDuplicate: true,
+          reason: 'Lead already Exist',
+          existingLead: matchedPhoneLead
+        };
+      }
+    }
+
+    return { isDuplicate: false };
+  }
+
+  static async checkDuplicateLead(firstName: string, lastName: string, email: string, phone: string): Promise<boolean> {
+    const result = await this.findDuplicateLead(email, phone);
+    return result.isDuplicate;
   }
 
   static calculateLeadScore(state: string, details?: string): number {

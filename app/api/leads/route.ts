@@ -139,8 +139,14 @@ export async function POST(req: NextRequest) {
       intakeAgentId
     } = body;
 
-    // Check duplicate
-    const duplicateDetected = await AIService.checkDuplicateLead(firstName, lastName, email, phone);
+    // Strict Global Deduplication Check: Phone (normalized digits) OR Email
+    const duplicateCheck = await AIService.findDuplicateLead(email, phone);
+    if (duplicateCheck.isDuplicate) {
+      return NextResponse.json({
+        success: false,
+        message: 'Lead already Exist'
+      }, { status: 409 });
+    }
 
     // Calculate score
     const leadScore = AIService.calculateLeadScore(state, caseDetails);
@@ -216,7 +222,7 @@ export async function POST(req: NextRequest) {
         priority: priority || 'MEDIUM',
         leadScore,
         aiSummary,
-        duplicateDetected,
+        duplicateDetected: false,
         campaignId: targetCampaignId,
         vendorId: resolvedVendorId,
         lawFirmId: resolvedLawFirmId,

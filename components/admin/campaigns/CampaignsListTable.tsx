@@ -189,19 +189,25 @@ export default function CampaignsListTable({
                       {camp.status}
                     </span>
                   </td>
-                  <td className="p-4 text-right">
+                  <td className="p-4 text-right" onClick={(e) => e.stopPropagation()}>
                     <div className="flex items-center justify-end gap-1.5">
                       <button
-                        onClick={() => onViewDetails(camp)}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          onViewDetails(camp);
+                        }}
                         title="Analytics Details"
-                        className="rounded-lg p-1.5 text-slate-400 hover:bg-slate-100 hover:text-blue-600 transition-colors"
+                        className="rounded-lg p-1.5 text-slate-400 hover:bg-slate-100 hover:text-blue-600 transition-colors cursor-pointer"
                       >
                         <Eye className="h-4 w-4" />
                       </button>
                       <button
-                        onClick={() => onToggleStatus(camp)}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          onToggleStatus(camp);
+                        }}
                         title={camp.status === 'ACTIVE' ? 'Pause Campaign' : 'Resume Campaign'}
-                        className="rounded-lg p-1.5 text-slate-400 hover:bg-slate-100 hover:text-slate-700 transition-colors"
+                        className="rounded-lg p-1.5 text-slate-400 hover:bg-slate-100 hover:text-slate-700 transition-colors cursor-pointer"
                       >
                         {camp.status === 'ACTIVE' ? (
                           <Pause className="h-4 w-4" />
@@ -210,16 +216,22 @@ export default function CampaignsListTable({
                         )}
                       </button>
                       <button
-                        onClick={() => onOpenEditModal(camp)}
-                        title="Edit"
-                        className="rounded-lg p-1.5 text-slate-400 hover:bg-slate-100 hover:text-blue-600 transition-colors"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          onOpenEditModal(camp);
+                        }}
+                        title="Edit Campaign"
+                        className="rounded-lg p-1.5 text-slate-400 hover:bg-slate-100 hover:text-blue-600 transition-colors cursor-pointer"
                       >
                         <Edit2 className="h-4 w-4" />
                       </button>
                       <button
-                        onClick={() => onDeleteCampaign(camp.id)}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          onDeleteCampaign(camp.id);
+                        }}
                         title="Delete"
-                        className="rounded-lg p-1.5 text-slate-400 hover:bg-slate-100 hover:text-rose-600 transition-colors"
+                        className="rounded-lg p-1.5 text-slate-400 hover:bg-slate-100 hover:text-rose-600 transition-colors cursor-pointer"
                       >
                         <Trash2 className="h-4 w-4" />
                       </button>

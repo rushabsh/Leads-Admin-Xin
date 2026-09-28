@@ -895,7 +895,12 @@ export default function NewCaseLeadFollowUpForm({
         if (res.data?.success && res.data?.lead) {
           createdLead = res.data.lead;
         }
-      } catch (apiErr) {
+      } catch (apiErr: any) {
+        if (apiErr.response?.status === 409 || apiErr.response?.data?.message?.includes('Duplicate') || apiErr.response?.data?.message?.includes('already Exist')) {
+          showToast(apiErr.response?.data?.message || 'Lead already Exist', 'error');
+          setIsSubmitting(false);
+          return;
+        }
         console.warn('Direct authenticated API POST lead creation failed, attempting public submit fallback:', apiErr);
         try {
           const publicRes = await fetch('/api/public/submit-lead', {
@@ -909,6 +914,11 @@ export default function NewCaseLeadFollowUpForm({
             })
           });
           const publicData = await publicRes.json();
+          if (publicRes.status === 409 || !publicData.success) {
+            showToast(publicData.message || 'Lead already Exist', 'error');
+            setIsSubmitting(false);
+            return;
+          }
           if (publicData.success && publicData.data) {
             createdLead = publicData.data;
           }
@@ -917,8 +927,14 @@ export default function NewCaseLeadFollowUpForm({
         }
       }
 
+      if (!createdLead) {
+        showToast('Failed to save lead. Please check input fields.', 'error');
+        setIsSubmitting(false);
+        return;
+      }
+
       try {
-        await addLead(createdLead || payload);
+        await addLead(createdLead);
         await fetchData(true);
       } catch (_) { }
 

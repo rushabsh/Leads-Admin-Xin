@@ -122,8 +122,14 @@ export async function POST(req: NextRequest) {
     const primaryEmail = email || `public.lead.${Date.now()}@example.com`;
     const primaryState = state || 'CA';
 
-    // Duplicate check
-    const duplicateDetected = await AIService.checkDuplicateLead(primaryFirstName, primaryLastName, primaryEmail, primaryPhone);
+    // Strict Global Deduplication Check: Phone (normalized digits) OR Email
+    const duplicateCheck = await AIService.findDuplicateLead(primaryEmail, primaryPhone);
+    if (duplicateCheck.isDuplicate) {
+      return NextResponse.json({
+        success: false,
+        message: 'Lead already Exist'
+      }, { status: 409 });
+    }
 
     // Build structured caseDetails JSON payload
     const caseDetailsObj = {
@@ -226,7 +232,7 @@ export async function POST(req: NextRequest) {
         priority: tier === 'Tier 1' ? 'HIGH' : 'MEDIUM',
         leadScore,
         aiSummary,
-        duplicateDetected,
+        duplicateDetected: false,
         campaignId: campaign.id,
         vendorId: vendor.id,
         dob: dob || '',

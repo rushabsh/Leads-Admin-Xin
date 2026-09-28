@@ -238,7 +238,12 @@ export default function useCsvImport(
         if (actualLead.leadId) {
           existingLeadIds.add(actualLead.leadId.toUpperCase());
         }
-      } catch (err) {
+      } catch (err: any) {
+        if (err.response?.status === 409 || err.response?.data?.message?.includes('Duplicate') || err.response?.data?.message?.includes('already Exist')) {
+          failedCount++;
+          reports.push(`Row ${rowNum}: Skipped - ${err.response?.data?.message || 'Lead already Exist'}`);
+          continue;
+        }
         console.warn(`API lead creation failed for row ${rowNum}, falling back to store persistence...`);
         const totalCount = currentLeads.length + newLeadsToAppend.length;
         const generatedLeadId = rowLeadId || `MC-${10000 + totalCount + 1}`;

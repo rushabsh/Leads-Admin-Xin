@@ -26,6 +26,8 @@ interface CampaignData {
   massTortId: string;
   massTort?: { id: string; name: string };
   vendorId?: string;
+  vendorIds?: string[];
+  vendors?: { id: string; name: string }[];
   vendor?: { id: string; name: string };
   lawFirmId?: string;
   lawFirm?: { id: string; name: string };
@@ -55,7 +57,7 @@ interface LawFirmData {
 
 export default function CampaignsPage() {
   const router = useRouter();
-  const { campaigns: rawCampaigns, fetchData, isLoading } = useCRMStore();
+  const { campaigns: rawCampaigns, fetchData, fetchCampaigns, isLoading } = useCRMStore();
   const campaigns = rawCampaigns as any[] as CampaignData[];
   const [massTorts, setMassTorts] = useState<MassTortData[]>([]);
   const [vendors, setVendors] = useState<VendorData[]>([]);
@@ -82,6 +84,7 @@ export default function CampaignsPage() {
     budget: 0,
     massTortId: '',
     vendorId: '',
+    vendorIds: [] as string[],
     lawFirmId: '',
     marketingSource: 'Facebook Ads',
     startDate: '',
@@ -95,7 +98,8 @@ export default function CampaignsPage() {
   const [toast, setToast] = useState<{ message: string; type: 'success' | 'error' } | null>(null);
 
   useEffect(() => {
-    fetchData();
+    fetchCampaigns(true);
+    fetchData(true);
     api.get('/settings/mass-torts').then(res => setMassTorts(res.data.massTorts || res.data.data || [])).catch(() => {
       setMassTorts([
         { id: '1', name: 'Camp Lejeune' },
@@ -105,7 +109,7 @@ export default function CampaignsPage() {
     });
     api.get('/vendors').then(res => setVendors(res.data.data || [])).catch(() => { });
     api.get('/law-firms').then(res => setLawFirms(res.data.data || [])).catch(() => { });
-  }, [fetchData]);
+  }, [fetchCampaigns, fetchData]);
 
   const showToast = (message: string, type: 'success' | 'error') => {
     setToast({ message, type });
@@ -119,7 +123,8 @@ export default function CampaignsPage() {
       description: '',
       budget: 10000,
       massTortId: massTorts[0]?.id || '',
-      vendorId: vendors[0]?.id || '',
+      vendorId: '',
+      vendorIds: [],
       lawFirmId: '',
       marketingSource: 'Facebook Ads',
       startDate: new Date().toISOString().split('T')[0],
@@ -143,12 +148,17 @@ export default function CampaignsPage() {
 
   const handleOpenEditModal = (campaign: CampaignData) => {
     setEditingCampaign(campaign);
+    const assignedVendorIds: string[] = campaign.vendorIds && campaign.vendorIds.length > 0
+      ? campaign.vendorIds
+      : (campaign.vendorId ? [campaign.vendorId] : []);
+
     setFormData({
       name: campaign.name,
       description: campaign.description || '',
       budget: campaign.budget,
       massTortId: campaign.massTortId,
       vendorId: campaign.vendorId || '',
+      vendorIds: assignedVendorIds,
       lawFirmId: campaign.lawFirmId || '',
       marketingSource: campaign.marketingSource || 'Facebook Ads',
       startDate: formatDateInput(campaign.startDate),
@@ -176,7 +186,8 @@ export default function CampaignsPage() {
         showToast('Campaign created successfully!', 'success');
       }
       setShowAddEditModal(false);
-      fetchData();
+      await fetchCampaigns(true);
+      await fetchData(true);
       if (selectedCampaign && selectedCampaign.id === editingCampaign?.id) {
         handleViewDetails(selectedCampaign);
       }
@@ -192,7 +203,8 @@ export default function CampaignsPage() {
     try {
       await api.delete(`/campaigns/${id}`);
       showToast('Campaign deleted successfully!', 'success');
-      fetchData();
+      await fetchCampaigns(true);
+      await fetchData(true);
       if (selectedCampaign?.id === id) {
         setSelectedCampaign(null);
       }
@@ -206,7 +218,8 @@ export default function CampaignsPage() {
     try {
       await api.put(`/campaigns/${campaign.id}`, { status: nextStatus });
       showToast(`Campaign status updated to ${nextStatus}`, 'success');
-      fetchData();
+      await fetchCampaigns(true);
+      await fetchData(true);
       if (selectedCampaign?.id === campaign.id) {
         setSelectedCampaign({ ...selectedCampaign, status: nextStatus });
       }

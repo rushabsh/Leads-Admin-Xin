@@ -93,7 +93,7 @@ const DEFAULT_FORM_FIELDS: FormFieldDefinition[] = [
 ];
 
 export default function AdminFormEditPage() {
-  const { vendors, campaigns, fetchData } = useCRMStore();
+  const { vendors, campaigns, fetchData, fetchCampaigns } = useCRMStore();
 
   const [activeTab, setActiveTab] = useState<'editor' | 'preview' | 'publicLinks'>('editor');
   const [fields, setFields] = useState<FormFieldDefinition[]>(DEFAULT_FORM_FIELDS);
@@ -115,8 +115,9 @@ export default function AdminFormEditPage() {
   const [isDirty, setIsDirty] = useState<boolean>(false);
 
   useEffect(() => {
-    fetchData();
-  }, [fetchData]);
+    fetchData(true);
+    fetchCampaigns(true);
+  }, [fetchData, fetchCampaigns]);
 
   // Find active vendor object
   const selectedVendor = useMemo(() => {
@@ -128,14 +129,17 @@ export default function AdminFormEditPage() {
   const assignedCampaigns = useMemo(() => {
     if (!selectedVendorId || selectedVendorId === 'all') return campaigns;
     const vendorObj = vendors.find((v) => v.id === selectedVendorId);
-    return campaigns.filter(
-      (c: any) =>
-        c.vendorId === selectedVendorId ||
-        c.vendor?.id === selectedVendorId ||
-        (c.vendorName && vendorObj?.name && c.vendorName.toLowerCase() === vendorObj.name.toLowerCase()) ||
-        (c.vendor?.name && vendorObj?.name && c.vendor.name.toLowerCase() === vendorObj.name.toLowerCase()) ||
-        (c.vendors && Array.isArray(c.vendors) && c.vendors.includes(selectedVendorId))
-    );
+    return campaigns.filter((c: any) => {
+      if (c.vendorId === selectedVendorId || c.vendor?.id === selectedVendorId) return true;
+      if (c.vendorName && vendorObj?.name && c.vendorName.toLowerCase() === vendorObj.name.toLowerCase()) return true;
+      if (c.vendor?.name && vendorObj?.name && c.vendor.name.toLowerCase() === vendorObj.name.toLowerCase()) return true;
+      if (Array.isArray(c.vendorIds) && c.vendorIds.includes(selectedVendorId)) return true;
+      if (Array.isArray(c.vendors) && c.vendors.some((v: any) => {
+        if (typeof v === 'string') return v === selectedVendorId;
+        return (v.id || v._id) === selectedVendorId || (v.name && vendorObj?.name && v.name.toLowerCase() === vendorObj.name.toLowerCase());
+      })) return true;
+      return false;
+    });
   }, [campaigns, selectedVendorId, vendors]);
 
   // Handle Vendor Selection Change & reset campaign selection

@@ -186,10 +186,10 @@ export default function DisqualifiedLeadsTable({
                       </span>
                     </td>
                     <td className="p-3.5 font-medium text-blue-600">
-                      {lead.campaign?.name || lead.campaignName || 'General Inbound'}
+                      {campaigns.find((c: any) => c.id === lead.campaignId)?.name || lead.campaign?.name || lead.campaignName || 'General Inbound'}
                     </td>
                     <td className="p-3.5 text-slate-600 font-medium">
-                      {lead.vendor?.name || lead.vendorName || 'Direct API'}
+                      {vendors.find((v: any) => v.id === lead.vendorId)?.name || lead.vendor?.name || lead.vendorName || 'Direct API'}
                     </td>
                     <td className="p-3.5 font-bold text-slate-800">
                       {lead.state}

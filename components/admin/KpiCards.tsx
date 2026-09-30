@@ -8,10 +8,12 @@ interface KpiCardsProps {
   stats: {
     totalLeads: number;
     todaysLeads: number;
+    inProgressLeads?: number;
     qualifiedLeads: number;
     disqualifiedLeads: number;
     signedRetainers: number;
     campaigns: number;
+    activeCampaigns?: number;
     vendors: number;
     lawFirms: number;
     revenue: number;
@@ -59,7 +61,7 @@ export default function KpiCards({
                 <h3 className="text-2xl font-bold text-slate-900">{stats.totalLeads}</h3>
               )}
               <span className="text-[10px] text-emerald-600 font-semibold flex items-center gap-0.5 mt-1">
-                <TrendingUp className="h-3 w-3" /> +12% vs last month
+                <TrendingUp className="h-3 w-3" /> System Pipeline Active
               </span>
             </div>
           </motion.div>
@@ -76,9 +78,9 @@ export default function KpiCards({
               {isStatsLoading ? (
                 <div className="h-7 w-12 bg-slate-100 animate-pulse rounded-lg mt-1" />
               ) : (
-                <h3 className="text-2xl font-bold text-slate-900">{stats.todaysLeads}</h3>
+                <h3 className="text-2xl font-bold text-slate-900">{stats.inProgressLeads ?? stats.todaysLeads}</h3>
               )}
-              <span className="text-[10px] text-slate-500 mt-1 block">Intake queue active</span>
+              <span className="text-[10px] text-slate-500 mt-1 block">{stats.todaysLeads || 0} received today</span>
             </div>
           </motion.div>
 
@@ -229,9 +231,15 @@ export default function KpiCards({
               {isStatsLoading ? (
                 <div className="h-7 w-10 bg-slate-100 animate-pulse rounded-lg mt-1" />
               ) : (
-                <h3 className="text-2xl font-bold text-slate-900">{stats.campaigns}</h3>
+                <div className="flex items-baseline gap-1.5">
+                  <h3 className="text-2xl font-bold text-slate-900">{stats.activeCampaigns ?? stats.campaigns}</h3>
+                  <span className="text-xs text-slate-400 font-semibold">/ {stats.campaigns} Total</span>
+                </div>
               )}
-              <span className="text-[10px] text-slate-500 mt-1 block">Active marketing campaigns</span>
+              <span className="text-[10px] text-emerald-600 font-semibold flex items-center gap-1 mt-1">
+                <span className="h-1.5 w-1.5 rounded-full bg-emerald-500 animate-pulse" />
+                Active marketing campaigns
+              </span>
             </div>
           </motion.div>
         </div>

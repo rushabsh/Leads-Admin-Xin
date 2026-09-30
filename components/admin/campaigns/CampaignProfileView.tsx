@@ -93,7 +93,10 @@ export default function CampaignProfileView({
               </div>
               <p className="text-xs text-slate-500 flex items-center gap-1 font-mono">
                 Mass Tort: {selectedCampaign.massTort?.name || selectedCampaign.tortName || 'N/A'} • Source:{' '}
-                {selectedCampaign.marketingSource} • Vendor: {selectedCampaign.vendor?.name || 'Direct'}
+                {selectedCampaign.marketingSource} • Vendor:{' '}
+                {(selectedCampaign as any).vendors && (selectedCampaign as any).vendors.length > 0
+                  ? (selectedCampaign as any).vendors.map((v: any) => v.name).join(', ')
+                  : (selectedCampaign.vendor?.name || 'All Vendors (Shared)')}
               </p>
             </div>
           </div>

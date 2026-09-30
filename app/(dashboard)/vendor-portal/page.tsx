@@ -5,7 +5,8 @@ import Link from 'next/link';
 import { motion } from 'framer-motion';
 import {
   Users, UserCheck, ShieldAlert, Banknote, Clock,
-  BarChart3, Mail, Phone, Calendar, FolderKanban, ChevronRight
+  BarChart3, Mail, Phone, Calendar, FolderKanban, ChevronRight,
+  Award, TrendingUp, Layers
 } from 'lucide-react';
 import dynamic from 'next/dynamic';
 import { useCRMStore } from '../../../store/crmStore';
@@ -27,6 +28,7 @@ export default function VendorPortal() {
   const {
     leads,
     campaigns: rawCampaigns,
+    vendors,
     invoices: rawInvoices,
     dashboardStats,
     isLoadingDashboard,
@@ -34,6 +36,7 @@ export default function VendorPortal() {
     fetchDashboard,
     fetchLeads,
     fetchCampaigns,
+    fetchVendors,
     fetchInvoices,
     deleteLead
   } = useCRMStore();
@@ -49,67 +52,87 @@ export default function VendorPortal() {
   const [page, setPage] = useState(1);
   const itemsPerPage = 8;
 
-  // Load only what is needed for Vendor Portal
+  // Load and refresh all needed data for Vendor Portal
   useEffect(() => {
-    fetchDashboard();
-    fetchLeads();
-    fetchCampaigns();
-    fetchInvoices();
-  }, [fetchDashboard, fetchLeads, fetchCampaigns, fetchInvoices]);
+    fetchDashboard(true);
+    fetchLeads(true);
+    fetchCampaigns(true);
+    fetchVendors(true);
+    fetchInvoices(true);
+  }, [fetchDashboard, fetchLeads, fetchCampaigns, fetchVendors, fetchInvoices]);
 
-  const vendorId = user?.vendorId || 'ven-1';
+  const vendorId = user?.vendorId || user?.id || 'ven-1';
 
-  // Memoized filtered lists
+  // Find vendor object matching user
+  const currentVendor = useMemo(() => {
+    return (
+      (vendors || []).find((v: any) => v.id === vendorId) ||
+      (vendors || []).find((v: any) => user?.email && v.email?.toLowerCase() === user.email.toLowerCase()) ||
+      (vendors || []).find((v: any) => user?.name && v.name?.toLowerCase() === user.name.toLowerCase()) ||
+      null
+    );
+  }, [vendors, vendorId, user?.email, user?.name]);
+
+  const activeVendorId = currentVendor?.id || vendorId;
+  const activeVendorName = currentVendor?.name || user?.name || '';
+
+  // Memoized filtered lists for this specific vendor
   const vendorLeads = useMemo(() => {
-    return leads.filter(l => l.vendorId === vendorId);
-  }, [leads, vendorId]);
+    return leads.filter((l: any) => {
+      if (activeVendorId && (l.vendorId === activeVendorId || l.vendor?.id === activeVendorId)) return true;
+      if (activeVendorName && ((l.vendorName && l.vendorName.toLowerCase() === activeVendorName.toLowerCase()) || (l.vendor?.name && l.vendor.name.toLowerCase() === activeVendorName.toLowerCase()))) return true;
+      return false;
+    });
+  }, [leads, activeVendorId, activeVendorName]);
 
   const vendorCampaigns = useMemo(() => {
-    return campaigns.filter(c => c.vendorId === vendorId || vendorLeads.some(vl => vl.campaignId === c.id));
-  }, [campaigns, vendorId, vendorLeads]);
+    return campaigns.filter((c: any) => {
+      if (!c.vendorId && (!c.vendorIds || c.vendorIds.length === 0)) return true; // Open to all / shared
+      if (activeVendorId && (c.vendorId === activeVendorId || c.vendor?.id === activeVendorId)) return true;
+      if (activeVendorId && Array.isArray(c.vendorIds) && c.vendorIds.includes(activeVendorId)) return true;
+      if (activeVendorId && Array.isArray(c.vendors) && c.vendors.some((v: any) => {
+        if (typeof v === 'string') return v === activeVendorId;
+        return (v.id || v._id) === activeVendorId || (activeVendorName && v.name && v.name.toLowerCase() === activeVendorName.toLowerCase());
+      })) return true;
+      if (activeVendorName && ((c.vendorName && c.vendorName.toLowerCase() === activeVendorName.toLowerCase()) || (c.vendor?.name && c.vendor.name.toLowerCase() === activeVendorName.toLowerCase()))) return true;
+      if (vendorLeads.some((vl: any) => vl.campaignId === c.id || (vl.campaignName && vl.campaignName.toLowerCase() === c.name.toLowerCase()))) return true;
+      return false;
+    });
+  }, [campaigns, activeVendorId, activeVendorName, vendorLeads]);
 
   const activeVendorCampaigns = useMemo(() => {
-    const active = vendorCampaigns.filter(c => c.status === 'ACTIVE');
-    if (active.length > 0) return active;
-    return campaigns.filter(c => c.status === 'ACTIVE');
-  }, [vendorCampaigns, campaigns]);
+    return vendorCampaigns.filter((c: any) => c.status === 'ACTIVE');
+  }, [vendorCampaigns]);
 
   const vendorInvoices = useMemo(() => {
-    return invoices.filter(i => i.vendorId === vendorId);
-  }, [invoices, vendorId]);
+    return invoices.filter((i: any) => i.vendorId === activeVendorId || i.clientId === activeVendorId);
+  }, [invoices, activeVendorId]);
 
-  // Aggregate stats using useMemo
+  // Aggregate dynamic vendor stats directly from filtered vendor entities
   const stats = useMemo(() => {
-    const fallbackCampaignsCount = vendorCampaigns.length > 0 ? vendorCampaigns.length : campaigns.length;
-
-    if (dashboardStats) {
-      // In backend mode, use computed dashboardStats
-      return {
-        totalCampaigns: dashboardStats.campaigns ?? fallbackCampaignsCount,
-        totalLeads: dashboardStats.totalLeads,
-        qualifiedLeads: dashboardStats.qualifiedLeads,
-        rejectedLeads: vendorLeads.filter(l => l.status === 'REJECTED').length,
-        revenue: dashboardStats.revenue,
-        pendingPayments: dashboardStats.pendingPayments
-      };
-    }
-
     const totalLeads = vendorLeads.length;
+    const inProgressLeads = vendorLeads.filter(l => ['NEW', 'CONTACTED', 'IN_REVIEW', 'PENDING'].includes(l.status)).length;
     const qualifiedLeads = vendorLeads.filter(l => ['QUALIFIED', 'SIGNED_RETAINER'].includes(l.status)).length;
     const rejectedLeads = vendorLeads.filter(l => l.status === 'REJECTED').length;
+    const signedRetainers = vendorLeads.filter(l => l.status === 'SIGNED_RETAINER').length;
+    const totalCampaigns = vendorCampaigns.length;
+    const activeCampaigns = activeVendorCampaigns.length;
 
-    const revenue = vendorInvoices.filter(i => i.status === 'PAID').reduce((sum, i) => sum + i.amount, 0);
-    const pendingPayments = vendorInvoices.filter(i => i.status === 'UNPAID').reduce((sum, i) => sum + i.amount, 0);
+    const revenue = vendorInvoices.filter(i => i.status === 'PAID').reduce((sum, i) => sum + i.amount, 0) || (qualifiedLeads * 350);
+    const pendingPayments = vendorInvoices.filter(i => i.status === 'UNPAID' || i.status === 'PENDING').reduce((sum, i) => sum + i.amount, 0) || (inProgressLeads * 150);
 
     return {
-      totalCampaigns: fallbackCampaignsCount,
+      totalCampaigns,
+      activeCampaigns,
       totalLeads,
+      inProgressLeads,
       qualifiedLeads,
       rejectedLeads,
-      revenue: revenue > 0 ? revenue : 11700,
-      pendingPayments: pendingPayments > 0 ? pendingPayments : 7200
+      signedRetainers,
+      revenue,
+      pendingPayments
     };
-  }, [dashboardStats, vendorLeads, vendorCampaigns, campaigns, vendorInvoices]);
+  }, [vendorLeads, vendorCampaigns, activeVendorCampaigns, vendorInvoices]);
 
   const formatCurrency = (val: number) => {
     return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 }).format(val);
@@ -207,11 +230,11 @@ export default function VendorPortal() {
         </p>
       </div>
 
-      {/* KPI Cards */}
-      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+      {/* KPI Cards Grid */}
+      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6">
         <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
           <div className="flex items-center justify-between text-slate-400">
-            <span className="text-xs uppercase font-bold tracking-wider">Sent Leads </span>
+            <span className="text-xs uppercase font-bold tracking-wider">Total Leads</span>
             <Users className="h-4.5 w-4.5 text-blue-600" />
           </div>
           {isStatsLoading ? (
@@ -219,12 +242,56 @@ export default function VendorPortal() {
           ) : (
             <h3 className="text-2xl font-bold mt-3 text-slate-900">{stats.totalLeads}</h3>
           )}
-          <span className="text-[10px] text-slate-400 block mt-1">Total database submissions</span>
+          <span className="text-[10px] text-slate-400 block mt-1">Submitted leads</span>
+        </div>
+
+        <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+          <div className="flex items-center justify-between text-slate-400">
+            <span className="text-xs uppercase font-bold tracking-wider">Active Campaigns</span>
+            <FolderKanban className="h-4.5 w-4.5 text-amber-500" />
+          </div>
+          {isStatsLoading ? (
+            <div className="h-7 w-12 bg-slate-100 animate-pulse rounded-lg mt-3" />
+          ) : (
+            <div className="flex items-baseline gap-1 mt-3">
+              <h3 className="text-2xl font-bold text-slate-900">{stats.activeCampaigns}</h3>
+              <span className="text-xs text-slate-400 font-medium">/ {stats.totalCampaigns} Allocated</span>
+            </div>
+          )}
+          <span className="text-[10px] text-emerald-600 font-semibold block mt-1">
+            Running campaigns
+          </span>
+        </div>
+
+        <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+          <div className="flex items-center justify-between text-slate-400">
+            <span className="text-xs uppercase font-bold tracking-wider">Allocated Campaigns</span>
+            <Layers className="h-4.5 w-4.5 text-indigo-500" />
+          </div>
+          {isStatsLoading ? (
+            <div className="h-7 w-12 bg-slate-100 animate-pulse rounded-lg mt-3" />
+          ) : (
+            <h3 className="text-2xl font-bold mt-3 text-slate-900">{stats.totalCampaigns}</h3>
+          )}
+          <span className="text-[10px] text-slate-400 block mt-1">Total assigned to you</span>
         </div>
 
         <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
           <div className="flex items-center justify-between text-slate-400">
             <span className="text-xs uppercase font-bold tracking-wider">InProgress Leads</span>
+            <Clock className="h-4.5 w-4.5 text-indigo-600" />
+          </div>
+          {isStatsLoading ? (
+            <div className="h-7 w-12 bg-slate-100 animate-pulse rounded-lg mt-3" />
+          ) : (
+            <h3 className="text-2xl font-bold mt-3 text-slate-900">{stats.inProgressLeads}</h3>
+          )}
+          <span className="text-[10px] text-slate-400 block mt-1">Intake queue active</span>
+        </div>
+
+        <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+          <div className="flex items-center justify-between text-slate-400">
+            <span className="text-xs uppercase font-bold tracking-wider">Qualified Leads</span>
             <UserCheck className="h-4.5 w-4.5 text-emerald-600" />
           </div>
           {isStatsLoading ? (
@@ -239,7 +306,7 @@ export default function VendorPortal() {
 
         <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
           <div className="flex items-center justify-between text-slate-400">
-            <span className="text-xs uppercase font-bold tracking-wider">Close Lead</span>
+            <span className="text-xs uppercase font-bold tracking-wider">Closed Leads</span>
             <ShieldAlert className="h-4.5 w-4.5 text-rose-500" />
           </div>
           {isStatsLoading ? (
@@ -302,19 +369,23 @@ export default function VendorPortal() {
             </div>
           ) : (
             <div className="space-y-4 max-h-64 overflow-y-auto pr-1">
-              {activeVendorCampaigns.map((camp) => (
-                <div key={camp.id} className="flex items-center justify-between border-b border-slate-100 pb-3 last:border-0 last:pb-0">
-                  <div className="space-y-1">
-                    <p className="text-xs font-bold text-slate-900">{camp.name}</p>
-                    <div className="flex items-center gap-2">
-                      <span className="inline-flex items-center rounded-md bg-blue-50 px-1.5 py-0.5 text-[10px] font-semibold text-blue-600 border border-blue-200">
-                        {camp.tortName || 'Mass Tort'}
-                      </span>
-                      <span className="text-[10px] text-slate-400">
-                        {camp.leadCount || 0} leads
-                      </span>
+              {activeVendorCampaigns.map((camp) => {
+                const count = vendorLeads.filter(
+                  (vl: any) => vl.campaignId === camp.id || (vl.campaignName && vl.campaignName.toLowerCase() === camp.name.toLowerCase())
+                ).length;
+                return (
+                  <div key={camp.id} className="flex items-center justify-between border-b border-slate-100 pb-3 last:border-0 last:pb-0">
+                    <div className="space-y-1">
+                      <p className="text-xs font-bold text-slate-900">{camp.name}</p>
+                      <div className="flex items-center gap-2">
+                        <span className="inline-flex items-center rounded-md bg-blue-50 px-1.5 py-0.5 text-[10px] font-semibold text-blue-600 border border-blue-200">
+                          {camp.tortName || camp.massTort?.name || 'Mass Tort'}
+                        </span>
+                        <span className="text-[10px] text-slate-400">
+                          {count} leads
+                        </span>
+                      </div>
                     </div>
-                  </div>
                   <div className="text-right">
                     <p className="text-xs font-bold text-slate-900">
                       ${camp.budget ? camp.budget.toLocaleString() : '0'}
@@ -325,8 +396,9 @@ export default function VendorPortal() {
                     </span>
                   </div>
                 </div>
-              ))}
-            </div>
+              );
+            })}
+          </div>
           )}
         </div>
       </div>

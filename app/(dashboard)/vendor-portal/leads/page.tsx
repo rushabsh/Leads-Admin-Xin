@@ -34,7 +34,7 @@ interface LeadData {
 
 export default function VendorLeadsPage() {
   const { user } = useAuthStore();
-  const { leads, campaigns: rawCampaigns, fetchData, addLead, deleteLead, isLoading } = useCRMStore();
+  const { leads, campaigns: rawCampaigns, fetchData, fetchCampaigns, addLead, deleteLead, isLoading } = useCRMStore();
   const campaigns = rawCampaigns as any[];
 
   const vendorId = user?.vendorId || 'ven-1';
@@ -70,12 +70,28 @@ export default function VendorLeadsPage() {
   const [toast, setToast] = useState<{ message: string; type: 'success' | 'error' } | null>(null);
 
   useEffect(() => {
-    fetchData();
-  }, [fetchData]);
+    fetchData(true);
+    fetchCampaigns(true);
+  }, [fetchData, fetchCampaigns]);
+
+  // Helper to filter vendor campaigns with multi-vendor support
+  const getVendorCampaigns = (campList: any[]) => {
+    return campList.filter((c: any) => {
+      if (!c.vendorId && (!c.vendorIds || c.vendorIds.length === 0)) return true; // Open to all / shared
+      if (c.vendorId === vendorId || c.vendor?.id === vendorId) return true;
+      if (Array.isArray(c.vendorIds) && c.vendorIds.includes(vendorId)) return true;
+      if (Array.isArray(c.vendors) && c.vendors.some((v: any) => {
+        if (typeof v === 'string') return v === vendorId;
+        return (v.id || v._id) === vendorId || (user?.name && v.name && v.name.toLowerCase() === user.name.toLowerCase());
+      })) return true;
+      if (user?.name && ((c.vendorName && c.vendorName.toLowerCase() === user.name.toLowerCase()) || (c.vendor?.name && c.vendor.name.toLowerCase() === user.name.toLowerCase()))) return true;
+      return false;
+    });
+  };
 
   // Set default campaign when campaigns load
   useEffect(() => {
-    const vendorCampaigns = campaigns.filter(c => c.vendorId === vendorId);
+    const vendorCampaigns = getVendorCampaigns(campaigns);
     if (vendorCampaigns.length > 0 && !formData.campaignId) {
       const defaultCamp = vendorCampaigns[0];
       setFormData(prev => ({
@@ -105,7 +121,7 @@ export default function VendorLeadsPage() {
   };
 
   const handleOpenSubmitModal = () => {
-    const vendorCampaigns = campaigns.filter(c => c.vendorId === vendorId);
+    const vendorCampaigns = getVendorCampaigns(campaigns);
     setFormData({
       firstName: '',
       lastName: '',
@@ -205,7 +221,7 @@ export default function VendorLeadsPage() {
   const totalPages = Math.ceil(sortedLeads.length / itemsPerPage) || 1;
   const paginatedLeads = sortedLeads.slice((page - 1) * itemsPerPage, page * itemsPerPage);
 
-  const vendorCampaignsList = campaigns.filter(c => c.vendorId === vendorId);
+  const vendorCampaignsList = getVendorCampaigns(campaigns);
 
   return (
     <div className="space-y-6">

@@ -82,7 +82,8 @@ export default function AdminAddQuestionsPage() {
 
   useEffect(() => {
     fetchData(true);
-  }, [fetchData]);
+    fetchCampaigns(true);
+  }, [fetchData, fetchCampaigns]);
 
   // Load all system mass torts on mount
   useEffect(() => {
@@ -137,14 +138,17 @@ export default function AdminAddQuestionsPage() {
   const assignedCampaigns = useMemo(() => {
     if (!selectedVendorId || selectedVendorId === 'all') return campaigns;
     const vendorObj = vendors.find((v) => v.id === selectedVendorId);
-    return campaigns.filter(
-      (c: any) =>
-        c.vendorId === selectedVendorId ||
-        c.vendor?.id === selectedVendorId ||
-        (c.vendorName && vendorObj?.name && c.vendorName.toLowerCase() === vendorObj.name.toLowerCase()) ||
-        (c.vendor?.name && vendorObj?.name && c.vendor.name.toLowerCase() === vendorObj.name.toLowerCase()) ||
-        (c.vendors && Array.isArray(c.vendors) && c.vendors.includes(selectedVendorId))
-    );
+    return campaigns.filter((c: any) => {
+      if (c.vendorId === selectedVendorId || c.vendor?.id === selectedVendorId) return true;
+      if (c.vendorName && vendorObj?.name && c.vendorName.toLowerCase() === vendorObj.name.toLowerCase()) return true;
+      if (c.vendor?.name && vendorObj?.name && c.vendor.name.toLowerCase() === vendorObj.name.toLowerCase()) return true;
+      if (Array.isArray(c.vendorIds) && c.vendorIds.includes(selectedVendorId)) return true;
+      if (Array.isArray(c.vendors) && c.vendors.some((v: any) => {
+        if (typeof v === 'string') return v === selectedVendorId;
+        return (v.id || v._id) === selectedVendorId || (v.name && vendorObj?.name && v.name.toLowerCase() === vendorObj.name.toLowerCase());
+      })) return true;
+      return false;
+    });
   }, [campaigns, selectedVendorId, vendors]);
 
   const handleVendorChange = (newVendorId: string) => {
@@ -154,14 +158,17 @@ export default function AdminAddQuestionsPage() {
       return;
     }
     const vendorObj = vendors.find((v) => v.id === newVendorId);
-    const vCamps = campaigns.filter(
-      (c: any) =>
-        c.vendorId === newVendorId ||
-        c.vendor?.id === newVendorId ||
-        (c.vendorName && vendorObj?.name && c.vendorName.toLowerCase() === vendorObj.name.toLowerCase()) ||
-        (c.vendor?.name && vendorObj?.name && c.vendor.name.toLowerCase() === vendorObj.name.toLowerCase()) ||
-        (c.vendors && Array.isArray(c.vendors) && c.vendors.includes(newVendorId))
-    );
+    const vCamps = campaigns.filter((c: any) => {
+      if (c.vendorId === newVendorId || c.vendor?.id === newVendorId) return true;
+      if (c.vendorName && vendorObj?.name && c.vendorName.toLowerCase() === vendorObj.name.toLowerCase()) return true;
+      if (c.vendor?.name && vendorObj?.name && c.vendor.name.toLowerCase() === vendorObj.name.toLowerCase()) return true;
+      if (Array.isArray(c.vendorIds) && c.vendorIds.includes(newVendorId)) return true;
+      if (Array.isArray(c.vendors) && c.vendors.some((v: any) => {
+        if (typeof v === 'string') return v === newVendorId;
+        return (v.id || v._id) === newVendorId || (v.name && vendorObj?.name && v.name.toLowerCase() === vendorObj.name.toLowerCase());
+      })) return true;
+      return false;
+    });
     if (vCamps.length > 0) {
       const firstCamp = vCamps[0];
       setSelectedCampaignId(firstCamp.id);
@@ -347,14 +354,17 @@ export default function AdminAddQuestionsPage() {
   const assignedCampaignsForNewTort = useMemo(() => {
     if (!newTortFormData.vendorId || newTortFormData.vendorId === 'all') return campaigns;
     const vendorObj = vendors.find((v) => v.id === newTortFormData.vendorId);
-    return campaigns.filter(
-      (c: any) =>
-        c.vendorId === newTortFormData.vendorId ||
-        c.vendor?.id === newTortFormData.vendorId ||
-        (c.vendorName && vendorObj?.name && c.vendorName.toLowerCase() === vendorObj.name.toLowerCase()) ||
-        (c.vendor?.name && vendorObj?.name && c.vendor.name.toLowerCase() === vendorObj.name.toLowerCase()) ||
-        (c.vendors && Array.isArray(c.vendors) && c.vendors.includes(newTortFormData.vendorId))
-    );
+    return campaigns.filter((c: any) => {
+      if (c.vendorId === newTortFormData.vendorId || c.vendor?.id === newTortFormData.vendorId) return true;
+      if (c.vendorName && vendorObj?.name && c.vendorName.toLowerCase() === vendorObj.name.toLowerCase()) return true;
+      if (c.vendor?.name && vendorObj?.name && c.vendor.name.toLowerCase() === vendorObj.name.toLowerCase()) return true;
+      if (Array.isArray(c.vendorIds) && c.vendorIds.includes(newTortFormData.vendorId)) return true;
+      if (Array.isArray(c.vendors) && c.vendors.some((v: any) => {
+        if (typeof v === 'string') return v === newTortFormData.vendorId;
+        return (v.id || v._id) === newTortFormData.vendorId || (v.name && vendorObj?.name && v.name.toLowerCase() === vendorObj.name.toLowerCase());
+      })) return true;
+      return false;
+    });
   }, [campaigns, newTortFormData.vendorId, vendors]);
 
   const handleSaveQuestionsMap = async (updatedMap: TortQuestionsMap) => {

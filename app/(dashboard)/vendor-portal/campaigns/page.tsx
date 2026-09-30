@@ -23,13 +23,15 @@ interface CampaignData {
     massTortId: string;
     tortName?: string;
     vendorId?: string;
+    vendorIds?: string[];
+    vendors?: any[];
     vendorName?: string;
 }
 
 export default function VendorCampaignsPage() {
     const { user } = useAuthStore();
     const { campaigns: rawCampaigns, leads, fetchCampaigns, fetchLeads, isLoading } = useCRMStore();
-    const campaigns = rawCampaigns as any[] as (CampaignData & { massTort?: any; vendor?: any })[];
+    const campaigns = rawCampaigns as any[] as (CampaignData & { massTort?: any; vendor?: any; vendorIds?: string[]; vendors?: any[] })[];
 
     const vendorId = user?.vendorId || 'ven-1';
 
@@ -42,20 +44,21 @@ export default function VendorCampaignsPage() {
     const itemsPerPage = 8;
 
     useEffect(() => {
-        fetchCampaigns();
-        fetchLeads();
+        fetchCampaigns(true);
+        fetchLeads(true);
     }, [fetchCampaigns, fetchLeads]);
 
     // Filter campaigns assigned to this vendor
     const vendorLeads = leads.filter(l => l.vendorId === vendorId);
-    const vendorCampaigns = campaigns.filter(c =>
-        c.vendorId === vendorId ||
-        c.vendor?.id === vendorId ||
-        c.vendorName === user?.name ||
-        c.vendor?.name === user?.name ||
-        vendorLeads.some(vl => vl.campaignId === c.id) ||
-        (user?.roleName === 'Vendor')
-    );
+    const vendorCampaigns = campaigns.filter(c => {
+        if (!c.vendorId && (!c.vendorIds || c.vendorIds.length === 0)) return true; // Open to all / shared
+        if (c.vendorId === vendorId || c.vendor?.id === vendorId) return true;
+        if (Array.isArray(c.vendorIds) && c.vendorIds.includes(vendorId)) return true;
+        if (Array.isArray(c.vendors) && c.vendors.some((v: any) => v.id === vendorId || v._id === vendorId)) return true;
+        if (c.vendorName === user?.name || c.vendor?.name === user?.name) return true;
+        if (vendorLeads.some(vl => vl.campaignId === c.id)) return true;
+        return false;
+    });
 
     // Search & Status filters
     const filteredCampaigns = vendorCampaigns.filter(c => {

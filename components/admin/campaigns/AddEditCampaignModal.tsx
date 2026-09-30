@@ -1,8 +1,8 @@
 'use client';
 
-import React from 'react';
+import React, { useState, useRef, useEffect, useMemo } from 'react';
 import { motion } from 'framer-motion';
-import { X } from 'lucide-react';
+import { X, Check, ChevronDown, Search, Users } from 'lucide-react';
 
 interface AddEditCampaignModalProps {
   showAddEditModal: boolean;
@@ -29,6 +29,86 @@ export default function AddEditCampaignModal({
   isSubmitting,
   onSubmit
 }: AddEditCampaignModalProps) {
+  const [isVendorDropdownOpen, setIsVendorDropdownOpen] = useState(false);
+  const [vendorSearchTerm, setVendorSearchTerm] = useState('');
+  const vendorDropdownRef = useRef<HTMLDivElement>(null);
+
+  // Close dropdown on click outside
+  useEffect(() => {
+    function handleClickOutside(event: MouseEvent) {
+      if (vendorDropdownRef.current && !vendorDropdownRef.current.contains(event.target as Node)) {
+        setIsVendorDropdownOpen(false);
+      }
+    }
+    if (isVendorDropdownOpen) {
+      document.addEventListener('mousedown', handleClickOutside);
+    }
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [isVendorDropdownOpen]);
+
+  // Derived selected vendor IDs
+  const selectedVendorIds: string[] = useMemo(() => {
+    if (Array.isArray(formData.vendorIds)) return formData.vendorIds;
+    if (formData.vendorId) return [formData.vendorId];
+    return [];
+  }, [formData.vendorIds, formData.vendorId]);
+
+  // Filter vendors by search
+  const filteredVendors = useMemo(() => {
+    if (!vendorSearchTerm.trim()) return vendors;
+    const term = vendorSearchTerm.toLowerCase();
+    return vendors.filter((v) => v.name?.toLowerCase().includes(term));
+  }, [vendors, vendorSearchTerm]);
+
+  const handleToggleVendor = (id: string) => {
+    const isSelected = selectedVendorIds.includes(id);
+    if (isSelected) {
+      alert('You cannot deassign the vendor from the campaign. (Because if the vendor has added leads inside it then all leads/data will be lost).');
+      return;
+    }
+
+    const confirmAssign = window.confirm('Are you sure to assign a vendor?');
+    if (!confirmAssign) {
+      return;
+    }
+
+    const newIds = [...selectedVendorIds, id];
+    setFormData({
+      ...formData,
+      vendorIds: newIds,
+      vendorId: newIds[0] || ''
+    });
+  };
+
+  const handleSelectAllVendors = () => {
+    const unselected = vendors.filter((v) => !selectedVendorIds.includes(v.id));
+    if (unselected.length === 0) return;
+
+    const confirmAssign = window.confirm('Are you sure to assign a vendor?');
+    if (!confirmAssign) return;
+
+    const allIds = vendors.map((v) => v.id);
+    setFormData({
+      ...formData,
+      vendorIds: allIds,
+      vendorId: allIds[0] || ''
+    });
+  };
+
+  const handleClearAllVendors = () => {
+    if (selectedVendorIds.length > 0) {
+      alert('You cannot deassign the vendor from the campaign. (Because if the vendor has added leads inside it then all leads/data will be lost).');
+      return;
+    }
+    setFormData({
+      ...formData,
+      vendorIds: [],
+      vendorId: ''
+    });
+  };
+
   if (!showAddEditModal) return null;
 
   return (
@@ -117,20 +197,136 @@ export default function AddEditCampaignModal({
                 ))}
               </select>
             </div>
-            <div>
-              <label className="text-xs font-bold uppercase tracking-wider text-slate-500">Lead Vendor</label>
-              <select
-                value={formData.vendorId}
-                onChange={(e) => setFormData({ ...formData, vendorId: e.target.value })}
-                className="mt-1 block w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-xs text-slate-900 outline-none focus:border-blue-600 shadow-xs"
+            <div className="relative" ref={vendorDropdownRef}>
+              <div className="flex items-center justify-between">
+                <label className="text-xs font-bold uppercase tracking-wider text-slate-500">
+                  Lead Vendors ({selectedVendorIds.length})
+                </label>
+                {selectedVendorIds.length > 0 && (
+                  <button
+                    type="button"
+                    onClick={handleClearAllVendors}
+                    className="text-[10px] font-semibold text-blue-600 hover:text-blue-700 cursor-pointer"
+                  >
+                    Clear All
+                  </button>
+                )}
+              </div>
+
+              {/* Trigger Button */}
+              <button
+                type="button"
+                onClick={() => setIsVendorDropdownOpen(!isVendorDropdownOpen)}
+                className="mt-1 flex w-full items-center justify-between rounded-xl border border-slate-200 bg-white px-3 py-2 text-left text-xs text-slate-900 outline-none transition-all hover:border-slate-300 focus:border-blue-600 shadow-xs cursor-pointer"
               >
-                <option value="">Direct Integration / Internal</option>
-                {vendors.map((v) => (
-                  <option key={v.id} value={v.id}>
-                    {v.name}
-                  </option>
-                ))}
-              </select>
+                <div className="flex items-center gap-1.5 truncate">
+                  <Users className="h-3.5 w-3.5 text-slate-400 shrink-0" />
+                  <span className="truncate">
+                    {selectedVendorIds.length === 0
+                      ? 'All Vendors (Multi-Vendor Shared)'
+                      : selectedVendorIds.length === 1
+                      ? vendors.find((v) => v.id === selectedVendorIds[0])?.name || '1 Vendor Selected'
+                      : `${selectedVendorIds.length} Vendors Selected`}
+                  </span>
+                </div>
+                <ChevronDown className={`h-4 w-4 text-slate-400 shrink-0 transition-transform ${isVendorDropdownOpen ? 'rotate-180' : ''}`} />
+              </button>
+
+              {/* Dropdown Popover */}
+              {isVendorDropdownOpen && (
+                <div className="absolute left-0 right-0 top-full z-50 mt-1 max-h-56 overflow-hidden rounded-xl border border-slate-200 bg-white shadow-xl">
+                  {/* Search and Action Header */}
+                  <div className="border-b border-slate-100 p-2 bg-slate-50">
+                    <div className="relative mb-1.5">
+                      <Search className="absolute left-2.5 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-slate-400" />
+                      <input
+                        type="text"
+                        value={vendorSearchTerm}
+                        onChange={(e) => setVendorSearchTerm(e.target.value)}
+                        placeholder="Search vendors..."
+                        className="w-full rounded-lg border border-slate-200 bg-white py-1 pl-8 pr-2 text-xs text-slate-900 outline-none focus:border-blue-600"
+                      />
+                    </div>
+                    <div className="flex items-center justify-between text-[11px] px-1 text-slate-500">
+                      <button
+                        type="button"
+                        onClick={handleSelectAllVendors}
+                        className="font-medium text-blue-600 hover:underline cursor-pointer"
+                      >
+                        Select All ({vendors.length})
+                      </button>
+                      <button
+                        type="button"
+                        onClick={handleClearAllVendors}
+                        className="font-medium text-slate-500 hover:text-slate-700 cursor-pointer"
+                      >
+                        All / Open (None)
+                      </button>
+                    </div>
+                  </div>
+
+                  {/* Vendor Checkbox List */}
+                  <div className="max-h-36 overflow-y-auto p-1 divide-y divide-slate-50">
+                    {filteredVendors.length === 0 ? (
+                      <div className="p-3 text-center text-xs text-slate-400">No vendors found</div>
+                    ) : (
+                      filteredVendors.map((v) => {
+                        const isSelected = selectedVendorIds.includes(v.id);
+                        return (
+                          <div
+                            key={v.id}
+                            onClick={() => handleToggleVendor(v.id)}
+                            className="flex items-center justify-between rounded-lg px-2.5 py-1.5 hover:bg-slate-50 cursor-pointer transition-colors"
+                          >
+                            <div className="flex items-center gap-2 truncate">
+                              <div
+                                className={`flex h-4 w-4 shrink-0 items-center justify-center rounded border transition-colors ${
+                                  isSelected
+                                    ? 'border-blue-600 bg-blue-600 text-white'
+                                    : 'border-slate-300 bg-white'
+                                }`}
+                              >
+                                {isSelected && <Check className="h-3 w-3 stroke-[3]" />}
+                              </div>
+                              <span className="text-xs text-slate-800 truncate font-medium">{v.name}</span>
+                            </div>
+                            {v.status && (
+                              <span className="text-[10px] uppercase font-semibold text-slate-400 shrink-0 ml-1">
+                                {v.status}
+                              </span>
+                            )}
+                          </div>
+                        );
+                      })
+                    )}
+                  </div>
+                </div>
+              )}
+
+              {/* Selected Chips */}
+              {selectedVendorIds.length > 0 && (
+                <div className="mt-1.5 flex flex-wrap gap-1 max-h-16 overflow-y-auto">
+                  {selectedVendorIds.map((id) => {
+                    const vendor = vendors.find((v) => v.id === id);
+                    if (!vendor) return null;
+                    return (
+                      <span
+                        key={id}
+                        className="inline-flex items-center gap-1 rounded-md bg-blue-50 border border-blue-200/60 px-1.5 py-0.5 text-[11px] font-medium text-blue-700"
+                      >
+                        <span className="max-w-[100px] truncate">{vendor.name}</span>
+                        <button
+                          type="button"
+                          onClick={() => handleToggleVendor(id)}
+                          className="text-blue-400 hover:text-blue-700 cursor-pointer"
+                        >
+                          <X className="h-3 w-3" />
+                        </button>
+                      </span>
+                    );
+                  })}
+                </div>
+              )}
             </div>
           </div>
 

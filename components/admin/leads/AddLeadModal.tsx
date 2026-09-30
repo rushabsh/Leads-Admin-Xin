@@ -5,11 +5,13 @@ import { motion } from 'framer-motion';
 import { X, Building2, Megaphone, Sparkles, Filter, ShieldAlert } from 'lucide-react';
 import NewCaseLeadFollowUpForm from '@/components/vendor-portal/leads/NewCaseLeadFollowUpForm';
 
+import { useCRMStore } from '@/store/crmStore';
+
 interface AddLeadModalProps {
   showAddModal: boolean;
   setShowAddModal: (val: boolean) => void;
-  campaigns: any[];
-  vendors: any[];
+  campaigns?: any[];
+  vendors?: any[];
   formData?: any;
   setFormData?: (val: any) => void;
   activeFormTab?: 'personal' | 'case';
@@ -25,33 +27,51 @@ export default function AddLeadModal({
   vendors = [],
   onSuccess
 }: AddLeadModalProps) {
+  const { campaigns: storeCampaigns, vendors: storeVendors, fetchCampaigns, fetchVendors } = useCRMStore();
+  const allCampaigns = storeCampaigns && storeCampaigns.length > 0 ? storeCampaigns : campaigns;
+  const allVendors = storeVendors && storeVendors.length > 0 ? storeVendors : vendors;
+
   // Target Vendor & Campaign Selection State
   const [selectedVendorId, setSelectedVendorId] = useState<string>('');
   const [selectedCampaignId, setSelectedCampaignId] = useState<string>('');
 
+  // Refresh campaigns and vendors whenever modal opens
+  useEffect(() => {
+    if (showAddModal) {
+      fetchCampaigns(true);
+      fetchVendors(true);
+    }
+  }, [showAddModal, fetchCampaigns, fetchVendors]);
+
   // Auto-initialize selected vendor on mount / modal open
   useEffect(() => {
-    if (showAddModal && vendors.length > 0 && !selectedVendorId) {
-      setSelectedVendorId(vendors[0].id);
+    if (showAddModal && allVendors.length > 0 && !selectedVendorId) {
+      setSelectedVendorId(allVendors[0].id);
     }
-  }, [showAddModal, vendors, selectedVendorId]);
+  }, [showAddModal, allVendors, selectedVendorId]);
 
   // Find active vendor object
   const selectedVendor = useMemo(() => {
-    return vendors.find((v) => v.id === selectedVendorId) || vendors[0] || null;
-  }, [vendors, selectedVendorId]);
+    return allVendors.find((v) => v.id === selectedVendorId) || allVendors[0] || null;
+  }, [allVendors, selectedVendorId]);
 
   // Filter campaigns assigned to selected vendor
   const assignedCampaigns = useMemo(() => {
-    if (!selectedVendorId && !selectedVendor) return campaigns;
-    return campaigns.filter(
-      (c) =>
-        c.vendorId === selectedVendorId ||
-        c.vendorId === selectedVendor?.id ||
-        (c.vendorName && selectedVendor?.name && c.vendorName.toLowerCase() === selectedVendor.name.toLowerCase()) ||
-        (c.vendors && Array.isArray(c.vendors) && c.vendors.includes(selectedVendorId))
-    );
-  }, [campaigns, selectedVendorId, selectedVendor]);
+    if (!selectedVendorId && !selectedVendor) return allCampaigns;
+    const vId = selectedVendorId || selectedVendor?.id;
+    const vName = selectedVendor?.name;
+    return allCampaigns.filter((c: any) => {
+      if (vId && (c.vendorId === vId || c.vendor?.id === vId)) return true;
+      if (vName && c.vendorName && c.vendorName.toLowerCase() === vName.toLowerCase()) return true;
+      if (vName && c.vendor?.name && c.vendor.name.toLowerCase() === vName.toLowerCase()) return true;
+      if (vId && Array.isArray(c.vendorIds) && c.vendorIds.includes(vId)) return true;
+      if (Array.isArray(c.vendors) && c.vendors.some((v: any) => {
+        if (typeof v === 'string') return v === vId;
+        return (v.id || v._id) === vId || (vName && v.name && v.name.toLowerCase() === vName.toLowerCase());
+      })) return true;
+      return false;
+    });
+  }, [allCampaigns, selectedVendorId, selectedVendor]);
 
   // Update selected campaign whenever assigned campaigns change
   useEffect(() => {
@@ -68,12 +88,19 @@ export default function AddLeadModal({
   // Handle Vendor Selection Change
   const handleVendorChange = (newVendorId: string) => {
     setSelectedVendorId(newVendorId);
-    const vendorObj = vendors.find((v) => v.id === newVendorId);
-    const filtered = campaigns.filter(
-      (c) =>
-        c.vendorId === newVendorId ||
-        (c.vendorName && vendorObj?.name && c.vendorName.toLowerCase() === vendorObj.name.toLowerCase())
-    );
+    const vendorObj = allVendors.find((v) => v.id === newVendorId);
+    const vName = vendorObj?.name;
+    const filtered = allCampaigns.filter((c: any) => {
+      if (newVendorId && (c.vendorId === newVendorId || c.vendor?.id === newVendorId)) return true;
+      if (vName && c.vendorName && c.vendorName.toLowerCase() === vName.toLowerCase()) return true;
+      if (vName && c.vendor?.name && c.vendor.name.toLowerCase() === vName.toLowerCase()) return true;
+      if (newVendorId && Array.isArray(c.vendorIds) && c.vendorIds.includes(newVendorId)) return true;
+      if (Array.isArray(c.vendors) && c.vendors.some((v: any) => {
+        if (typeof v === 'string') return v === newVendorId;
+        return (v.id || v._id) === newVendorId || (vName && v.name && v.name.toLowerCase() === vName.toLowerCase());
+      })) return true;
+      return false;
+    });
     if (filtered.length > 0) {
       setSelectedCampaignId(filtered[0].id);
     } else {
@@ -83,7 +110,7 @@ export default function AddLeadModal({
 
   if (!showAddModal) return null;
 
-  const selectedCampaign = campaigns.find((c) => c.id === selectedCampaignId) || assignedCampaigns[0] || null;
+  const selectedCampaign = allCampaigns.find((c) => c.id === selectedCampaignId) || assignedCampaigns[0] || null;
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-2 sm:p-4 bg-slate-950/70 backdrop-blur-md overflow-y-auto">
@@ -146,10 +173,10 @@ export default function AddLeadModal({
                 onChange={(e) => handleVendorChange(e.target.value)}
                 className="w-full rounded-xl border border-slate-250 bg-white px-3.5 py-2.5 text-xs font-medium text-slate-900 shadow-xs focus:border-blue-600 focus:ring-2 focus:ring-blue-500/15 outline-none transition-all cursor-pointer"
               >
-                {vendors.length === 0 ? (
+                {allVendors.length === 0 ? (
                   <option value="">No Vendors Found</option>
                 ) : (
-                  vendors.map((v) => (
+                  allVendors.map((v) => (
                     <option key={v.id} value={v.id}>
                       {v.name} {v.email ? `(${v.email})` : ''}
                     </option>

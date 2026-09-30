@@ -138,13 +138,25 @@ export default function AdminDashboard() {
   // Vendors Table Data
   const vendorsTableData = useMemo(() => {
     return vendors.map((vendor: any) => {
-      const vendorLeads = leads.filter((l: any) => l.vendorId === vendor.id);
-      const totalLeadsCount = vendorLeads.length || vendor.leads?.length || 0;
-      const qualifiedLeadsCount = vendorLeads.filter((l: any) => l.status === 'QUALIFIED' || l.status === 'SIGNED_RETAINER').length || 0;
+      const vendorLeads = leads.filter((l: any) => {
+        if (l.vendorId === vendor.id || l.vendor?.id === vendor.id) return true;
+        if (vendor.name && ((l.vendorName && l.vendorName.toLowerCase() === vendor.name.toLowerCase()) || (l.vendor?.name && l.vendor.name.toLowerCase() === vendor.name.toLowerCase()))) return true;
+        return false;
+      });
+      const totalLeadsCount = vendorLeads.length;
+      const qualifiedLeadsCount = vendorLeads.filter((l: any) => l.status === 'QUALIFIED' || l.status === 'SIGNED_RETAINER').length;
       const conversionRate = totalLeadsCount > 0 ? Math.round((qualifiedLeadsCount / totalLeadsCount) * 100) : 0;
 
       const vendorInvoices = invoices.filter((inv: any) => inv.clientId === vendor.id || inv.vendorId === vendor.id);
       const paymentsCollected = vendorInvoices.filter((inv: any) => inv.status === 'PAID').reduce((sum: number, inv: any) => sum + inv.amount, 0) || 0;
+
+      const vendorCampaigns = campaigns.filter((c: any) => {
+        if (c.vendorId === vendor.id || c.vendor?.id === vendor.id) return true;
+        if (Array.isArray(c.vendorIds) && c.vendorIds.includes(vendor.id)) return true;
+        if (Array.isArray(c.vendors) && c.vendors.some((v: any) => (typeof v === 'string' ? v === vendor.id : (v.id === vendor.id || v._id === vendor.id)))) return true;
+        if (vendor.name && ((c.vendorName && c.vendorName.toLowerCase() === vendor.name.toLowerCase()) || (c.vendor?.name && c.vendor.name.toLowerCase() === vendor.name.toLowerCase()))) return true;
+        return false;
+      });
 
       return {
         ...vendor,
@@ -152,54 +164,65 @@ export default function AdminDashboard() {
         qualifiedLeads: qualifiedLeadsCount,
         conversionRate,
         paymentsCollected,
-        campaignsCount: vendor.campaigns?.length || 0
+        campaignsCount: vendorCampaigns.length
       };
     });
-  }, [vendors, leads, invoices]);
+  }, [vendors, leads, invoices, campaigns]);
 
   // Load all required dashboard and list data
   useEffect(() => {
-    fetchDashboard();
-    fetchTasks();
-    fetchLogs();
-    fetchLeads();
-    fetchVendors();
-    fetchCampaigns();
-    fetchInvoices();
+    fetchDashboard(true);
+    fetchTasks(true);
+    fetchLogs(true);
+    fetchLeads(true);
+    fetchVendors(true);
+    fetchCampaigns(true);
+    fetchInvoices(true);
   }, [fetchDashboard, fetchTasks, fetchLogs, fetchLeads, fetchVendors, fetchCampaigns, fetchInvoices]);
 
-  // Aggregate stats from dashboardStats or compute locally if not loaded
+  // Aggregate stats dynamically from live entities with fallback to dashboardStats
   const stats = useMemo(() => {
-    if (dashboardStats) {
-      return dashboardStats;
-    }
-    const totalLeads = leads.length;
+    const totalLeads = leads.length > 0 ? leads.length : (dashboardStats?.totalLeads ?? 0);
     const today = new Date();
     today.setHours(0, 0, 0, 0);
-    const todaysLeads = leads.filter(l => new Date(l.createdAt) >= today).length;
-    const qualifiedLeads = leads.filter(l => l.status === 'QUALIFIED').length;
-    const disqualifiedLeads = leads.filter(l => l.status === 'REJECTED').length;
-    const signedRetainers = leads.filter(l => l.status === 'SIGNED_RETAINER').length;
+    const todaysLeads = leads.length > 0
+      ? leads.filter(l => new Date(l.createdAt) >= today).length
+      : (dashboardStats?.todaysLeads ?? 0);
+    const inProgressLeads = leads.filter(l => ['NEW', 'CONTACTED', 'IN_REVIEW', 'PENDING'].includes(l.status)).length;
+    const qualifiedLeads = leads.length > 0
+      ? leads.filter(l => l.status === 'QUALIFIED' || l.status === 'SIGNED_RETAINER').length
+      : (dashboardStats?.qualifiedLeads ?? 0);
+    const disqualifiedLeads = leads.length > 0
+      ? leads.filter(l => l.status === 'REJECTED').length
+      : (dashboardStats?.disqualifiedLeads ?? 0);
+    const signedRetainers = leads.length > 0
+      ? leads.filter(l => l.status === 'SIGNED_RETAINER').length
+      : (dashboardStats?.signedRetainers ?? 0);
     const activeCases = cases.filter(c => c.stageName !== 'Closed').length;
-    const lawFirmsCount = lawFirms.length;
-    const vendorsCount = vendors.length;
-    const campaignsCount = campaigns.length;
-    const totalRevenue = cases.reduce((sum, c) => sum + (c.settlementAmount || 0), 0);
-    const pendingPayments = totalLeads * 150;
+    const lawFirmsCount = lawFirms.length > 0 ? lawFirms.length : (dashboardStats?.lawFirms ?? 0);
+    const vendorsCount = vendors.length > 0 ? vendors.length : (dashboardStats?.vendors ?? 0);
+    const campaignsCount = campaigns.length > 0 ? campaigns.length : (dashboardStats?.campaigns ?? 0);
+    const activeCampaigns = campaigns.filter((c: any) => c.status === 'ACTIVE').length;
+    const totalRevenue = cases.reduce((sum, c) => sum + (c.settlementAmount || 0), 0) || (dashboardStats?.revenue ?? 0);
+    const pendingPayments = invoices
+      .filter((i: any) => i.status === 'UNPAID' || i.status === 'PENDING')
+      .reduce((sum: number, i: any) => sum + i.amount, 0) || (dashboardStats?.pendingPayments ?? (totalLeads * 150));
 
     return {
       totalLeads,
       todaysLeads,
+      inProgressLeads,
       qualifiedLeads,
       disqualifiedLeads,
       signedRetainers,
       campaigns: campaignsCount,
+      activeCampaigns,
       vendors: vendorsCount,
       lawFirms: lawFirmsCount,
       revenue: totalRevenue,
       pendingPayments
     };
-  }, [dashboardStats, leads, cases, campaigns, vendors, lawFirms]);
+  }, [dashboardStats, leads, cases, campaigns, vendors, lawFirms, invoices]);
 
   const activeCasesCount = useMemo(() => {
     return cases.filter(c => c.stageName !== 'Closed').length;

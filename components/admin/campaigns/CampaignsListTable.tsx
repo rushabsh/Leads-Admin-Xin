@@ -161,7 +161,11 @@ export default function CampaignsListTable({
                   <td className="p-4 text-slate-700">
                     <div>
                       <span className="font-semibold text-slate-900">{camp.marketingSource || 'Direct'}</span>
-                      <div className="text-xs text-slate-400">{camp.vendor?.name || 'Internal'}</div>
+                      <div className="text-xs text-slate-400">
+                        {camp.vendors && camp.vendors.length > 0
+                          ? camp.vendors.map((v: any) => v.name).join(', ')
+                          : (camp.vendor?.name || 'All Vendors (Shared)')}
+                      </div>
                     </div>
                   </td>
                   <td className="p-4 text-slate-700">

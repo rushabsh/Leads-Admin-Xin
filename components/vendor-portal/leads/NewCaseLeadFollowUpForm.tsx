@@ -529,13 +529,9 @@ export default function NewCaseLeadFollowUpForm({
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
-    if (!campaigns || campaigns.length === 0) {
-      fetchCampaigns();
-    }
-    if (!vendors || vendors.length === 0) {
-      fetchVendors();
-    }
-  }, [campaigns, vendors, fetchCampaigns, fetchVendors]);
+    fetchCampaigns(true);
+    fetchVendors(true);
+  }, [fetchCampaigns, fetchVendors]);
 
   // Filter campaigns available for this vendor
   const availableVendorCampaigns = React.useMemo(() => {
@@ -546,11 +542,18 @@ export default function NewCaseLeadFollowUpForm({
       if (activeVendorId && (c.vendorId === activeVendorId || c.vendor?.id === activeVendorId)) {
         return true;
       }
-      // 2. Multi-vendor array match if present
-      if (activeVendorId && Array.isArray(c.vendors) && c.vendors.includes(activeVendorId)) {
+      // 2. Multi-vendor IDs array match
+      if (activeVendorId && Array.isArray(c.vendorIds) && c.vendorIds.includes(activeVendorId)) {
         return true;
       }
-      // 3. Match by vendor name
+      // 3. Multi-vendor objects array match
+      if (activeVendorId && Array.isArray(c.vendors) && c.vendors.some((v: any) => {
+        if (typeof v === 'string') return v === activeVendorId;
+        return (v.id || v._id) === activeVendorId;
+      })) {
+        return true;
+      }
+      // 4. Match by vendor name
       const campVendorName = c.vendorName || c.vendor?.name;
       if (campVendorName) {
         if (activeVendorName && campVendorName.toLowerCase() === activeVendorName.toLowerCase()) {
@@ -559,6 +562,17 @@ export default function NewCaseLeadFollowUpForm({
         if (matchedVendor?.name && campVendorName.toLowerCase() === matchedVendor.name.toLowerCase()) {
           return true;
         }
+      }
+      // 5. Match by vendor name within c.vendors array
+      if (Array.isArray(c.vendors) && c.vendors.some((v: any) => {
+        const vName = typeof v === 'object' ? v?.name : null;
+        if (!vName) return false;
+        return (
+          (activeVendorName && vName.toLowerCase() === activeVendorName.toLowerCase()) ||
+          (matchedVendor?.name && vName.toLowerCase() === matchedVendor.name.toLowerCase())
+        );
+      })) {
+        return true;
       }
       return false;
     });

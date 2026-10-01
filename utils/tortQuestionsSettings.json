@@ -1,6 +1,6 @@
 {
-  "version": 22,
-  "updatedAt": "2026-09-16T16:42:16.191Z",
+  "version": 24,
+  "updatedAt": "2026-10-01T11:08:21.038Z",
   "updatedBy": "MassCore Administrator",
   "questionsMap": {
     "Depo-Provera": [
@@ -3162,10 +3162,10 @@
         "categoryBadge": "Qualifier"
       },
       {
-        "id": "custom-1789576934964",
-        "name": "testingQuestion3",
-        "label": "Testing Question 3",
-        "type": "textarea",
+        "id": "custom-1790852900389",
+        "name": "howLongTheCountIs",
+        "label": "How long the count is",
+        "type": "number",
         "required": true,
         "categoryBadge": "Qualifier"
       }

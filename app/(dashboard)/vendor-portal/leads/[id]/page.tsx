@@ -42,6 +42,13 @@ interface ActivityFeedItem {
   };
 }
 
+function extractRoleBadge(role: any, fallback = 'EMPLOYEE'): string {
+  if (!role) return fallback;
+  if (typeof role === 'string') return role;
+  if (typeof role === 'object' && typeof role.name === 'string') return role.name;
+  return fallback;
+}
+
 export default function VendorLeadDetailPage({ params }: PageProps) {
   const { id } = use(params);
   const router = useRouter();
@@ -115,7 +122,7 @@ export default function VendorLeadDetailPage({ params }: PageProps) {
               leadId: id,
               userId: c.userId,
               authorName: c.authorName || c.user?.name || 'Employee Specialist',
-              roleBadge: c.user?.role || 'EMPLOYEE',
+              roleBadge: extractRoleBadge(c.user?.role || c.user?.roleName, 'EMPLOYEE'),
               statusLine: 'Employee replied to customer',
               content: c.content,
               createdAt: c.createdAt,
@@ -149,8 +156,14 @@ export default function VendorLeadDetailPage({ params }: PageProps) {
       if (saved && isMounted) {
         try {
           const parsed = JSON.parse(saved);
-          setFeedItems(parsed);
-          return;
+          if (Array.isArray(parsed)) {
+            const sanitized = parsed.map((item: any) => ({
+              ...item,
+              roleBadge: extractRoleBadge(item.roleBadge, 'EMPLOYEE')
+            }));
+            setFeedItems(sanitized);
+            return;
+          }
         } catch (_) { }
       }
 
@@ -222,11 +235,14 @@ export default function VendorLeadDetailPage({ params }: PageProps) {
       finalContent += `\n\n📎 Attached files: ${attachedFiles.join(', ')}`;
     }
 
+    const rawUserRole = user?.roleName || (user as any)?.role;
+    const authorRoleBadge = extractRoleBadge(rawUserRole, 'EMPLOYEE');
+
     const newFeedEntry: ActivityFeedItem = {
       id: `feed-${Date.now()}`,
       leadId: id,
       authorName: employeeName,
-      roleBadge: user?.roleName || 'EMPLOYEE',
+      roleBadge: authorRoleBadge,
       statusLine: 'Employee replied to customer',
       content: finalContent,
       createdAt: new Date().toISOString(),
@@ -242,10 +258,17 @@ export default function VendorLeadDetailPage({ params }: PageProps) {
     };
 
     try {
-      await api.post(`/leads/${id}/comments`, {
+      const res = await api.post(`/leads/${id}/comments`, {
         content: finalContent,
         authorName: employeeName,
       });
+
+      if (res.data?.comment?.id) {
+        newFeedEntry.id = res.data.comment.id;
+      }
+      if (res.data?.comment?.createdAt) {
+        newFeedEntry.createdAt = res.data.comment.createdAt;
+      }
 
       setFeedItems(prev => {
         const updated = [newFeedEntry, ...prev];
@@ -309,11 +332,16 @@ export default function VendorLeadDetailPage({ params }: PageProps) {
   // Filtered Feed Items
   const filteredFeedItems = useMemo(() => {
     if (!feedSearchTerm.trim()) return feedItems;
+    const term = feedSearchTerm.toLowerCase();
     return feedItems.filter(
-      item =>
-        item.content.toLowerCase().includes(feedSearchTerm.toLowerCase()) ||
-        item.authorName.toLowerCase().includes(feedSearchTerm.toLowerCase()) ||
-        item.roleBadge.toLowerCase().includes(feedSearchTerm.toLowerCase())
+      item => {
+        const roleText = extractRoleBadge(item.roleBadge, '');
+        return (
+          (item.content && item.content.toLowerCase().includes(term)) ||
+          (item.authorName && item.authorName.toLowerCase().includes(term)) ||
+          roleText.toLowerCase().includes(term)
+        );
+      }
     );
   }, [feedItems, feedSearchTerm]);
 
@@ -1242,13 +1270,14 @@ export default function VendorLeadDetailPage({ params }: PageProps) {
                   ) : (
                     <div className="space-y-3">
                       {filteredFeedItems.map((item) => {
-                        const author = item.authorName || 'Employee Specialist';
+                        const author = typeof item.authorName === 'string' ? item.authorName : 'Employee Specialist';
                         const initials = author
                           .split(' ')
                           .map((n) => n[0])
+                          .filter(Boolean)
                           .join('')
                           .substring(0, 2)
-                          .toUpperCase();
+                          .toUpperCase() || 'ES';
 
                         const dateObj = new Date(item.createdAt);
                         const timeString = !isNaN(dateObj.getTime())
@@ -1274,7 +1303,7 @@ export default function VendorLeadDetailPage({ params }: PageProps) {
                                       {author}
                                     </h5>
                                     <span className="rounded-md bg-indigo-50 text-indigo-700 border border-indigo-200 px-1.5 py-0.5 text-[10px] font-extrabold uppercase">
-                                      {item.roleBadge || 'EMPLOYEE'}
+                                      {extractRoleBadge(item.roleBadge, 'EMPLOYEE')}
                                     </span>
                                   </div>
                                   <p className="text-xs text-emerald-600 font-semibold mt-0.5">

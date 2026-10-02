@@ -1,6 +1,6 @@
 {
-  "version": 12,
-  "updatedAt": "2026-09-16T16:42:16.192Z",
+  "version": 16,
+  "updatedAt": "2026-10-01T11:08:21.075Z",
   "updatedBy": "MassCore Administrator",
   "fields": [
     {
@@ -885,7 +885,7 @@
         "label": "Medical Diagnosis",
         "type": "select",
         "section": "diagnosis",
-        "required": false,
+        "required": true,
         "active": true,
         "options": [
           "Sexual Dysfunction",
@@ -925,7 +925,7 @@
         "label": "Diagnosing Doctor's Name",
         "type": "text",
         "section": "diagnosis",
-        "required": true,
+        "required": false,
         "active": true,
         "placeholder": "Dr. Full Name"
       },
@@ -1444,7 +1444,7 @@
         "label": "Diagnosing Hospital's Name",
         "type": "text",
         "section": "diagnosis",
-        "required": true,
+        "required": false,
         "active": true,
         "placeholder": "Hospital / Medical Center"
       },
